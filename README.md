@@ -1,76 +1,171 @@
+# 🏆 PartTimeMon - Sydney-Based Part-Time Job Platform
 
-# 🚀 React + TypeScript + Vite + Tailwind CSS
+## 📌 Project Overview
+**PartTimeMon** is a specialized job platform that connects job seekers with **part-time and casual job opportunities** in Sydney. Designed for **students, working holiday visa holders, and temporary job seekers**, it helps users find jobs in industries such as cafés, retail, delivery, and more.
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
-> ⚡ A modern and fast frontend template built with **Vite**, **React**, **TypeScript**, and **Tailwind CSS**.
-
-
----
-
-## 📂 Project Structure  
-```
-my-app
-│── src/
-│   ├── assets/       # Static assets (logos, images)
-│   ├── components/   # Reusable components
-│   ├── pages/        # Page components
-│   ├── App.tsx       # Main application file
-│   ├── main.tsx      # Entry point
-│── public/           # Static files
-│── index.html        # Main HTML file
-│── package.json      # Dependencies
-│── tailwind.config.js # Tailwind CSS config
-│── tsconfig.json     # TypeScript config
-│── vite.config.ts    # Vite config
-```
+## 🚀 Features (MVP)
+- **Job Listings & Filtering** – Search and filter jobs by **location, industry, and job type**.
+- **Job Application System** – Users can **apply** for jobs with a resume and cover letter.
+- **Employer Job Posting** – Businesses can **post, edit, and manage** job listings.
+- **User Authentication** – JWT-based **login & registration** for job seekers and employers.
+- **Multilingual Support** – Supporting **English & Korean**, with plans to expand.
 
 ---
 
-## 🛠 Installation & Setup  
+## 🛠️ Tech Stack
 
-### 1️⃣ Clone the Repository  
-```bash
-git clone https://github.com/your-github-repo.git
-cd your-github-repo
+### 🌐 Frontend (React)
+- **Framework:** React.js + TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** React Context API
+- **Routing:** React Router
+- **Internationalization:** react-i18next
+- **API Communication:** Axios
+
+### 🔗 Backend (NestJS)
+- **Framework:** NestJS (TypeScript-based)
+- **Database:** PostgreSQL (with Prisma ORM)
+- **Authentication:** JWT-based user authentication
+- **API Architecture:** RESTful endpoints
+
+### ☁️ Deployment (To Be Decided)
+- **Frontend:** Vercel or Netlify
+- **Backend:** AWS EC2, Render, or Railway
+- **Database:** Supabase or AWS RDS
+
+---
+
+## 📂 Folder Structure
+```plaintext
+project-root/
+├── frontend/         # React-based frontend
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Main pages (Home, Job List, Job Detail, etc.)
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── contexts/      # Global state/context
+│   │   ├── i18n/          # Translations (English/Korean)
+│   │   ├── utils/         # Utility functions
+│   │   └── App.tsx        # Main app component
+│   ├── public/            # Static assets
+│   ├── package.json       # Project dependencies
+│   └── tsconfig.json      # TypeScript configuration
+│
+├── backend/         # NestJS-based backend
+│   ├── src/
+│   │   ├── modules/       # Job, User, Application modules
+│   │   ├── auth/          # Authentication (JWT)
+│   │   ├── prisma/        # ORM schema and migrations
+│   │   ├── main.ts        # Entry point
+│   │   └── app.module.ts  # Main application module
+│   ├── .env               # Environment variables
+│   ├── package.json       # Project dependencies
+│   ├── tsconfig.json      # TypeScript configuration
+│   ├── README.md          # Documentation
+│   └── prisma/schema.prisma  # Database schema
 ```
 
-### 2️⃣ Install Dependencies  
+---
+
+## 🚀 Getting Started
+
+### **🔹 1. Clone the Repository**
 ```bash
+git clone <REPO_URL>
+cd project-root
+```
+
+### **🔹 2. Setup Frontend**
+```bash
+cd frontend
 npm install
+npm start   # Runs on http://localhost:3000
 ```
 
-### 3️⃣ Run the Development Server  
+### **🔹 3. Setup Backend**
 ```bash
-npm run dev
+cd backend
+npm install
+npm run start:dev  # Runs on http://localhost:4000
 ```
-Then open `http://localhost:5173` in your browser.
 
----
-
-## 🚀 Built With  
-- **[React](https://reactjs.org/)** – A JavaScript library for building user interfaces  
-- **[TypeScript](https://www.typescriptlang.org/)** – Strongly typed JavaScript  
-- **[Vite](https://vitejs.dev/)** – A fast build tool for modern web apps  
-- **[Tailwind CSS](https://tailwindcss.com/)** – A utility-first CSS framework  
-
----
-
-## 📸 Screenshots   
-<img width="983" alt="Screenshot 2025-02-05 at 12 30 04 PM" src="https://github.com/user-attachments/assets/894fe6f3-8c9f-4812-abc5-978cc21c11fb" />
-
----
-
-## 🔗 Links  
-- 💻 **Source Code:** [GitHub Repository](https://github.com/your-github-repo)  
-
----
-
-## 📜 License  
-MIT License © 2025 Jin Lee  
+### **🔹 4. Configure Environment Variables**
+Create a `.env` file in the `backend/` directory:
+```env
+DATABASE_URL=postgres://username:password@localhost:5432/parttimemon
+JWT_SECRET=your_jwt_secret
+PORT=4000
 ```
+
+---
+
+## 📌 API Endpoints (MVP)
+
+### **🔹 User Authentication**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | Login and receive a JWT token |
+| `GET` | `/auth/me` | Get current user profile |
+
+### **🔹 Job Postings**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/jobs` | Create a job post |
+| `GET` | `/jobs` | Get all job listings (with filters) |
+| `GET` | `/jobs/:id` | Get job details |
+| `PUT` | `/jobs/:id` | Update a job post |
+| `DELETE` | `/jobs/:id` | Delete a job post |
+
+### **🔹 Job Applications**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/applications` | Apply for a job |
+| `GET` | `/applications/my` | Get my job applications |
+| `GET` | `/applications/job/:jobId` | Get applicants for a job |
+| `PUT` | `/applications/:id/status` | Update application status |
+
+### **🔹 Job Categories**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/categories/locations` | Get Sydney job locations |
+| `GET` | `/categories/industries` | Get industries for part-time jobs |
+| `GET` | `/categories/job-types` | Get job types |
+
+---
+
+## 👥 Team Members
+| Role | Name |
+|------|------|
+| **Frontend Developer** | JinLee |
+| **Backend Developer** | Elodie Kim |
+
+---
+
+## 🔥 Contributing
+We welcome contributions! Follow these steps to contribute:
+
+1. **Fork the repository**
+2. **Create a new branch** (`feature/new-feature`)
+3. **Commit your changes**
+4. **Open a pull request**
+
+### **Code Guidelines**
+- Follow **TypeScript best practices**
+- Use **ESLint & Prettier** for code formatting
+- Write **meaningful commit messages**
+
+---
+
+## 📜 License
+This project is licensed under the **MIT License**.
+
+---
+
+## 📩 Contact
+For any inquiries or suggestions, feel free to reach out:
+
+- **JinLee** - [jinlee@example.com](mailto:jinlee@example.com)
+- **Elodie Kim** - [elodie@example.com](mailto:elodie@example.com)
 
 ---
