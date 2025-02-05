@@ -8,6 +8,7 @@
     "strict": true,
     "jsx": "react-jsx", // ✅ JSX 활성화
     "allowImportingTsExtensions": true, // ✅ TSX 파일 import 허용
+    "allowSyntheticDefaultImports": true,
     "noEmit": true
   },
   "include": ["src"]
