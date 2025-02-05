@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "jsx": "react-jsx", // ✅ JSX 활성화
+    "allowImportingTsExtensions": true, // ✅ TSX 파일 import 허용
+    "noEmit": true
+  },
+  "include": ["src"]
+}
