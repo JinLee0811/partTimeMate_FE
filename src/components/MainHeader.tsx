@@ -14,17 +14,21 @@ import {
 
 export default function JobCategories() {
   return (
-    <div className='max-w-7xl mx-auto p-6 bg-white grid grid-cols-3 gap-6'>
+    <div className='max-w-7xl mx-auto p-6 bg-white grid grid-cols-3 gap-6 mb-10'>
       {/* 🔹 Left Section (Job Categories) */}
       <div className='col-span-2 space-y-6'>
         {/* Featured Banner */}
-        <div className='flex justify-between items-center p-4 bg-blue-500 text-white rounded-lg'>
-          <h2 className='text-xl font-bold'>Find the Best Part-time Jobs in Sydney!</h2>
-          <img src='/sydney-icon.png' alt='Sydney Icon' className='h-14' />
+        <div className='grid grid-cols-[2fr_1fr] gap-1 bg-white text-white rounded-lg'>
+          <div className='flex m-1 justify-center items-center p-12 bg-blue-500 text-white rounded-lg'>
+            <h2 className='text-xl font-bold'>Find the Best Part-time Jobs in Sydney!</h2>
+          </div>
+          <div className='flex m-1 justify-center items-center bg-blue-500 text-white rounded-lg'>
+            <h2 className='text-xl font-bold'>Hot View!</h2>
+          </div>
         </div>
 
         {/* Job Categories */}
-        <div className='grid grid-cols-3 gap-6'>
+        <div className='grid grid-cols-3 gap-3'>
           {/* Location-based Jobs */}
           <div className='bg-gray-100 p-4 rounded-lg'>
             <h3 className='font-bold text-lg mb-3'>Jobs by Location</h3>
@@ -86,9 +90,9 @@ export default function JobCategories() {
       {/* 🔹 Right Section (Login + Ads) */}
       <div className='col-span-1 space-y-6'>
         {/* Login Section */}
-        <div className='bg-white p-4 border rounded-lg shadow'>
+        <div className='bg-white p-6 border rounded-lg shadow'>
           <h3 className='font-bold text-lg'>Login</h3>
-          <div className='flex justify-between mt-3'>
+          <div className='flex justify-between mt-5'>
             <Link to='/login' className='flex items-center'>
               <img src='/user-icon.png' alt='User Icon' className='h-10' />
               <span className='ml-2'>Job Seekers</span>
@@ -125,13 +129,13 @@ export default function JobCategories() {
       </div>
 
       {/* Featured Companies */}
-      <div className='col-span-3 flex overflow-x-auto space-x-4 mt-6 p-4 border-t'>
+      {/* <div className='col-span-3 flex overflow-x-auto space-x-4 mt-6 p-4 border-t'>
         <img src='/company1.png' alt='Company 1' className='h-12' />
         <img src='/company2.png' alt='Company 2' className='h-12' />
         <img src='/company3.png' alt='Company 3' className='h-12' />
         <img src='/company4.png' alt='Company 4' className='h-12' />
         <img src='/company5.png' alt='Company 5' className='h-12' />
-      </div>
+      </div> */}
     </div>
   );
 }
