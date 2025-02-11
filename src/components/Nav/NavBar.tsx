@@ -1,23 +1,37 @@
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useAuthStore } from "../../store/useAuthStore";
+import NavItem from "./NavItem";
 
 export default function Navbar() {
+  const { isAuthenticated, user, logout } = useAuthStore();
+
   return (
-    <nav className='bg-white'>
+    <nav className='bg-white relative'>
       {/* 1️⃣ Top Bar: 로그인 / 회원가입 */}
       <div className='flex justify-end items-center p-2 text-gray-500 text-sm max-w-7xl mx-auto'>
-        <Link to='/auth/login' className='hover:text-gray-700'>
-          Login
-        </Link>
-        <span className='mx-2'>|</span>
-        <Link to='/auth/register' className='hover:text-gray-700'>
-          Sign Up
-        </Link>
+        {isAuthenticated ? (
+          <>
+            <span className='mr-2'>Welcome, {user?.username}!</span>
+            <button onClick={logout} className='hover:text-red-500'>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to='/auth/login' className='hover:text-gray-700'>
+              Login
+            </Link>
+            <span className='mx-2'>|</span>
+            <Link to='/auth/register' className='hover:text-gray-700'>
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
 
       {/* 2️⃣ Middle Bar: 로고 + 검색창 + 광고 */}
       <div className='flex justify-between items-center max-w-7xl mx-auto p-4'>
-        {/* 로고 */}
         <Link to='/' className='flex items-center space-x-2'>
           <img src='/logo.svg' alt='Part-Time Mate Logo' className='h-10' />
         </Link>
@@ -34,45 +48,35 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* 오른쪽 광고 (예제용) */}
+        {/* 광고 자리 */}
         <div className='hidden md:block'>
           <img src='/ad-banner.png' alt='Promotion' className='h-12' />
         </div>
       </div>
 
       {/* 3️⃣ Bottom Bar: 네비게이션 + 버튼 */}
-      <div className='flex justify-between items-center bg-white border-y py-3 pl-20 pr-10 w-auto mx-auto'>
-        {/* 네비게이션 메뉴 */}
-        <div className='flex space-x-6 text-gray-800 font-semibold'>
-          <Link to='/jobs' className='hover:text-blue-500'>
-            Job Listings
-          </Link>
-          <Link to='/companies' className='hover:text-blue-500'>
-            Companies
-          </Link>
-          <Link to='/candidates' className='hover:text-blue-500'>
-            Candidates
-          </Link>
-          <Link to='/job-story' className='hover:text-blue-500'>
-            Job Stories
-          </Link>
-          <Link to='/support' className='hover:text-blue-500'>
-            Support
-          </Link>
-        </div>
+      <div className='relative'>
+        <div className='flex justify-between items-center bg-white border-y py-4 px-10 w-auto mx-auto'>
+          {/* 네비게이션 메뉴 */}
+          <div className='flex space-x-6 font-semibold relative'>
+            <NavItem label='Job Listings' path='/jobs' menuKey='jobs' />
+            <NavItem label='Branded Jobs' path='/brands' menuKey='brands' />
+            <NavItem label='Talent Pool' path='/candidates' menuKey='candidates' />
+          </div>
 
-        {/* 오른쪽 버튼 */}
-        <div className='flex space-x-3'>
-          <Link
-            to='/resume'
-            className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
-            Upload Resume
-          </Link>
-          <Link
-            to='/post-job'
-            className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
-            Post a Job
-          </Link>
+          {/* 오른쪽 버튼 */}
+          <div className='flex space-x-3'>
+            <Link
+              to='/resume'
+              className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
+              Upload Resume
+            </Link>
+            <Link
+              to='/post-job'
+              className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
+              Post a Job
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
