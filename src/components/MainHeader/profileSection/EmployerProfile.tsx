@@ -15,7 +15,7 @@ export default function EmployerProfile({ user, logout }: EmployerProfileProps) 
   return (
     <div className='bg-white p-6 border border-gray-200 rounded-lg text-center'>
       {/* 프로필 정보 */}
-      <UserProfileHeader username={user.username} role='Employer' />
+      <UserProfileHeader username={user.username} role={user.role} />
 
       {/* 아이콘 메뉴 */}
       <UserProfileMenu items={menuItems} />

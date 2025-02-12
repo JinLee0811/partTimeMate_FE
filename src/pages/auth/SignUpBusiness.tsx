@@ -42,7 +42,7 @@ export default function SignUpBusiness() {
     e.preventDefault();
     await signUp(
       {
-        phone: formData.phone,
+        // phone: formData.phone,
         email: formData.email,
         password: formData.password,
         first_name: formData.first_name,
@@ -120,7 +120,7 @@ export default function SignUpBusiness() {
         {/* Sign Up Form */}
         <form className='w-full space-y-3' onSubmit={handleSubmit}>
           {/* Phone Number & Verification */}
-          <div className='flex items-center space-x-3'>
+          {/* <div className='flex items-center space-x-3'>
             <InputField
               label='Phone *'
               type='text'
@@ -132,7 +132,7 @@ export default function SignUpBusiness() {
             <button className='px-3 mt-7 py-2 bg-gray-300 text-gray-600 rounded-md h-[40px]'>
               Verify
             </button>
-          </div>
+          </div> */}
 
           {/* <InputField
             label='Verification Code'
@@ -157,7 +157,7 @@ export default function SignUpBusiness() {
           <InputField
             label='First Name *'
             type='text'
-            name='username'
+            name='first_name'
             value={formData.first_name}
             onChange={handleChange}
             placeholder='Enter your First Name'
@@ -165,7 +165,7 @@ export default function SignUpBusiness() {
           <InputField
             label='Last Name *'
             type='text'
-            name='username'
+            name='last_name'
             value={formData.last_name}
             onChange={handleChange}
             placeholder='Enter your Last Name'

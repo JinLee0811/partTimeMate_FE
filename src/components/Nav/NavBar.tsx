@@ -12,7 +12,8 @@ export default function Navbar() {
       <div className='flex justify-end items-center p-2 text-gray-500 text-sm max-w-7xl mx-auto'>
         {isAuthenticated ? (
           <>
-            <span className='mr-2'>Welcome, {user?.username}!</span>
+            <span className='mr-2'>Welcome, {user?.role}!</span>
+            {console.log(user)}
             <button onClick={logout} className='hover:text-red-500'>
               Logout
             </button>
@@ -66,16 +67,19 @@ export default function Navbar() {
 
           {/* 오른쪽 버튼 */}
           <div className='flex space-x-3'>
-            <Link
-              to='/resume'
-              className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
-              Upload Resume
-            </Link>
-            <Link
-              to='/post-job'
-              className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
-              Post a Job
-            </Link>
+            {user?.role === "jobseeker" ? (
+              <Link
+                to='/resume'
+                className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
+                Upload Resume
+              </Link>
+            ) : (
+              <Link
+                to='/post-job'
+                className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
+                Post a Job
+              </Link>
+            )}
           </div>
         </div>
       </div>

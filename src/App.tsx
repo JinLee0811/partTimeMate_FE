@@ -9,6 +9,7 @@ import Register from "./pages/auth/Register";
 import SignUpBusiness from "./pages/auth/SignUpBusiness";
 import SignUpUser from "./pages/auth/SignUpUser";
 import Brands from "./pages/brands/Brands";
+import Mypage from "./pages/MyPage";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path='/jobs' element={<JobBoard />} />
         <Route path='/jobs/:id' element={<JobDetail />} />
         <Route path='/brands' element={<Brands />} />
+        <Route path='/mypage' element={<Mypage />} />
       </Route>
 
       {/* 로그인 및 회원가입 페이지 */}

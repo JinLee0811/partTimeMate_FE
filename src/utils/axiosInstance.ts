@@ -22,15 +22,22 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      const { refreshAccessToken } = useAuthStore.getState();
+    const originalRequest = error.config;
+    const { refreshAccessToken, logout } = useAuthStore.getState();
+
+    // ✅ 401 에러 발생 && 이미 재시도한 요청이 아니면 실행
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // ✅ 재시도 여부 플래그 추가
+
       try {
         await refreshAccessToken(); // 새 Access Token 발급
-        return api.request(error.config); // 요청 재시도
+        return api.request(originalRequest); // 🔄 요청 재시도
       } catch {
-        return Promise.reject(error); // 갱신 실패 시 로그아웃
+        logout(); // ❌ 토큰 갱신 실패 시 로그아웃
+        return Promise.reject(error); // 요청 중단
       }
     }
+
     return Promise.reject(error);
   }
 );
