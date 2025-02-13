@@ -1,18 +1,22 @@
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useUser } from "../../hooks/useUser"; // ✅ 유저 정보 가져오기 훅
 import NavItem from "./NavItem";
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { isLoading } = useUser(); // ✅ React Query에서 user 정보 가져오기
 
   return (
     <nav className='bg-white relative'>
       {/* 1️⃣ Top Bar: 로그인 / 회원가입 */}
       <div className='flex justify-end items-center p-2 text-gray-500 text-sm max-w-7xl mx-auto'>
-        {isAuthenticated && user?.id ? (
+        {isLoading ? (
+          <span>Loading...</span> // ✅ 로딩 중 표시
+        ) : isAuthenticated && user ? (
           <>
-            <span className='mr-2'>Welcome, {user?.lastName}!</span>
+            <span className='mr-2'>Welcome, {user.lastName}!</span>
             <button onClick={logout} className='hover:text-red-500'>
               Logout
             </button>

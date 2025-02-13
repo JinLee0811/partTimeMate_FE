@@ -1,84 +1,77 @@
 import { create } from "zustand";
-import { loginApi, fetchUserApi, refreshAccessTokenApi, logoutApi, updateUserApi } from "./authApi";
-import { AuthState } from "../types/auth"; // ✅ auth 타입 불러오기
-import { User } from "../types/user"; // ✅ 유저 타입 불러오기
+import { persist, createJSONStorage } from "zustand/middleware";
+import { loginApi, logoutApi, refreshAccessTokenApi } from "../api/authApi";
+import { fetchUserApi } from "../api/userApi"; // ✅ 유저 정보 가져오기 추가
+import { User } from "../types/user";
 
-/** ✅ Zustand Store */
-export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: !!localStorage.getItem("accessToken"),
-  accessToken: localStorage.getItem("accessToken") || null,
-  refreshToken: localStorage.getItem("refreshToken") || null,
-  user: null,
+interface AuthState {
+  user: User | null;
+  accessToken: string | null;
+  isAuthenticated: boolean;
+  login: (email: string, password: string, role: User["role"]) => Promise<void>;
+  logout: () => void;
+  refreshAccessToken: () => Promise<string>;
+  setUser: (user: User | null) => void;
+  setAccessToken: (token: string) => void;
+}
 
-  // ✅ 로그인
-  login: async (email, password, role) => {
-    try {
-      const loginRole = role === "ADMIN" ? "ADMIN" : role; // ADMIN이면 role 무시
-      const { accessToken, refreshToken } = await loginApi(email, password, loginRole);
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      accessToken: localStorage.getItem("accessToken") || null,
+      isAuthenticated: !!localStorage.getItem("accessToken"),
 
-      set({ isAuthenticated: true, accessToken, refreshToken });
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      // ✅ 로그인 (유저 정보 가져오기 추가)
+      login: async (email, password, role) => {
+        const { accessToken, refreshToken } = await loginApi(email, password, role);
 
-      await useAuthStore.getState().fetchUser(); // 🔄 유저 정보 가져오기
-    } catch (error: any) {
-      console.error("❌ Login Error:", error.message);
-      throw new Error(error.message || "Login failed. Please try again.");
+        // ✅ Access Token 저장
+        set({ isAuthenticated: true, accessToken });
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        // ✅ 유저 정보 가져오기 & 저장
+        try {
+          const userData = await fetchUserApi();
+          set({ user: userData });
+        } catch (error) {
+          console.error("❌ 로그인 후 유저 데이터 가져오기 실패:", error);
+          set({ user: null });
+        }
+      },
+
+      // ✅ 로그아웃
+      logout: () => {
+        logoutApi();
+        set({ user: null, accessToken: null, isAuthenticated: false });
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      },
+
+      // ✅ Access Token 갱신 (🔹 API 호출 후 상태 업데이트)
+      refreshAccessToken: async (): Promise<string> => {
+        try {
+          const newAccessToken = await refreshAccessTokenApi();
+          set({ accessToken: newAccessToken });
+          localStorage.setItem("accessToken", newAccessToken);
+          return newAccessToken;
+        } catch (error) {
+          console.error("❌ Token refresh failed", error);
+          get().logout();
+          throw new Error("Failed to refresh access token.");
+        }
+      },
+
+      // ✅ 유저 정보 설정
+      setUser: (user) => set({ user }),
+
+      // ✅ Access Token 업데이트 함수 추가
+      setAccessToken: (token) => set({ accessToken: token }),
+    }),
+    {
+      name: "auth-storage",
+      storage: createJSONStorage(() => localStorage), // ✅ localStorage를 JSON 저장소로 변환하여 적용
     }
-  },
-
-  // ✅ 유저 정보 가져오기
-  fetchUser: async () => {
-    try {
-      const userData = await fetchUserApi();
-      set({ user: userData });
-    } catch (error) {
-      console.error("❌ Failed to fetch user:", error);
-      set({ user: null });
-    }
-  },
-
-  // ✅ 유저 정보 업데이트
-  updateUser: async (updatedData: Partial<User>) => {
-    try {
-      const updatedUser = await updateUserApi(updatedData);
-
-      if (!updatedUser) {
-        throw new Error("No user data returned from API.");
-      }
-
-      set({ user: updatedUser }); // ✅ 유저 정보 업데이트
-    } catch (error: any) {
-      console.error("❌ Failed to update user:", error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || "User update failed. Please try again.");
-    }
-  },
-
-  // ✅ 로그아웃
-  logout: () => {
-    logoutApi();
-    set({ isAuthenticated: false, accessToken: null, refreshToken: null, user: null });
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-
-    if (location.pathname !== "/") {
-      window.location.href = "/";
-    }
-  },
-
-  // ✅ Access Token 갱신
-  refreshAccessToken: async (): Promise<string> => {
-    try {
-      const newAccessToken = await refreshAccessTokenApi();
-      set({ accessToken: newAccessToken });
-      localStorage.setItem("accessToken", newAccessToken);
-
-      await useAuthStore.getState().fetchUser(); // 🔄 유저 정보 다시 가져오기
-      return newAccessToken; // ✅ 반환값 추가
-    } catch (error) {
-      console.error("❌ Token refresh failed", error);
-      useAuthStore.getState().logout();
-      throw new Error("Failed to refresh access token."); // ✅ 예외 처리
-    }
-  },
-}));
+  )
+);

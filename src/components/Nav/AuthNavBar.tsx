@@ -15,11 +15,14 @@ export default function AuthNavBar() {
       </Link>
 
       {/* 오른쪽 네비게이션 */}
-      <div className='flex space-x-6'>
+      <div className='flex space-x-4'>
         {isLoginPage ? (
           <>
             <Link to='/' className='text-gray-600 hover:text-blue-500 transition'>
               Home
+            </Link>
+            <Link to='/auth/register' className='text-gray-600 hover:text-blue-500 transition'>
+              Sign Up
             </Link>
             <Link to='/qna' className='text-gray-600 hover:text-blue-500 transition'>
               Q&A
@@ -35,6 +38,9 @@ export default function AuthNavBar() {
             </Link>
             <Link to='/auth/login' className='text-gray-600 hover:text-blue-500 transition'>
               Login
+            </Link>
+            <Link to='/auth/register' className='text-gray-600 hover:text-blue-500 transition'>
+              Sign Up
             </Link>
           </>
         )}

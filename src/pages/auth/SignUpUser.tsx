@@ -3,7 +3,9 @@ import { useSignUp } from "../../hooks/useSignUp";
 import InputField from "../../components/InputField";
 
 export default function SignUpUser() {
-  const { signUp, loading, error } = useSignUp();
+  const { signUp, isPending, error } = useSignUp();
+  const [localError, setLocalError] = useState<string | null>(null); // 🔹 에러 메시지 상태 추가
+
   const [formData, setFormData] = useState({
     phoneNumber: "",
     firstName: "",
@@ -12,7 +14,7 @@ export default function SignUpUser() {
     confirmPassword: "",
     email: "",
     preferredLanguage: "ENG",
-    role: "BUSINESS",
+    role: "JOB_SEEKER",
     terms: {
       all: false,
       age: false,
@@ -63,29 +65,49 @@ export default function SignUpUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ 전화번호 입력 핸들러 (+61 고정 유지)
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onlyNumbers = e.target.value.replace(/\D/g, ""); // 숫자만 허용
+    setFormData((prev) => ({ ...prev, phoneNumber: onlyNumbers }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isRequiredTermsChecked) return; // 필수 약관 체크되지 않으면 회원가입 진행 X
+    setLocalError(null); // 🔹 기존 오류 메시지 초기화
+
+    if (!isRequiredTermsChecked) {
+      setLocalError("⚠️ You must agree to the required terms.");
+      return;
+    }
+
     const formattedPhoneNumber = `+61${formData.phoneNumber}`;
 
-    await signUp(
+    signUp(
       {
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formattedPhoneNumber,
         preferredLanguage: formData.preferredLanguage,
         role: "JOB_SEEKER",
       },
-      formData.confirmPassword
+      {
+        onError: (signupError: any) => {
+          setLocalError(signupError.message || "⚠️ Registration failed. Please try again.");
+        },
+      }
     );
   };
 
   return (
     <div className='flex flex-col items-center bg-gray-50 py-10 px-4'>
       <div className='w-full max-w-lg bg-white shadow-md p-6 rounded-lg'>
-        <h2 className='text-2xl font-semibold text-gray-800 mb-6'>Business Sign Up</h2>
+        <h2 className='text-2xl font-semibold text-gray-800 mb-6'>User Sign Up</h2>
+
+        {/* ✅ 오류 메시지 표시 */}
+        {/* {localError && <p className='text-red-500 text-sm mb-4 text-center'>{localError}</p>} */}
 
         {/* ✅ 약관 동의 섹션 */}
         <div className='border p-4 rounded-md mb-6 bg-gray-50'>
@@ -132,23 +154,20 @@ export default function SignUpUser() {
           </div>
         </div>
 
-        {/* ✅ 회원가입 폼 (필수 약관 동의 안 하면 입력 비활성화) */}
+        {/* ✅ 회원가입 폼 */}
         <form className='w-full space-y-3' onSubmit={handleSubmit}>
-          {/* Phone Number */}
+          {/* Phone Number (+61 고정) */}
           <div className='mb-4'>
             <label className='text-gray-800 text-sm mb-2 block'>Phone Number *</label>
             <div className='flex items-center border border-gray-300 rounded-md overflow-hidden'>
-              <span className='bg-gray-200 text-sm px-3 py-2 text-gray-600'>+61</span>
+              <span className='bg-gray-200 px-3 py-2 text-gray-600'>+61</span>
               <input
                 type='text'
                 name='phoneNumber'
                 value={formData.phoneNumber}
-                onChange={(e) => {
-                  const onlyNumbers = e.target.value.replace(/\D/g, "");
-                  setFormData((prev) => ({ ...prev, phoneNumber: onlyNumbers }));
-                }}
-                placeholder='Enter phone number (e.g. 435233222)'
-                className='flex-1 p-2 focus:outline-none text-sm'
+                onChange={handlePhoneNumberChange}
+                placeholder='Enter phone number (e.g. 123456789)'
+                className='flex-1 text-sm p-2 focus:outline-none'
                 disabled={!isRequiredTermsChecked}
               />
             </div>
@@ -164,6 +183,7 @@ export default function SignUpUser() {
             placeholder='Enter your email'
             disabled={!isRequiredTermsChecked}
           />
+
           {/* First Name & Last Name */}
           <InputField
             label='First Name *'
@@ -183,6 +203,7 @@ export default function SignUpUser() {
             placeholder='Enter your Last Name'
             disabled={!isRequiredTermsChecked}
           />
+
           {/* Password */}
           <InputField
             label='Password *'
@@ -202,17 +223,13 @@ export default function SignUpUser() {
             placeholder='Re-enter your password'
             disabled={!isRequiredTermsChecked}
           />
-          {error && <p className='text-red-500 text-sm mt-2 text-center'>{error}</p>}
-          {/* ✅ 회원가입 버튼 (필수 약관 미동의 시 비활성화) */}
+
+          {/* ✅ 회원가입 버튼 */}
           <button
             type='submit'
-            className={`w-full py-3 rounded-md font-semibold transition ${
-              !isRequiredTermsChecked || loading
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-600 text-white hover:bg-gray-700"
-            }`}
-            disabled={!isRequiredTermsChecked || loading}>
-            {loading ? "Signing Up..." : "Create Account"}
+            className={`w-full py-3 rounded-md font-semibold transition ${!isRequiredTermsChecked || isPending ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gray-600 text-white hover:bg-gray-700"}`}
+            disabled={!isRequiredTermsChecked || isPending}>
+            {isPending ? "Signing Up..." : "Create Account"}
           </button>
         </form>
       </div>

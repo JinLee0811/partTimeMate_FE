@@ -1,68 +1,51 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // React Router 사용
-import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { registerApi } from "../api/authApi"; // ✅ API 호출 함수
+import { useAuthStore } from "../store/useAuthStore"; // ✅ Zustand 연동
+import { User } from "../types/user"; // ✅ User 타입 가져오기
+import { SignUpData } from "../types/auth"; // ✅ SignUpData 타입 가져오기
 
-interface SignUpData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: "JOB_SEEKER" | "BUSINESS"; // ✅ role을 동적으로 받도록 설정
-  preferredLanguage?: string;
-  business_name?: string;
-  business_address?: string;
-  phoneNumber?: string;
+// 🔹 `confirmPassword` 포함한 요청 타입 (단, API 호출 시에는 제외)
+interface SignUpRequest extends SignUpData {
+  confirmPassword: string;
 }
 
 export function useSignUp() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate(); // 🔹 네비게이션 훅 추가
+  const navigate = useNavigate();
+  const { setUser } = useAuthStore();
 
-  // 비밀번호 유효성 검사 함수
-  const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
-    return passwordRegex.test(password);
-  };
-
-  const signUp = async (data: SignUpData, confirmPassword: string) => {
-    setLoading(true);
-    setError("");
-
-    // ✅ 프론트에서 비밀번호 검증
-    if (!validatePassword(data.password)) {
-      setError(
-        "Password must be 8-32 characters long and contain letters, numbers, and special characters."
-      );
-      setLoading(false);
-      return;
-    }
-
-    if (data.password !== confirmPassword) {
-      setError("Passwords do not match!");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // ✅ API 요청 보내기
-      const response = await axios.post("http://localhost:4000/auth/signup", {
-        ...data,
-      });
-
-      alert("✅ Registration successful! Please log in."); // 🔹 회원가입 성공 시 알림 추가
-      navigate("/auth/login"); // 🔹 성공하면 로그인 페이지로 이동
-      return response.data;
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Signup failed. Please try again.");
-      } else {
-        setError("An unexpected error occurred.");
+  // ✅ React Query의 useMutation 사용
+  const mutation = useMutation<User, Error, SignUpRequest>({
+    mutationFn: async ({ confirmPassword, ...data }) => {
+      if (!validatePassword(data.password)) {
+        throw new Error(
+          "Password must be 8-32 characters long and contain letters, numbers, and special characters."
+        );
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (data.password !== confirmPassword) {
+        throw new Error("Passwords do not match!");
+      }
 
-  return { signUp, loading, error };
+      // 🔹 confirmPassword를 제외하고 서버로 보냄
+      return registerApi(data);
+    },
+    onSuccess: (userData) => {
+      if (userData) {
+        setUser(userData); // ✅ Zustand 상태 업데이트
+      }
+      alert("✅ Registration successful! Please log in.");
+      navigate("/auth/login");
+    },
+    onError: (error) => {
+      alert(error.message || "Signup failed. Please try again.");
+    },
+  });
+
+  return { signUp: mutation.mutate, isPending: mutation.isPending, ...mutation };
 }
+
+// ✅ 비밀번호 유효성 검사 함수
+const validatePassword = (password: string) => {
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+  return passwordRegex.test(password);
+};

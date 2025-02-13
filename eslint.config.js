@@ -22,6 +22,26 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+
+      // ✅ `any` 사용에 대한 경고만 표시 (에러 X)
+      "@typescript-eslint/no-explicit-any": "warn",
+
+      // ✅ `@ts-ignore`, `@ts-expect-error` 사용을 제한적으로 허용
+      "@typescript-eslint/ban-ts-comment": [
+        "warn",
+        {
+          "ts-ignore": "allow-with-description", // 설명이 있는 경우 허용
+          "ts-expect-error": true,
+          "ts-nocheck": false, // 전체 무시 방지
+          "ts-check": false,
+        },
+      ],
+
+      // ✅ TypeScript의 명시적 `any` 사용을 줄이기 위한 설정
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
     },
   }
 );

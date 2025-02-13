@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useUser } from "./hooks/useUser";
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Home from "./pages/Home";
@@ -18,37 +20,45 @@ import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
 import ErrorPage from "./pages/ErrorPage"; // ✅ 404 및 기타 에러 페이지
 
+// ✅ React Query 클라이언트 생성
+const queryClient = new QueryClient();
+
 export default function App() {
+  // ✅ 유저 상태 관리 (Zustand + React Query 통합)
+  useUser();
+
   return (
-    <Routes>
-      {/* ✅ 메인 레이아웃 적용 */}
-      <Route element={<MainLayout />}>
-        <Route path='/' element={<Home />} />
-        <Route path='/jobs' element={<JobBoard />} />
-        <Route path='/jobs/:id' element={<JobDetail />} />
-        <Route path='/brands' element={<Brands />} />
-        <Route path='/mypage' element={<Mypage />} />
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        {/* ✅ 메인 레이아웃 적용 */}
+        <Route element={<MainLayout />}>
+          <Route path='/' element={<Home />} />
+          <Route path='/jobs' element={<JobBoard />} />
+          <Route path='/jobs/:id' element={<JobDetail />} />
+          <Route path='/brands' element={<Brands />} />
+          <Route path='/mypage' element={<Mypage />} />
 
-        {/* ✅ 관리자 전용 페이지 */}
-        <Route path='/admin' element={<AdminDashboard />}>
-          <Route index element={<AdminHome />} />
-          <Route path='users' element={<UserManagement />} />
-          <Route path='jobs' element={<JobManagement />} />
-          <Route path='categories' element={<CategoryManagement />} />
-          <Route path='categories/:id' element={<CategoryDetail />} />
+          {/* ✅ 관리자 전용 페이지 */}
+          <Route path='/admin' element={<AdminDashboard />}>
+            <Route index element={<AdminHome />} />
+            <Route path='users' element={<UserManagement />} />
+            <Route path='jobs' element={<JobManagement />} />
+            <Route path='categories' element={<CategoryManagement />} />
+            <Route path='categories/:id' element={<CategoryDetail />} />
+          </Route>
         </Route>
-      </Route>
 
-      {/* ✅ 로그인 및 회원가입 */}
-      <Route element={<AuthLayout />}>
-        <Route path='/auth/login' element={<Login />} />
-        <Route path='/auth/register' element={<Register />} />
-        <Route path='/auth/signup/user' element={<SignUpUser />} />
-        <Route path='/auth/signup/business' element={<SignUpBusiness />} />
-      </Route>
+        {/* ✅ 로그인 및 회원가입 */}
+        <Route element={<AuthLayout />}>
+          <Route path='/auth/login' element={<Login />} />
+          <Route path='/auth/register' element={<Register />} />
+          <Route path='/auth/signup/user' element={<SignUpUser />} />
+          <Route path='/auth/signup/business' element={<SignUpBusiness />} />
+        </Route>
 
-      {/* ✅ 404 에러 처리 */}
-      <Route path='*' element={<ErrorPage />} />
-    </Routes>
+        {/* ✅ 404 에러 처리 */}
+        <Route path='*' element={<ErrorPage />} />
+      </Routes>
+    </QueryClientProvider>
   );
 }

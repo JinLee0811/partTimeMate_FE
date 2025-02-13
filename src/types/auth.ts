@@ -1,5 +1,17 @@
 import { User } from "./user"; // ✅ 유저 타입 불러오기
 
+export interface SignUpData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: "JOB_SEEKER" | "BUSINESS"; // ✅ 역할 선택
+  preferredLanguage?: string;
+  //   business_name?: string;
+  //   business_address?: string;
+  phoneNumber?: string;
+}
+
 /** ✅ 로그인 요청 타입 */
 export interface LoginRequest {
   email: string;

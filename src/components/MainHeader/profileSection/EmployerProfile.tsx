@@ -20,7 +20,9 @@ export default function EmployerProfile({ user, logout }: EmployerProfileProps) 
       <UserProfileMenu items={menuItems} />
 
       {/* 로그아웃 버튼 */}
-      <LogoutButton logout={logout} />
+      <div className='mt-36'>
+        <LogoutButton logout={logout} />
+      </div>
     </div>
   );
 }
