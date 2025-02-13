@@ -10,10 +10,9 @@ export default function Navbar() {
     <nav className='bg-white relative'>
       {/* 1️⃣ Top Bar: 로그인 / 회원가입 */}
       <div className='flex justify-end items-center p-2 text-gray-500 text-sm max-w-7xl mx-auto'>
-        {isAuthenticated ? (
+        {isAuthenticated && user?.id ? (
           <>
-            <span className='mr-2'>Welcome, {user?.role}!</span>
-            {console.log(user)}
+            <span className='mr-2'>Welcome, {user?.lastName}!</span>
             <button onClick={logout} className='hover:text-red-500'>
               Logout
             </button>
@@ -58,28 +57,32 @@ export default function Navbar() {
       {/* 3️⃣ Bottom Bar: 네비게이션 + 버튼 */}
       <div className='relative'>
         <div className='flex justify-between items-center bg-white border-y py-4 px-10 w-auto mx-auto'>
-          {/* 네비게이션 메뉴 */}
+          {/* 네비게이션 메뉴 (모든 유저에게 공통 메뉴 표시) */}
           <div className='flex space-x-6 font-semibold relative'>
             <NavItem label='Job Listings' path='/jobs' menuKey='jobs' />
             <NavItem label='Branded Jobs' path='/brands' menuKey='brands' />
             <NavItem label='Talent Pool' path='/candidates' menuKey='candidates' />
+            {isAuthenticated && user ? (
+              <NavItem label='My Page' path='/mypage' menuKey='mypages' />
+            ) : null}
+            {user?.role === "ADMIN" && <NavItem label='Admin' path='/admin' menuKey='admin' />}
           </div>
 
           {/* 오른쪽 버튼 */}
           <div className='flex space-x-3'>
-            {user?.role === "jobseeker" ? (
+            {user?.role === "JOB_SEEKER" ? (
               <Link
                 to='/resume'
                 className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
                 Upload Resume
               </Link>
-            ) : (
+            ) : user?.role === "BUSINESS" ? (
               <Link
                 to='/post-job'
                 className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
                 Post a Job
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

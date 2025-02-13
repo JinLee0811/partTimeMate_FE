@@ -10,7 +10,7 @@ export default function LoginSection() {
         <div className='flex justify-between items-center px-4 py-6'>
           {/* 개인회원 */}
           <Link
-            to='/auth/login'
+            to='/auth/login?role=JOB_SEEKER' // ✅ 쿼리스트링 추가
             className='flex flex-col items-center w-1/2 group border-r border-gray-300'>
             <div className='relative'>
               {/* 아이콘 */}
@@ -45,7 +45,9 @@ export default function LoginSection() {
           </Link>
 
           {/* 기업회원 */}
-          <Link to='/auth/login' className='flex flex-col items-center w-1/2 group'>
+          <Link
+            to='/auth/login?role=BUSINESS' // ✅ 쿼리스트링 추가
+            className='flex flex-col items-center w-1/2 group'>
             <div className='relative'>
               {/* 아이콘 */}
               <div className='w-16 h-16 bg-gray-200 rounded-full flex justify-center items-center'>
@@ -82,7 +84,7 @@ export default function LoginSection() {
 
         {/* 하단 링크 */}
         <div className='border-t pt-2 mt-2 text-sm text-gray-500 flex justify-center space-x-4'>
-          <Link to='/register' className='hover:text-gray-600'>
+          <Link to='/auth/register' className='hover:text-gray-600'>
             New Register
           </Link>
           <span>|</span>

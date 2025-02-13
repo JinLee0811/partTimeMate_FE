@@ -1,24 +1,34 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { FaGoogle, FaFacebookF, FaApple } from "react-icons/fa";
 
 const Login: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const { login } = useAuthStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"jobseeker" | "employer">("jobseeker");
+  const roleFromURL = searchParams.get("role") as "JOB_SEEKER" | "BUSINESS" | null;
+  const [activeTab, setActiveTab] = useState<"JOB_SEEKER" | "BUSINESS">("JOB_SEEKER");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (roleFromURL) {
+      setActiveTab(roleFromURL);
+    }
+  }, [roleFromURL]);
 
   const handleLogin = async () => {
     setLoading(true);
+    setErrorMessage(null);
 
     try {
-      await login(email, password, activeTab);
+      await login(email, password, activeTab); // ✅ 백엔드가 요구하는 role 전송
       navigate("/"); // ✅ 로그인 성공 시 홈으로 이동
     } catch (err: any) {
-      alert(err.response?.data?.message || "Login failed. Please try again."); // ✅ 에러 메시지 alert으로 표시
+      setErrorMessage(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -42,17 +52,17 @@ const Login: React.FC = () => {
           <div className='flex mt-5 border-b'>
             <button
               className={`w-1/2 py-2 text-center font-medium ${
-                activeTab === "jobseeker" ? "border-b-2 border-black text-black" : "text-gray-400"
+                activeTab === "JOB_SEEKER" ? "border-b-2 border-black text-black" : "text-gray-400"
               }`}
-              onClick={() => setActiveTab("jobseeker")}>
+              onClick={() => setActiveTab("JOB_SEEKER")}>
               Job Seeker
               <p className='text-sm text-gray-500'>(Finding Job)</p>
             </button>
             <button
               className={`w-1/2 py-2 text-center font-medium ${
-                activeTab === "employer" ? "border-b-2 border-black text-black" : "text-gray-400"
+                activeTab === "BUSINESS" ? "border-b-2 border-black text-black" : "text-gray-400"
               }`}
-              onClick={() => setActiveTab("employer")}>
+              onClick={() => setActiveTab("BUSINESS")}>
               Employer
               <p className='text-sm text-gray-500'>(Hiring Staff)</p>
             </button>
@@ -84,6 +94,9 @@ const Login: React.FC = () => {
               </span>
             </div>
 
+            {/* ✅ 로그인 에러 메시지 표시 */}
+            {errorMessage && <p className='text-red-500 text-sm mt-3'>{errorMessage}</p>}
+
             <button
               onClick={handleLogin}
               disabled={loading}
@@ -110,7 +123,7 @@ const Login: React.FC = () => {
         {/* 🏷️ Right Panel - Additional Features */}
         <div className='hidden md:flex w-2/5 bg-white border border-l-gray-400 p-6 flex-col text-center justify-center'>
           <h3 className='text-lg font-semibold text-blue-600'>Exclusive Benefits</h3>
-          {activeTab === "jobseeker" ? (
+          {activeTab === "JOB_SEEKER" ? (
             <ul className='mt-3 text-sm text-gray-600 space-y-3'>
               <li>🔹 One-click job applications</li>
               <li>🔹 Smart job recommendations</li>

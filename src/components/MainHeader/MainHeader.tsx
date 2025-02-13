@@ -1,9 +1,10 @@
 import JobCategoryList from "./JobCategoryList";
 import AuthSection from "./AuthSection";
 import { useAuthStore } from "../../store/useAuthStore";
+import { AuthProps } from "../../types/auth"; // ✅ AuthProps 가져오기
 
 export default function JobCategories() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout }: AuthProps = useAuthStore();
 
   return (
     <div className='max-w-7xl mx-auto p-6 bg-white grid grid-cols-3 gap-6 mb-10'>
@@ -24,7 +25,7 @@ export default function JobCategories() {
       </div>
 
       {/* 오른쪽 섹션: 로그인 여부에 따라 UI 변경 */}
-      <AuthSection isLoggedIn={isAuthenticated} user={user?.role ? user : null} logout={logout} />
+      <AuthSection isAuthenticated={isAuthenticated} user={user} logout={logout} />
     </div>
   );
 }

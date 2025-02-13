@@ -7,6 +7,7 @@ const InputField = ({
   value,
   onChange,
   placeholder,
+  disabled,
 }: {
   label: string;
   type: string;
@@ -14,6 +15,7 @@ const InputField = ({
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
+  disabled?: boolean;
 }) => {
   return (
     <div>
@@ -25,6 +27,7 @@ const InputField = ({
         onChange={onChange}
         placeholder={placeholder}
         required
+        disabled={disabled}
         className='bg-white border border-gray-300 w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500'
       />
     </div>

@@ -5,13 +5,13 @@ import axios from "axios";
 interface SignUpData {
   email: string;
   password: string;
-  first_name: string;
-  last_name: string;
-  role: "JOB_SEEKER" | "BUSINESS";
-  preferred_language?: string;
+  firstName: string;
+  lastName: string;
+  role: "JOB_SEEKER" | "BUSINESS"; // ✅ role을 동적으로 받도록 설정
+  preferredLanguage?: string;
   business_name?: string;
   business_address?: string;
-  phone?: string;
+  phoneNumber?: string;
 }
 
 export function useSignUp() {
@@ -29,10 +29,10 @@ export function useSignUp() {
     setLoading(true);
     setError("");
 
-    // 프론트에서 비밀번호 검증
+    // ✅ 프론트에서 비밀번호 검증
     if (!validatePassword(data.password)) {
       setError(
-        "Password must be between 8 and 32 characters and contain letters, numbers, and special characters."
+        "Password must be 8-32 characters long and contain letters, numbers, and special characters."
       );
       setLoading(false);
       return;
@@ -45,8 +45,12 @@ export function useSignUp() {
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/auth/signup", data);
-      alert("Signup successful!");
+      // ✅ API 요청 보내기
+      const response = await axios.post("http://localhost:4000/auth/signup", {
+        ...data,
+      });
+
+      alert("✅ Registration successful! Please log in."); // 🔹 회원가입 성공 시 알림 추가
       navigate("/auth/login"); // 🔹 성공하면 로그인 페이지로 이동
       return response.data;
     } catch (err: unknown) {

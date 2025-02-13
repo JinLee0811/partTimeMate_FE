@@ -1,27 +1,12 @@
-import JobSeekerProfile from "./profileSection/JobSeekerProfile";
-import EmployerProfile from "./profileSection/EmployerProfile";
+import JobSeekerProfile from "./profileSection/JobSeekerProfile";
+import EmployerProfile from "./profileSection/EmployerProfile";
 import LoginSection from "./LoginSection";
+import { AuthProps } from "../../types/auth"; // ✅ AuthProps 불러오기
 
-interface JobSeekerUser {
-  username: string | null;
-  role: "jobseeker";
-}
+export default function AuthContainer({ isAuthenticated, user, logout }: AuthProps) {
+  if (!isAuthenticated || !user) return <LoginSection />;
 
-interface EmployerUser {
-  username: string | null;
-  role: "employer";
-}
-
-interface AuthContainerProps {
-  isLoggedIn: boolean;
-  user: JobSeekerUser | EmployerUser | null;
-  logout: () => void;
-}
-
-export default function AuthContainer({ isLoggedIn, user, logout }: AuthContainerProps) {
-  if (!isLoggedIn || !user) return <LoginSection />;
-
-  return user.role === "jobseeker" ? (
+  return user.role === "JOB_SEEKER" ? (
     <JobSeekerProfile user={user} logout={logout} />
   ) : (
     <EmployerProfile user={user} logout={logout} />
