@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 export default function LoginSection() {
   return (
-    <div>
-      <div className='bg-white p-6 border border-gray-200 rounded-lg'>
-        <h3 className='font-bold text-lg mb-4'>Login</h3>
+    <div className='flex flex-col gap-2'>
+      <div className='bg-white p-5 border border-gray-200 rounded-lg'>
+        <h3 className='font-bold text-lg'>Login</h3>
 
         {/* 로그인 선택 섹션 */}
         <div className='flex justify-between items-center px-4 py-6'>
@@ -83,7 +83,7 @@ export default function LoginSection() {
         </div>
 
         {/* 하단 링크 */}
-        <div className='border-t pt-2 mt-2 text-sm text-gray-500 flex justify-center space-x-4'>
+        <div className='border-t pt-3 mt-1 text-sm text-gray-500 flex justify-center space-x-4'>
           <Link to='/auth/register' className='hover:text-gray-600'>
             New Register
           </Link>
@@ -97,8 +97,8 @@ export default function LoginSection() {
           </Link>
         </div>
       </div>
-      <div className='flex mt-4 justify-center items-center h-32 p-6 bg-yellow-300 text-white rounded-lg'>
-        <h2 className='text-xl font-bold'>ADD HERE</h2>
+      <div className='flex-grow flex justify-center items-center bg-white text-black border border-gray-200 rounded-lg'>
+        <h2 className='text-xl font-bold'>AD here!</h2>
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ export function useSignUp() {
     },
   });
 
-  return { signUp: mutation.mutate, isPending: mutation.isPending, ...mutation };
+  return { signUp: mutation.mutate, ...mutation };
 }
 
 // ✅ 비밀번호 유효성 검사 함수

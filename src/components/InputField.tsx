@@ -1,24 +1,30 @@
 import React from "react";
 
-const InputField = ({
+interface InputFieldProps {
+  label: string;
+  type?: "text" | "number" | "password" | "email" | "tel" | "url"; // ✅ 기본값을 "text"로 설정
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void; // ✅ textarea도 지원
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  autoComplete?: string;
+}
+
+const InputField: React.FC<InputFieldProps> = ({
   label,
-  type,
+  type = "text",
   name,
   value,
   onChange,
-  placeholder,
-  disabled,
-}: {
-  label: string;
-  type: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
-  disabled?: boolean;
+  placeholder = "",
+  disabled = false,
+  className = "",
+  autoComplete = "off",
 }) => {
   return (
-    <div>
+    <div className={`mb-4 ${className}`}>
       <label className='text-gray-800 text-sm mb-2 block'>{label}</label>
       <input
         type={type}
@@ -28,7 +34,10 @@ const InputField = ({
         placeholder={placeholder}
         required
         disabled={disabled}
-        className='bg-white border border-gray-300 w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500'
+        autoComplete={autoComplete}
+        className={`bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
+          ${disabled ? "border-gray-300 bg-gray-100 cursor-not-allowed" : "border-gray-300"}
+        `}
       />
     </div>
   );

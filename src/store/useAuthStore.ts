@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { loginApi, logoutApi, refreshAccessTokenApi } from "../api/authApi";
-import { fetchUserApi } from "../api/userApi"; // ✅ 유저 정보 가져오기 추가
+import { fetchUserApi } from "../api/userApi";
 import { User } from "../types/user";
 
 interface AuthState {
@@ -22,16 +22,14 @@ export const useAuthStore = create<AuthState>()(
       accessToken: localStorage.getItem("accessToken") || null,
       isAuthenticated: !!localStorage.getItem("accessToken"),
 
-      // ✅ 로그인 (유저 정보 가져오기 추가)
+      // ✅ 로그인
       login: async (email, password, role) => {
         const { accessToken, refreshToken } = await loginApi(email, password, role);
 
-        // ✅ Access Token 저장
         set({ isAuthenticated: true, accessToken });
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
-        // ✅ 유저 정보 가져오기 & 저장
         try {
           const userData = await fetchUserApi();
           set({ user: userData });
@@ -41,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ✅ 로그아웃
+      // ✅ 로그아웃 (🚀 `navigate`를 직접 사용하지 않음)
       logout: () => {
         logoutApi();
         set({ user: null, accessToken: null, isAuthenticated: false });
@@ -49,7 +47,7 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem("refreshToken");
       },
 
-      // ✅ Access Token 갱신 (🔹 API 호출 후 상태 업데이트)
+      // ✅ Access Token 갱신 (🚀 `navigate`를 직접 사용하지 않음)
       refreshAccessToken: async (): Promise<string> => {
         try {
           const newAccessToken = await refreshAccessTokenApi();
@@ -63,15 +61,12 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ✅ 유저 정보 설정
       setUser: (user) => set({ user }),
-
-      // ✅ Access Token 업데이트 함수 추가
       setAccessToken: (token) => set({ accessToken: token }),
     }),
     {
       name: "auth-storage",
-      storage: createJSONStorage(() => localStorage), // ✅ localStorage를 JSON 저장소로 변환하여 적용
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

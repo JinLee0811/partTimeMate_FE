@@ -62,7 +62,7 @@ export default function Navbar() {
       <div className='relative'>
         <div className='flex justify-between items-center bg-white border-y py-4 px-10 w-auto mx-auto'>
           {/* 네비게이션 메뉴 (모든 유저에게 공통 메뉴 표시) */}
-          <div className='flex space-x-6 font-semibold relative'>
+          <div className='flex space-x-6 font-semibold relative ml-10'>
             <NavItem label='Job Listings' path='/jobs' menuKey='jobs' />
             <NavItem label='Branded Jobs' path='/brands' menuKey='brands' />
             <NavItem label='Talent Pool' path='/candidates' menuKey='candidates' />

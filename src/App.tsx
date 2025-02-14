@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUser } from "./hooks/useUser";
+import ProtectedRoute from "./utils/ProtectedRoute"; // ✅ 보호된 경로 추가
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Home from "./pages/Home";
@@ -18,14 +19,13 @@ import UserManagement from "./pages/admin/users/UserManagement";
 import JobManagement from "./pages/admin/jobs/JobManagement";
 import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
+import JobPosting from "./pages/jobs/JobPosting";
 import ErrorPage from "./pages/ErrorPage"; // ✅ 404 및 기타 에러 페이지
 
-// ✅ React Query 클라이언트 생성
 const queryClient = new QueryClient();
 
 export default function App() {
-  // ✅ 유저 상태 관리 (Zustand + React Query 통합)
-  useUser();
+  useUser(); // ✅ 유저 상태 관리 (Zustand + React Query 통합)
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -36,10 +36,35 @@ export default function App() {
           <Route path='/jobs' element={<JobBoard />} />
           <Route path='/jobs/:id' element={<JobDetail />} />
           <Route path='/brands' element={<Brands />} />
-          <Route path='/mypage' element={<Mypage />} />
 
-          {/* ✅ 관리자 전용 페이지 */}
-          <Route path='/admin' element={<AdminDashboard />}>
+          {/* ✅ 보호된 페이지 (로그인 필수, Admin 가능) */}
+          <Route
+            path='/mypage'
+            element={
+              <ProtectedRoute>
+                <Mypage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Job Posting (Business or Admin만 가능) */}
+          <Route
+            path='/jobposting'
+            element={
+              <ProtectedRoute requiredRole='BUSINESS'>
+                <JobPosting />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Admin 전용 페이지 */}
+          <Route
+            path='/admin'
+            element={
+              <ProtectedRoute requiredRole='ADMIN'>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }>
             <Route index element={<AdminHome />} />
             <Route path='users' element={<UserManagement />} />
             <Route path='jobs' element={<JobManagement />} />
