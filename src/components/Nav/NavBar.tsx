@@ -74,19 +74,20 @@ export default function Navbar() {
 
           {/* 오른쪽 버튼 */}
           <div className='flex space-x-3'>
-            {user?.role === "JOB_SEEKER" ? (
+            {(user?.role === "JOB_SEEKER" || user?.role === "ADMIN") && (
               <Link
                 to='/resume'
-                className='bg-yellow-400 px-4 py-2 rounded-full text-black font-semibold hover:bg-yellow-500'>
+                className='bg-yellow-300 px-4 py-2 rounded-full text-black font-semibold'>
                 Upload Resume
               </Link>
-            ) : user?.role === "BUSINESS" ? (
+            )}
+            {(user?.role === "BUSINESS" || user?.role === "ADMIN") && (
               <Link
-                to='/post-job'
-                className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibold hover:bg-blue-600'>
+                to='/jobposting'
+                className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibol '>
                 Post a Job
               </Link>
-            ) : null}
+            )}
           </div>
         </div>
       </div>

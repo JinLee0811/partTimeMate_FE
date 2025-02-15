@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Tab } from "@headlessui/react";
-import InputField from "../../components/InputField";
 import WorkConditions from "../../components/JobPosting/WorkConditions";
 import WorkLocation from "../../components/JobPosting/WorkLocation";
 import JobDescription from "../../components/JobPosting/JobDescription";
 import ApplicationMethod from "../../components/JobPosting/ApplicationMethod";
+import BasicInfo from "../../components/JobPosting/BasicInfo";
+import { useJobPostingStore } from "../../store/jobPostingStore";
 
 const sections = [
   "Basic Info",
@@ -14,36 +15,58 @@ const sections = [
   "Application",
 ];
 
-export default function JobPosting() {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [formData, setFormData] = useState({
-    title: "",
-    companyName: "",
-    companyLogo: null as File | null, // ✅ 회사 로고 추가
-    salary: "",
-    salaryType: "hourly", // 시급/일급/주급/월급 선택 가능
-    workPeriod: "", // 기간 or 상시모집
-    workHours: "",
-    workDays: [],
-    employmentType: "Part-time",
-    benefits: "",
-    workAddress: "",
-    locationCoords: "",
-    description: "",
-    contactName: "",
-    contactPhone: "",
-  });
+const workDayOptions = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+  "To be discussed",
+];
 
-  // ✅ 입력값 핸들링
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+const employmentTypes = [
+  "Part-time",
+  "Contract",
+  "Temporary",
+  "Casual",
+  "To be discussed after interview",
+];
+
+const applicationMethods = [
+  "Email",
+  "Mobile",
+  "Direct Visit",
+  "Text then Visit",
+  "Phone Call then Visit",
+];
+
+export default function JobPosting() {
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const [benefitsList, setBenefitsList] = useState<string[]>([
+    "Flexible Hours",
+    "Paid Leave",
+    "Meal Allowance",
+    "Bonus",
+    "Insurance",
+  ]);
+
+  // 전역 상태 사용: formData와 setFormData를 store에서 가져옴
+  const { formData, setFormData } = useJobPostingStore();
+
+  // ✅ 입력값 핸들링 (input, textarea, select)
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ [name]: value });
   };
 
   // ✅ 이미지 파일 업로드 핸들링
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormData((prev) => ({ ...prev, companyLogo: e.target.files![0] }));
+      setFormData({ companyLogo: e.target.files[0] });
     }
   };
 
@@ -62,6 +85,7 @@ export default function JobPosting() {
   const handleSubmit = () => {
     console.log("Submitting Job Post:", formData);
     alert("Job posting submitted successfully!");
+    // 서버 전송 로직 구현 가능 (예: API 호출)
   };
 
   return (
@@ -86,45 +110,24 @@ export default function JobPosting() {
         <Tab.Panels>
           {/* 🔹 기본 정보 */}
           <Tab.Panel>
-            <InputField
-              label='Job Title *'
-              name='title'
-              value={formData.title}
-              onChange={handleChange}
+            <BasicInfo
+              formData={formData}
+              handleChange={handleChange}
+              handleFileChange={handleFileChange}
             />
-            <InputField
-              label='Company Name *'
-              name='companyName'
-              value={formData.companyName}
-              onChange={handleChange}
-            />
-
-            {/* ✅ 회사 로고 업로드 */}
-            <div className='mt-4'>
-              <label className='block text-sm font-medium text-gray-700'>
-                Company Logo (Optional)
-              </label>
-              <input
-                type='file'
-                accept='image/*'
-                onChange={handleFileChange}
-                className='mt-1 p-2 text-sm border border-gray-300 rounded-md w-full'
-              />
-              {formData.companyLogo && (
-                <div className='mt-2'>
-                  <img
-                    src={URL.createObjectURL(formData.companyLogo)}
-                    alt='Company Logo Preview'
-                    className='w-20 h-20 object-cover rounded-md border'
-                  />
-                </div>
-              )}
-            </div>
           </Tab.Panel>
 
           {/* 🔹 근무 조건 */}
           <Tab.Panel>
-            <WorkConditions formData={formData} handleChange={handleChange} />
+            <WorkConditions
+              formData={formData}
+              setFormData={setFormData}
+              handleChange={handleChange}
+              benefitsList={benefitsList}
+              setBenefitsList={setBenefitsList}
+              employmentTypes={employmentTypes}
+              workDayOptions={workDayOptions}
+            />
           </Tab.Panel>
 
           {/* 🔹 근무 지역 */}
@@ -139,7 +142,11 @@ export default function JobPosting() {
 
           {/* 🔹 지원 방법 */}
           <Tab.Panel>
-            <ApplicationMethod formData={formData} handleChange={handleChange} />
+            <ApplicationMethod
+              formData={formData}
+              handleChange={handleChange}
+              applicationMethods={applicationMethods}
+            />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
@@ -160,11 +167,18 @@ export default function JobPosting() {
             Continue
           </button>
         ) : (
-          <button
-            onClick={handleSubmit}
-            className='bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 ml-auto'>
-            Submit Job Posting
-          </button>
+          <div className='flex items-center space-x-3'>
+            <button
+              onClick={handleSubmit}
+              className='bg-yellow-300 text-black px-4 py-2 rounded-md hover:bg-yellow-300 ml-auto'>
+              Preview
+            </button>
+            <button
+              onClick={handleSubmit}
+              className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 ml-auto'>
+              Submit Job Posting
+            </button>
+          </div>
         )}
       </div>
     </div>

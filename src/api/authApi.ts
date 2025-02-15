@@ -1,8 +1,9 @@
+// authApi.ts
 import api from "../utils/axiosInstance";
 import { User, UserRole } from "../types/user";
-import { SignUpData } from "../types/auth"; // ✅ SignUpData 추가 임포트
+import { SignUpData } from "../types/auth";
 
-/** ✅ 회원가입 API */
+/** 회원가입 API */
 export const registerApi = async (userData: SignUpData): Promise<User> => {
   const response = await api.post("/auth/register", userData);
 
@@ -10,10 +11,10 @@ export const registerApi = async (userData: SignUpData): Promise<User> => {
     throw new Error(response.data.message || "Registration failed.");
   }
 
-  return response.data.user; // ✅ user 데이터 반환
+  return response.data.user; // 회원가입 성공 시 user 데이터 반환
 };
 
-/** ✅ 로그인 API */
+/** 로그인 API */
 export const loginApi = async (email: string, password: string, role: UserRole) => {
   const response = await api.post("/auth/login", { email, password, role });
 
@@ -27,7 +28,8 @@ export const loginApi = async (email: string, password: string, role: UserRole) 
   };
 };
 
-/** ✅ 리프레시 토큰으로 Access Token 갱신 */
+/** 리프레시 토큰으로 Access Token 갱신 */
+// 리프레시 토큰은 보통 localStorage나 auth store에 저장됩니다.
 export const refreshAccessTokenApi = async (): Promise<string> => {
   const refreshToken = localStorage.getItem("refreshToken");
   if (!refreshToken) throw new Error("No refresh token available");
@@ -38,7 +40,7 @@ export const refreshAccessTokenApi = async (): Promise<string> => {
   return response.data.accessToken;
 };
 
-/** ✅ 로그아웃 API */
+/** 로그아웃 API */
 export const logoutApi = async (): Promise<void> => {
   await api.post("/auth/logout").catch(() => null);
 };

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUser } from "./hooks/useUser";
 import ProtectedRoute from "./utils/ProtectedRoute"; // ✅ 보호된 경로 추가
 import MainLayout from "./layouts/MainLayout";
+import MapLayout from "./layouts/MapLayout"; // 새로 만든 MapLayout
 import AuthLayout from "./layouts/AuthLayout";
 import Home from "./pages/Home";
 import JobBoard from "./pages/jobs/JobBoard";
@@ -30,14 +31,13 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        {/* ✅ 메인 레이아웃 적용 */}
+        {/* 메인 레이아웃 적용 */}
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />
           <Route path='/jobs' element={<JobBoard />} />
-          <Route path='/jobs/:id' element={<JobDetail />} />
           <Route path='/brands' element={<Brands />} />
 
-          {/* ✅ 보호된 페이지 (로그인 필수, Admin 가능) */}
+          {/* 보호된 페이지 (로그인 필수, Admin 가능) */}
           <Route
             path='/mypage'
             element={
@@ -47,17 +47,22 @@ export default function App() {
             }
           />
 
-          {/* ✅ Job Posting (Business or Admin만 가능) */}
-          <Route
-            path='/jobposting'
-            element={
-              <ProtectedRoute requiredRole='BUSINESS'>
-                <JobPosting />
-              </ProtectedRoute>
-            }
-          />
+          {/* 구글 맵 API가 필요한 페이지들을 MapLayout으로 감싸기 */}
+          <Route element={<MapLayout />}>
+            {/* Job Posting (Business or Admin만 가능) */}
+            <Route
+              path='/jobposting'
+              element={
+                <ProtectedRoute requiredRole='BUSINESS'>
+                  <JobPosting />
+                </ProtectedRoute>
+              }
+            />
+            {/* Job Detail */}
+            <Route path='/jobs/:id' element={<JobDetail />} />
+          </Route>
 
-          {/* ✅ Admin 전용 페이지 */}
+          {/* Admin 전용 페이지 */}
           <Route
             path='/admin'
             element={
@@ -73,7 +78,7 @@ export default function App() {
           </Route>
         </Route>
 
-        {/* ✅ 로그인 및 회원가입 */}
+        {/* 로그인 및 회원가입 */}
         <Route element={<AuthLayout />}>
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
@@ -81,7 +86,7 @@ export default function App() {
           <Route path='/auth/signup/business' element={<SignUpBusiness />} />
         </Route>
 
-        {/* ✅ 404 에러 처리 */}
+        {/* 404 에러 처리 */}
         <Route path='*' element={<ErrorPage />} />
       </Routes>
     </QueryClientProvider>
