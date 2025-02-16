@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "./RichTextEditor.css"; // 추가
 
 interface RichTextEditorProps {
   value: string;
@@ -32,15 +33,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
         onChange={onChange}
         modules={modules}
         theme='snow'
-        // 아래 className에서 .ql-editor에 min-height를 적용
         className='custom-quill'
       />
-      <style jsx>{`
-        /* local scope로 .custom-quill 아래의 .ql-editor에만 적용 */
-        .custom-quill .ql-editor {
-          min-height: 200px; /* 원하는 높이 */
-        }
-      `}</style>
     </div>
   );
 };

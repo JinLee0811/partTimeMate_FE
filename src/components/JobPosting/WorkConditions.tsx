@@ -1,94 +1,104 @@
-import { Dispatch, SetStateAction } from "react";
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { JobPostingData } from "../../types/jobPosting";
+import { useJobPostingStore } from "../../store/jobPostingStore";
 
-interface WorkConditionsProps {
-  formData: JobPostingData;
-  // <input> | <select> | <textarea> 모두 처리할 수 있도록 유니온 타입
-  handleChange: (
+export default function WorkConditions() {
+  // 글로벌 스토어에서 formData와 setFormData를 직접 구독
+  const { formData, setFormData } = useJobPostingStore();
+
+  // Benefits 옵션은 로컬 상태에서 관리
+  const [benefitsList, setBenefitsList] = useState<string[]>([
+    "Flexible Hours",
+    "Paid Leave",
+    "Meal Allowance",
+    "Bonus",
+    "Insurance",
+  ]);
+
+  // workDayOptions와 employmentTypes를 컴포넌트 내부에서 정의
+  const workDayOptions = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+    "To be discussed",
+  ];
+
+  const employmentTypes = [
+    "Part-time",
+    "Contract",
+    "Temporary",
+    "Casual",
+    "To be discussed after interview",
+  ];
+
+  // 기본 onChange: 입력값 변화 시 store에 업데이트
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
-  benefitsList: string[];
-  setBenefitsList: Dispatch<SetStateAction<string[]>>;
-  setFormData: Dispatch<SetStateAction<JobPostingData>>;
-  workDayOptions: string[];
-  employmentTypes: string[];
-}
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ [name]: value });
+  };
 
-export default function WorkConditions({
-  formData,
-  handleChange,
-  benefitsList,
-  setFormData,
-  setBenefitsList,
-  workDayOptions,
-  employmentTypes,
-}: WorkConditionsProps) {
-  // ✅ 급여 입력 (숫자만 허용)
+  // 급여 입력 (숫자만 허용)
   const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
-    setFormData((prev) => ({ ...prev, salary: onlyNumbers }));
+    setFormData({ salary: onlyNumbers });
   };
 
-  // ✅ 급여 협의 토글: 체크 시 급여 입력 필드를 비활성화
+  // 급여 협의 토글: 체크 시 급여 입력 필드를 비활성화 및 초기화
   const handleSalaryNegotiableToggle = () => {
-    setFormData((prev) => ({
-      ...prev,
-      salaryNegotiable: !prev.salaryNegotiable,
-      salary: !prev.salaryNegotiable ? "" : prev.salary, // 토글 시 급여 입력 초기화
-    }));
+    setFormData({
+      salaryNegotiable: !formData.salaryNegotiable,
+      salary: !formData.salaryNegotiable ? "" : formData.salary,
+    });
   };
 
-  // ✅ 날짜 선택 핸들러
+  // 날짜 선택 핸들러: workPeriod 업데이트
   const handleDateChange = (date: Date | null, type: "startDate" | "endDate") => {
-    setFormData((prev) => ({
-      ...prev,
-      workPeriod: { ...prev.workPeriod, [type]: date },
-    }));
+    setFormData({
+      workPeriod: { ...formData.workPeriod, [type]: date },
+    });
   };
 
-  // ✅ 근무 시간 선택 핸들러
+  // 근무 시간 선택 핸들러: workHours 업데이트
   const handleTimeChange = (date: Date | null, type: "start" | "end") => {
-    setFormData((prev) => ({
-      ...prev,
-      workHours: { ...prev.workHours, [type]: date },
-    }));
+    setFormData({
+      workHours: { ...formData.workHours, [type]: date },
+    });
   };
 
-  // ✅ 버튼 토글 (WorkDays, Benefits)
+  // 버튼 토글: workDays 및 benefits 업데이트
   const handleToggle = (key: "workDays" | "benefits", value: string) => {
     if (key === "workDays") {
       if (value === "To be discussed") {
-        // "To be discussed"가 선택되면 다른 요일은 모두 제거
-        setFormData((prev) => ({ ...prev, workDays: ["To be discussed"] }));
+        setFormData({ workDays: ["To be discussed"] });
         return;
       } else {
-        // 다른 요일 선택 시 "To be discussed"가 있으면 제거
-        setFormData((prev) => ({
-          ...prev,
-          workDays: prev.workDays.filter((day) => day !== "To be discussed"),
-        }));
+        // 다른 요일 선택 시, "To be discussed"가 있으면 제거
+        setFormData({ workDays: formData.workDays.filter((day) => day !== "To be discussed") });
       }
     }
-    setFormData((prev) => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter((item: string) => item !== value)
-        : [...prev[key], value],
-    }));
+    setFormData({
+      [key]: formData[key].includes(value)
+        ? formData[key].filter((item: string) => item !== value)
+        : [...formData[key], value],
+    });
   };
 
-  // ✅ 사용자가 직접 입력한 복리후생 추가
+  // 사용자가 직접 입력한 복리후생 추가
   const handleAddBenefit = () => {
     const trimmedBenefit = formData.customBenefit.trim();
     if (trimmedBenefit && !benefitsList.includes(trimmedBenefit)) {
-      setBenefitsList((prev) => [...prev, trimmedBenefit]); // 리스트에도 추가
-      setFormData((prev) => ({
-        ...prev,
-        benefits: [...prev.benefits, trimmedBenefit], // 선택된 상태로 추가
+      setBenefitsList([...benefitsList, trimmedBenefit]);
+      setFormData({
+        benefits: [...formData.benefits, trimmedBenefit],
         customBenefit: "",
-      }));
+      });
     }
   };
 
@@ -209,7 +219,7 @@ export default function WorkConditions({
         </div>
       </div>
 
-      {/* Employment Types (드롭다운 선택) */}
+      {/* Employment Type (드롭다운 선택) */}
       <div>
         <label className='text-gray-800 text-sm mb-2 block'>Employment Type</label>
         <select
@@ -249,7 +259,7 @@ export default function WorkConditions({
             type='text'
             placeholder='Add custom benefit'
             value={formData.customBenefit}
-            onChange={(e) => setFormData((prev) => ({ ...prev, customBenefit: e.target.value }))}
+            onChange={(e) => setFormData({ customBenefit: e.target.value })}
             className='p-2 border border-gray-300 rounded-md w-full'
           />
           <button

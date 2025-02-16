@@ -1,23 +1,27 @@
-// BasicInfo.tsx
 import React from "react";
 import PostingInputField from "./PostingInputField";
+import { useJobPostingStore } from "../../store/jobPostingStore";
 
-interface BasicInfoProps {
-  formData: {
-    title: string;
-    companyName: string;
-    jobCategory: string;
-    companyLogo: File | null;
-  };
-  // onChange 핸들러는 <input> | <select> 모두 처리할 수 있도록 유니온 타입
-  handleChange: (
+export default function BasicInfo() {
+  // 글로벌 스토어에서 formData와 setFormData를 직접 가져옴
+  const { formData, setFormData } = useJobPostingStore();
+
+  // 글로벌 상태를 업데이트하는 handleChange 함수
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
+  ) => {
+    const { name, value } = e.target;
+    // setFormData는 Partial 객체만 받으므로, 함수 인자가 아닌 객체를 직접 전달
+    setFormData({ [name]: value });
+  };
 
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+  // 파일 업로드 핸들러
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFormData({ companyLogo: e.target.files[0] });
+    }
+  };
 
-export default function BasicInfo({ formData, handleChange, handleFileChange }: BasicInfoProps) {
   const jobCategories = [
     "Cafe",
     "Restaurant",
