@@ -2,8 +2,10 @@
 import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 const api = axios.create({
-  baseURL: import.meta.env.BASE_URL,
+  baseURL: SERVER_URL,
   withCredentials: true, // HTTP-Only 쿠키 사용
 });
 

@@ -12,7 +12,7 @@ export interface WorkHours {
 export interface JobPostingData {
   title: string;
   companyName: string;
-  companyLogo: File | null;
+  companyLogo: File | string | null;
   jobCategory: string;
   salary: string;
   salaryType: string;

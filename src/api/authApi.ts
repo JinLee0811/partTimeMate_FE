@@ -5,7 +5,7 @@ import { SignUpData } from "../types/auth";
 
 /** 회원가입 API */
 export const registerApi = async (userData: SignUpData): Promise<User> => {
-  const response = await api.post("/auth/register", userData);
+  const response = await api.post("/auth/signup", userData);
 
   if (!response.data.success) {
     throw new Error(response.data.message || "Registration failed.");

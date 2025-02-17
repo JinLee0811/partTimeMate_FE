@@ -18,7 +18,11 @@ export default function BasicInfo() {
   // 파일 업로드 핸들러
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormData({ companyLogo: e.target.files[0] });
+      const file = e.target.files[0];
+      const fileURL = URL.createObjectURL(file);
+
+      setFormData({ companyLogo: fileURL });
+      // 이제 store에는 문자열(URL)만 저장
     }
   };
 
@@ -104,7 +108,7 @@ export default function BasicInfo() {
         {formData.companyLogo && (
           <div className='mt-2'>
             <img
-              src={URL.createObjectURL(formData.companyLogo)}
+              src={formData.companyLogo as string}
               alt='Company Logo Preview'
               className='w-20 h-20 object-cover rounded-md border'
             />
