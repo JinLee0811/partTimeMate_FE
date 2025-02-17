@@ -1,0 +1,4 @@
+/* RichTextEditor.css */
+.custom-quill .ql-editor {
+  min-height: 200px;
+}

@@ -1,0 +1,73 @@
+// src/data/brands.ts
+export const brands = [
+  {
+    id: 1,
+    name: "Woolworths",
+    logo: "/images/woolworths.png",
+    jobCount: 1500,
+    bgColor: "bg-green-200",
+  },
+  {
+    id: 2,
+    name: "Coles",
+    logo: "/images/coles.png",
+    jobCount: 1200,
+    bgColor: "bg-red-200",
+  },
+  {
+    id: 3,
+    name: "McDonald's",
+    logo: "/images/mcdonalds.png",
+    jobCount: 1800,
+    bgColor: "bg-yellow-300",
+  },
+  {
+    id: 4,
+    name: "Kmart",
+    logo: "/images/kmart.png",
+    jobCount: 950,
+    bgColor: "bg-blue-200",
+  },
+  {
+    id: 5,
+    name: "Bunnings",
+    logo: "/images/bunnings.png",
+    jobCount: 600,
+    bgColor: "bg-green-300",
+  },
+  {
+    id: 6,
+    name: "7-Eleven",
+    logo: "/images/7eleven.png",
+    jobCount: 1300,
+    bgColor: "bg-orange-300",
+  },
+  {
+    id: 7,
+    name: "Starbucks",
+    logo: "/images/starbucks.png",
+    jobCount: 800,
+    bgColor: "bg-gray-300",
+  },
+  {
+    id: 8,
+    name: "Australia Post",
+    logo: "/images/auspost.png",
+    jobCount: 700,
+    bgColor: "bg-red-300",
+  },
+  {
+    id: 9,
+    name: "KFC",
+    logo: "/images/kfc.png",
+    jobCount: 1400,
+    bgColor: "bg-red-400",
+  },
+  {
+    id: 10,
+    name: "Subway",
+    logo: "/images/subway.png",
+    jobCount: 900,
+    bgColor: "bg-yellow-400",
+  },
+];
