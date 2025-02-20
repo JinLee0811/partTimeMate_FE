@@ -35,7 +35,8 @@ export default function App() {
   return (
     <LoadScript
       googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""}
-      libraries={libraries}>
+      libraries={libraries}
+      language='en'>
       <QueryClientProvider client={queryClient}>
         <Routes>
           {/* 메인 레이아웃 적용 */}

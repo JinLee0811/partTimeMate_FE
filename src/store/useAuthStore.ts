@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { loginApi, logoutApi, refreshAccessTokenApi } from "../api/authApi";
 import { fetchUserApi } from "../api/userApi";
 import { User } from "../types/user";
+import { useJobPostingStore } from "../store/jobPostingStore";
 
 interface AuthState {
   user: User | null;
@@ -45,6 +46,7 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, accessToken: null, isAuthenticated: false });
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        useJobPostingStore.getState().resetFormData();
       },
 
       // ✅ Access Token 갱신 (🚀 `navigate`를 직접 사용하지 않음)

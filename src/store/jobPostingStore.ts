@@ -15,13 +15,17 @@ interface JobPostingStoreState {
 const initialFormData: JobPostingData = {
   title: "",
   companyName: "",
+  workPeriod: "",
   companyLogo: null,
   jobCategory: "",
   salary: "",
-  salaryType: "hourly",
+  salaryType: "hourly", // 원하는 기본값으로 설정
   salaryNegotiable: false,
-  workPeriod: { startDate: null, endDate: null },
-  workHours: { start: null, end: null },
+  workHours: null, // 총 근무 시간을 계산해 저장할 필드
+  workTime: {
+    start: null,
+    end: null,
+  },
   workDays: [],
   employmentType: "Part-time",
   benefits: [],
@@ -34,6 +38,7 @@ const initialFormData: JobPostingData = {
   contactPhone: "",
   contactEmail: "",
   applicationMethod: "",
+  hiringCount: "",
 };
 
 /**

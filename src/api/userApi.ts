@@ -17,8 +17,6 @@ export const updateUserApi = async (updatedData: Partial<User>): Promise<User> =
   try {
     const response = await api.patch("/users/me", updatedData);
 
-    console.log("🔍 Update API Response:", response.data); // 응답 데이터 확인
-
     if (!response.data.data) {
       throw new Error("Invalid response from server.");
     }

@@ -16,235 +16,337 @@ export default function WorkConditions() {
     "Insurance",
   ]);
 
-  // workDayOptions와 employmentTypes를 컴포넌트 내부에서 정의
-  const workDayOptions = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-    "To be discussed",
+  const workPeriods = [
+    "More than 1 year",
+    "6 months - 1 year",
+    "3 months - 6 months",
+    "1 month - 3 months",
+    "1 week - 1 month",
+    "Less than 1 week",
+    "1 day",
   ];
 
-  const employmentTypes = [
-    "Part-time",
-    "Contract",
-    "Temporary",
-    "Casual",
-    "To be discussed after interview",
-  ];
+  const workDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  // 기본 onChange: 입력값 변화 시 store에 업데이트
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const salaryTypes = ["Hourly", "Daily", "Weekly", "Monthly"];
+
+  // ----------------------------
+  //   "To be discussed" 체크박스 핸들러
+  // ----------------------------
+
+  // 1) Work Period
+  const handleWorkPeriodToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      // 체크됨 -> "To be discussed"로 저장
+      setFormData({ workPeriod: "To be discussed" });
+    } else {
+      // 체크 해제 -> 초기화(또는 이전 값 복원 로직)
+      setFormData({ workPeriod: "" });
+    }
+  };
+
+  // 2) Work Days
+  const handleWorkDaysToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setFormData({ workDays: ["To be discussed"] });
+    } else {
+      setFormData({ workDays: [] });
+    }
+  };
+
+  // 3) Work Time
+  const handleWorkHoursToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      // 체크됨 -> 문자열 "To be discussed"로 저장
+      setFormData({ workTime: "To be discussed" });
+    } else {
+      // 체크 해제 -> 다시 { start: null, end: null } 로
+      setFormData({ workTime: { start: null, end: null } });
+    }
+  };
+
+  // 4) Salary
+  const handleSalaryToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setFormData({ salary: "To be discussed" });
+    } else {
+      setFormData({ salary: "" });
+    }
+  };
+
+  // 5) Benefits
+  const handleBenefitsToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setFormData({ benefits: ["To be discussed"] });
+    } else {
+      setFormData({ benefits: [] });
+    }
+  };
+
+  // ----------------------------
+  //   일반 핸들러
+  // ----------------------------
+
+  // Work Days나 Benefits 등 배열에 대한 일반 토글
+  const handleCheckboxToggle = (key: "workDays" | "benefits", value: string) => {
+    // 만약 현재가 "To be discussed"라면 다른 항목은 선택 불가
+    // (UI에서 disabled 처리도 필요할 수 있음)
+    const current = formData[key];
+    if (Array.isArray(current)) {
+      // 이미 "To be discussed"가 들어있으면 무시
+      if (current.includes("To be discussed")) return;
+
+      const isSelected = current.includes(value);
+      const updated = isSelected ? current.filter((item) => item !== value) : [...current, value];
+      setFormData({ [key]: updated });
+    }
+  };
+
+  // Work Period 일반 선택
+  const handleWorkPeriodSelect = (period: string) => {
+    // 이미 "To be discussed" 상태라면 무시
+    if (formData.workPeriod === "To be discussed") return;
+    setFormData({ workPeriod: period });
+  };
+
+  // SalaryType 변경
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ [name]: value });
   };
 
-  // 급여 입력 (숫자만 허용)
+  // Salary 숫자만 입력
   const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
     setFormData({ salary: onlyNumbers });
   };
 
-  // 급여 협의 토글: 체크 시 급여 입력 필드를 비활성화 및 초기화
-  const handleSalaryNegotiableToggle = () => {
-    setFormData({
-      salaryNegotiable: !formData.salaryNegotiable,
-      salary: !formData.salaryNegotiable ? "" : formData.salary,
-    });
-  };
-
-  // 날짜 선택 핸들러: workPeriod 업데이트
-  const handleDateChange = (date: Date | null, type: "startDate" | "endDate") => {
-    setFormData({
-      workPeriod: { ...formData.workPeriod, [type]: date },
-    });
-  };
-
-  // 근무 시간 선택 핸들러: workHours 업데이트
+  // Work Hours DatePicker 변경
   const handleTimeChange = (date: Date | null, type: "start" | "end") => {
+    // 이미 "To be discussed" 상태라면 무시
+    if (formData.workTime === "To be discussed") return;
+
     setFormData({
-      workHours: { ...formData.workHours, [type]: date },
+      workTime: {
+        ...formData.workTime,
+        [type]: date,
+      },
     });
   };
 
-  // 버튼 토글: workDays 및 benefits 업데이트
-  const handleToggle = (key: "workDays" | "benefits", value: string) => {
-    if (key === "workDays") {
-      if (value === "To be discussed") {
-        setFormData({ workDays: ["To be discussed"] });
-        return;
-      } else {
-        // 다른 요일 선택 시, "To be discussed"가 있으면 제거
-        setFormData({ workDays: formData.workDays.filter((day) => day !== "To be discussed") });
-      }
-    }
-    setFormData({
-      [key]: formData[key].includes(value)
-        ? formData[key].filter((item: string) => item !== value)
-        : [...formData[key], value],
-    });
-  };
-
-  // 사용자가 직접 입력한 복리후생 추가
+  // Benefits 사용자 정의 추가
   const handleAddBenefit = () => {
     const trimmedBenefit = formData.customBenefit.trim();
-    if (trimmedBenefit && !benefitsList.includes(trimmedBenefit)) {
+    if (!trimmedBenefit) return;
+    // 이미 "To be discussed"인 상태라면 무시
+    if (formData.benefits.includes("To be discussed")) return;
+
+    if (!benefitsList.includes(trimmedBenefit)) {
       setBenefitsList([...benefitsList, trimmedBenefit]);
-      setFormData({
-        benefits: [...formData.benefits, trimmedBenefit],
-        customBenefit: "",
-      });
     }
+    setFormData({
+      benefits: [...formData.benefits, trimmedBenefit],
+      customBenefit: "",
+    });
   };
 
   return (
     <div className='space-y-4'>
-      <h3 className='text-lg font-semibold text-gray-700'>Work Conditions</h3>
+      {/* ✅ 상단 섹션 제목 및 설명 */}
+      <div className='bg-gray-100 p-4 rounded-lg'>
+        <h2 className='text-xl font-bold text-blue-600'>Work Conditions</h2>
+        <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
+      </div>
 
-      {/* Salary Type */}
-      <label className='block text-sm font-medium text-gray-700'>Salary Type</label>
-      <select
-        name='salaryType'
-        value={formData.salaryType}
-        onChange={handleChange}
-        className='w-full p-2 border border-gray-300 rounded-md'>
-        <option value='hourly'>Hourly</option>
-        <option value='daily'>Daily</option>
-        <option value='weekly'>Weekly</option>
-        <option value='monthly'>Monthly</option>
-        <option value='TBD'>To be discussed after interview</option>
-      </select>
-
-      {/* Salary 입력 필드 */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Salary *</label>
-        <div className='flex items-center border border-gray-300 rounded-md p-2'>
-          <span className='px-3 text-gray-600'>$</span>
-          <input
-            type='text'
-            name='salary'
-            value={formData.salary}
-            onChange={handleSalaryChange}
-            placeholder='Enter amount (e.g. 25)'
-            required={!formData.salaryNegotiable}
-            disabled={formData.salaryNegotiable}
-            className='bg-white text-sm text-gray-800 pl-2 pr-4 py-1.5 w-full outline-none'
-          />
+      {/* Work Period */}
+      <div className='border border-gray-200 p-4 rounded-lg'>
+        <label className='block text-sm font-bold text-gray-700 mb-2'>Work Period *</label>
+        <div className='flex flex-wrap gap-2'>
+          {workPeriods.map((period) => (
+            <button
+              key={period}
+              type='button'
+              onClick={() => handleWorkPeriodSelect(period)}
+              className={`px-4 py-2 border rounded-md cursor-pointer text-sm ${
+                formData.workPeriod === period
+                  ? "bg-blue-600 text-white"
+                  : "border-gray-300 text-gray-700"
+              }`}>
+              {period}
+            </button>
+          ))}
         </div>
-        <div className='mt-2'>
-          <label className='inline-flex items-center'>
-            <input
-              type='checkbox'
-              checked={formData.salaryNegotiable}
-              onChange={handleSalaryNegotiableToggle}
-              className='form-checkbox'
-            />
-            <span className='ml-2 text-sm text-gray-700'>
-              Salary: To be discussed after interview
-            </span>
+
+        {/* To be discussed 체크박스 */}
+        <div className='mt-2 flex items-center'>
+          <input
+            type='checkbox'
+            id='workPeriodDiscussed'
+            checked={formData.workPeriod === "To be discussed"}
+            onChange={handleWorkPeriodToBeDiscussedChange}
+            className='mr-2'
+          />
+          <label htmlFor='workPeriodDiscussed' className='text-sm'>
+            To be discussed
           </label>
         </div>
       </div>
 
-      {/* Work Period (달력) */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Work Period</label>
-        <div className='flex space-x-2'>
-          <DatePicker
-            selected={formData.workPeriod.startDate}
-            onChange={(date) => handleDateChange(date, "startDate")}
-            placeholderText='Start Date'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
-          <DatePicker
-            selected={formData.workPeriod.endDate}
-            onChange={(date) => handleDateChange(date, "endDate")}
-            placeholderText='End Date'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
-        </div>
-      </div>
-
-      {/* Work Hours (시간 선택) */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Work Hours *</label>
-        <div className='flex space-x-2'>
-          <DatePicker
-            selected={formData.workHours.start}
-            onChange={(date) => handleTimeChange(date, "start")}
-            showTimeSelect
-            showTimeSelectOnly
-            timeIntervals={30}
-            timeCaption='Start Time'
-            dateFormat='h:mm aa'
-            placeholderText='Start Time'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
-          <DatePicker
-            selected={formData.workHours.end}
-            onChange={(date) => handleTimeChange(date, "end")}
-            showTimeSelect
-            showTimeSelectOnly
-            timeIntervals={30}
-            timeCaption='End Time'
-            dateFormat='h:mm aa'
-            placeholderText='End Time'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
-        </div>
-      </div>
-
-      {/* Work Days (체크 버튼) */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Work Days</label>
+      {/* Work Days */}
+      <div className='border border-gray-200 p-4 rounded-lg'>
+        <label className='block text-sm font-bold text-gray-700 mb-2'>Work Days *</label>
         <div className='flex flex-wrap gap-2'>
-          {workDayOptions.map((day) => (
+          {workDays.map((day) => (
             <button
               key={day}
               type='button'
-              onClick={() => handleToggle("workDays", day)}
-              className={`px-3 py-1 rounded-full border ${
+              onClick={() => handleCheckboxToggle("workDays", day)}
+              // 만약 "To be discussed"가 이미 체크되어 있다면 비활성화
+              disabled={formData.workDays.includes("To be discussed")}
+              className={`px-4 py-2 border rounded-md cursor-pointer text-sm ${
                 formData.workDays.includes(day)
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-600 border-gray-300"
+                  : "border-gray-300 text-gray-700"
               }`}>
               {day}
             </button>
           ))}
         </div>
+
+        {/* To be discussed 체크박스 */}
+        <div className='mt-2 flex items-center'>
+          <input
+            type='checkbox'
+            id='workDaysDiscussed'
+            checked={formData.workDays.includes("To be discussed")}
+            onChange={handleWorkDaysToBeDiscussedChange}
+            className='mr-2'
+          />
+          <label htmlFor='workDaysDiscussed' className='text-sm'>
+            To be discussed
+          </label>
+        </div>
       </div>
 
-      {/* Employment Type (드롭다운 선택) */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Employment Type</label>
-        <select
-          name='employmentType'
-          value={formData.employmentType}
-          onChange={handleChange}
-          className='w-full p-2 border border-gray-300 rounded-md'>
-          <option value=''>Select employment type</option>
-          {employmentTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
+      {/* Work Hours */}
+      <div className='border border-gray-200 p-4 rounded-lg'>
+        <label className='block text-sm font-bold text-gray-700 mb-2'>Work Hours *</label>
+
+        {/* 만약 workHours === "To be discussed" 라면 DatePicker 비활성화 */}
+        {formData.workTime === "To be discussed" ? (
+          <div className='text-sm text-gray-500'>
+            (Start/End Time disabled because "To be discussed" is selected)
+          </div>
+        ) : (
+          <div className='flex space-x-4 items-center'>
+            <DatePicker
+              selected={
+                typeof formData.workTime === "object" && formData.workTime.start
+                  ? formData.workTime.start
+                  : null
+              }
+              onChange={(date) => {
+                if (typeof formData.workHours === "object") {
+                  handleTimeChange(date, "start");
+                }
+              }}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={30}
+              dateFormat='h:mm aa'
+              placeholderText='Start Time'
+              className='p-2 border border-gray-300 rounded-md'
+            />
+
+            <DatePicker
+              selected={
+                typeof formData.workTime === "object" && formData.workTime.end
+                  ? formData.workTime.end
+                  : null
+              }
+              onChange={(date) => {
+                if (typeof formData.workTime === "object") {
+                  handleTimeChange(date, "end");
+                }
+              }}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={30}
+              dateFormat='h:mm aa'
+              placeholderText='End Time'
+              className='p-2 border border-gray-300 rounded-md'
+            />
+          </div>
+        )}
+
+        {/* To be discussed 체크박스 */}
+        <div className='mt-2 flex items-center'>
+          <input
+            type='checkbox'
+            id='workHoursDiscussed'
+            checked={formData.workTime === "To be discussed"}
+            onChange={handleWorkHoursToBeDiscussedChange}
+            className='mr-2'
+          />
+          <label htmlFor='workHoursDiscussed' className='text-sm'>
+            To be discussed
+          </label>
+        </div>
+      </div>
+
+      {/* Salary */}
+      <div className='border border-gray-200 p-4 rounded-lg'>
+        <label className='block text-sm font-bold text-gray-700 mb-2'>Salary *</label>
+        <div className='flex gap-2 items-center'>
+          <select
+            name='salaryType'
+            value={formData.salaryType}
+            onChange={handleChange}
+            disabled={formData.salary === "To be discussed"}
+            className='p-2 border border-gray-300 rounded-md'>
+            {salaryTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type='text'
+            name='salary'
+            value={formData.salary === "To be discussed" ? "" : formData.salary}
+            onChange={handleSalaryChange}
+            placeholder='Amount'
+            disabled={formData.salary === "To be discussed"}
+            className='p-2 border border-gray-300 rounded-md'
+          />
+        </div>
+
+        {/* To be discussed 체크박스 */}
+        <div className='mt-2 flex items-center'>
+          <input
+            type='checkbox'
+            id='salaryDiscussed'
+            checked={formData.salary === "To be discussed"}
+            onChange={handleSalaryToBeDiscussedChange}
+            className='mr-2'
+          />
+          <label htmlFor='salaryDiscussed' className='text-sm'>
+            To be discussed
+          </label>
+        </div>
       </div>
 
       {/* Benefits (기본 제공 + 사용자 추가) */}
-      <div>
-        <label className='text-gray-800 text-sm mb-2 block'>Benefits (Optional)</label>
+      <div className='border border-gray-200 p-4 rounded-lg'>
+        <label className='text-gray-800 font-bold text-sm mb-2 block'>Benefits (Optional)</label>
         <div className='flex flex-wrap gap-2'>
           {benefitsList.map((benefit) => (
             <button
               key={benefit}
               type='button'
-              onClick={() => handleToggle("benefits", benefit)}
+              onClick={() => handleCheckboxToggle("benefits", benefit)}
+              disabled={formData.benefits.includes("To be discussed")}
               className={`px-3 py-1 rounded-full border ${
                 formData.benefits.includes(benefit)
                   ? "bg-blue-600 text-white"
@@ -254,19 +356,37 @@ export default function WorkConditions() {
             </button>
           ))}
         </div>
+
+        {/* 사용자 추가 Benefit 입력 */}
         <div className='flex mt-2 gap-2'>
           <input
             type='text'
             placeholder='Add custom benefit'
             value={formData.customBenefit}
             onChange={(e) => setFormData({ customBenefit: e.target.value })}
+            disabled={formData.benefits.includes("To be discussed")}
             className='p-2 border border-gray-300 rounded-md w-full'
           />
           <button
             onClick={handleAddBenefit}
+            disabled={formData.benefits.includes("To be discussed")}
             className='bg-blue-500 text-white px-3 py-1 rounded-md'>
             Add
           </button>
+        </div>
+
+        {/* To be discussed 체크박스 */}
+        <div className='mt-2 flex items-center'>
+          <input
+            type='checkbox'
+            id='benefitsDiscussed'
+            checked={formData.benefits.includes("To be discussed")}
+            onChange={handleBenefitsToBeDiscussedChange}
+            className='mr-2'
+          />
+          <label htmlFor='benefitsDiscussed' className='text-sm'>
+            To be discussed
+          </label>
         </div>
       </div>
     </div>

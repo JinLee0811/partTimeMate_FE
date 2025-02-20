@@ -1,119 +1,127 @@
 import React from "react";
-import PostingInputField from "./PostingInputField";
 import { useJobPostingStore } from "../../store/jobPostingStore";
 
 export default function BasicInfo() {
-  // 글로벌 스토어에서 formData와 setFormData를 직접 가져옴
   const { formData, setFormData } = useJobPostingStore();
 
-  // 글로벌 상태를 업데이트하는 handleChange 함수
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    // setFormData는 Partial 객체만 받으므로, 함수 인자가 아닌 객체를 직접 전달
     setFormData({ [name]: value });
   };
 
-  // 파일 업로드 핸들러
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const fileURL = URL.createObjectURL(file);
-
-      setFormData({ companyLogo: fileURL });
-      // 이제 store에는 문자열(URL)만 저장
-    }
-  };
-
-  const jobCategories = [
-    "Cafe",
-    "Restaurant",
-    "Food Service",
-    "Delivery",
-    "Retail",
-    "Hospitality",
-    "Office Administration",
-    "Information Technology",
-    "Finance",
-    "Marketing",
-    "Sales",
-    "Healthcare",
-    "Education",
-    "Manufacturing",
-    "Construction",
-    "Transportation",
-    "Real Estate",
-    "Entertainment",
-    "Customer Service",
-    "Logistics",
-    "Engineering",
-    "Consulting",
+  const employmentTypes = [
+    "Part-time",
+    "Full-time",
+    "Contract",
     "Freelance",
+    "Temporary",
+    "Internship",
   ];
 
   return (
-    <div className='space-y-4'>
-      <h3 className='text-lg font-semibold text-gray-700'>Basic Info</h3>
-
-      {/* Job Title */}
-      <PostingInputField
-        label='Job Title'
-        name='title'
-        value={formData.title}
-        onChange={handleChange}
-        placeholder='Enter the job title'
-        required
-      />
-
-      {/* Company Name */}
-      <PostingInputField
-        label='Company Name'
-        name='companyName'
-        value={formData.companyName}
-        onChange={handleChange}
-        placeholder='Enter the company name'
-        required
-      />
-
-      {/* 잡 카테고리 선택 (select) */}
-      <div>
-        <label className='block text-sm font-medium text-gray-700'>
-          Job Category <span className='text-red-500 ml-1'>*</span>
-        </label>
-        <select
-          name='jobCategory'
-          value={formData.jobCategory}
-          onChange={handleChange}
-          className='w-full p-2 border border-gray-300 rounded-md'
-          required>
-          <option value=''>Select Job Category</option>
-          {jobCategories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+    <div className='space-y-6'>
+      {/* ✅ 상단 섹션 제목 및 설명 */}
+      <div className='bg-gray-100 p-4 rounded-lg'>
+        <h2 className='text-xl font-bold text-blue-600'>Basic Information</h2>
+        <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
       </div>
 
-      {/* 회사 로고 업로드 */}
-      <div className='mt-4'>
-        <label className='block text-sm font-medium text-gray-700'>Company Logo (Optional)</label>
+      {/* 공고 제목 */}
+      <div>
+        <label className='block text-lg font-bold text-gray-800'>
+          Posting Title <span className='text-red-500'>*</span>
+        </label>
         <input
-          type='file'
-          accept='image/*'
-          onChange={handleFileChange}
-          className='mt-1 p-2 text-sm border border-gray-300 rounded-md w-full'
+          type='text'
+          name='title'
+          value={formData.title}
+          onChange={handleChange}
+          placeholder='Enter job title'
+          className='w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
         />
-        {formData.companyLogo && (
-          <div className='mt-2'>
-            <img
-              src={formData.companyLogo as string}
-              alt='Company Logo Preview'
-              className='w-20 h-20 object-cover rounded-md border'
+      </div>
+
+      {/* 업직종 선택 */}
+      <div>
+        <label className='block text-lg font-bold text-gray-800'>
+          Job Category <span className='text-red-500'>*</span>
+        </label>
+        <div className='flex gap-2 mt-1'>
+          <input
+            type='text'
+            name='jobCategory'
+            value={formData.jobCategory}
+            onChange={handleChange}
+            placeholder='Search or select a category'
+            className='flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+          />
+          <button className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100'>
+            Select
+          </button>
+          <button className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100'>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* 고용 형태 */}
+      <div>
+        <label className='block text-lg font-bold text-gray-800'>
+          Employment Type <span className='text-red-500'>*</span>
+        </label>
+        <div className='flex flex-wrap gap-2 mt-1'>
+          {employmentTypes.map((type) => (
+            <label
+              key={type}
+              className={`px-4 py-2 border rounded-md cursor-pointer ${
+                formData.employmentType === type
+                  ? "bg-blue-600 text-white"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-100"
+              }`}>
+              <input
+                type='checkbox'
+                name='employmentType'
+                value={type}
+                checked={formData.employmentType === type}
+                onChange={() => setFormData({ employmentType: type })}
+                className='hidden'
+              />
+              {type}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* 모집 인원 */}
+      <div>
+        <label className='block text-lg font-bold text-gray-800'>
+          Number of Hires <span className='text-red-500'>*</span>
+        </label>
+        <div className='flex items-center gap-4 mt-1'>
+          {["Less than 10", "1 person", "Less than 100", "Custom"].map((option, index) => (
+            <label key={index} className='flex items-center gap-2 cursor-pointer'>
+              <input
+                type='radio'
+                name='hiringCount'
+                value={option}
+                checked={formData.hiringCount === option}
+                onChange={handleChange}
+                className='w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300'
+              />
+              {option}
+            </label>
+          ))}
+          {formData.hiringCount === "Custom" && (
+            <input
+              type='number'
+              name='customHiringCount'
+              placeholder='Enter number'
+              className='w-36 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
