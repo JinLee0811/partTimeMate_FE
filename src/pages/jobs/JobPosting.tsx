@@ -7,6 +7,7 @@ import JobDescription from "../../components/JobPosting/JobDescription";
 import ApplicationMethod from "../../components/JobPosting/ApplicationMethod";
 import PreviewModal from "./PreviewModal";
 import { useJobPostingStore } from "../../store/jobPostingStore";
+import { JobPostingData } from "../../types/jobPosting";
 
 const steps = [
   "Basic Infomation",
@@ -20,6 +21,10 @@ export default function JobPosting() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
 
+  // 모달에서 보여줄 "스냅샷" 데이터를 저장할 로컬 상태
+  const [previewData, setPreviewData] = useState<JobPostingData | null>(null);
+
+  // store에서 실시간 formData
   const { formData } = useJobPostingStore();
 
   const handleNext = () => {
@@ -34,25 +39,29 @@ export default function JobPosting() {
     }
   };
 
-  // ✅ 새로 추가된 함수: 스텝 아이콘 클릭 시 해당 단계로 이동
+  // 스텝 아이콘 클릭 시 해당 단계로 이동
   const handleStepClick = (stepIndex: number) => {
     setCurrentStep(stepIndex);
   };
 
-  // 모달 열기/닫기
-  const openPreviewModal = () => setIsPreviewOpen(true);
-  const closePreviewModal = () => setIsPreviewOpen(false);
+  // 미리보기 모달 열기
+  const openPreviewModal = () => {
+    // 모달을 열기 직전에, store의 formData를 로컬 상태에 복사
+    setPreviewData({ ...formData });
+    setIsPreviewOpen(true);
+  };
+
+  // 미리보기 모달 닫기
+  const closePreviewModal = () => {
+    setIsPreviewOpen(false);
+  };
 
   return (
     <div className='max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6'>
       <h2 className='text-2xl font-bold mb-6 text-gray-900'>Job Posting</h2>
 
       {/* 진행 바 (Step Progress) */}
-      <StepProgress
-        steps={steps}
-        currentStep={currentStep}
-        onStepClick={handleStepClick} // 추가
-      />
+      <StepProgress steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
 
       <div className='mt-6'>
         {currentStep === 0 && <BasicInfo />}
@@ -81,7 +90,7 @@ export default function JobPosting() {
           <div className='flex items-center space-x-3'>
             <button
               onClick={openPreviewModal}
-              className='bg-yellow-300 text-black px-4 py-2 rounded-md hover:bg-yellow-300 ml-auto'>
+              className='bg-yellow-300 text-black px-4 py-2 rounded-md hover:bg-yellow-400 ml-auto'>
               Preview
             </button>
             <button className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 ml-auto'>
@@ -92,7 +101,12 @@ export default function JobPosting() {
       </div>
 
       {/* 미리보기 모달 */}
-      <PreviewModal isOpen={isPreviewOpen} onClose={closePreviewModal} formData={formData} />
+      <PreviewModal
+        isOpen={isPreviewOpen}
+        onClose={closePreviewModal}
+        // 전역 store의 formData 대신, 로컬에 복사된 previewData를 전달
+        formData={previewData}
+      />
     </div>
   );
 }

@@ -3,9 +3,10 @@ import { useState } from "react";
 interface UserEditFormProps {
   user: any;
   onUpdate: (updatedUser: any) => void;
+  onCancel: () => void;
 }
 
-export default function UserEditForm({ user, onUpdate }: UserEditFormProps) {
+export default function UserEditForm({ user, onUpdate, onCancel }: UserEditFormProps) {
   const [formData, setFormData] = useState({ ...user });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -64,10 +65,7 @@ export default function UserEditForm({ user, onUpdate }: UserEditFormProps) {
         </div>
 
         <div className='flex justify-end gap-2'>
-          <button
-            type='button'
-            className='p-2 bg-gray-300 rounded-md'
-            onClick={() => onUpdate(user)}>
+          <button type='button' className='p-2 bg-gray-300 rounded-md' onClick={onCancel}>
             Cancel
           </button>
           <button type='submit' className='p-2 bg-blue-500 text-white rounded-md'>

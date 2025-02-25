@@ -1,10 +1,5 @@
 // types/jobPosting.ts
 
-export interface WorkTime {
-  start: Date | null;
-  end: Date | null;
-}
-
 export interface JobPostingData {
   title: string;
   companyName: string;
@@ -14,7 +9,7 @@ export interface JobPostingData {
   salary: string;
   salaryType: string;
   salaryNegotiable: boolean;
-  workHours: number | null;
+  workHours: number | "To be discussed" | null;
   workTime: { start: null; end: null } | "To be discussed";
   workDays: string[];
   employmentType: string;
@@ -23,10 +18,14 @@ export interface JobPostingData {
   workAddress: string;
   addressDetail: string;
   locationCoords: string;
+  location: string;
   description: string;
   contactName: string;
   contactPhone: string;
   contactEmail: string;
   applicationMethod: string;
   hiringCount: string;
+  exposureRegions: string[];
+  nearbySubways: string[];
+  nearbySchools: string[];
 }

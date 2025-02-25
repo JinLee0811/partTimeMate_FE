@@ -1,28 +1,9 @@
+import React, { useEffect } from "react";
 import { FaUsers, FaBriefcase, FaThList } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useAdminStore } from "../../store/useAdminStore";
 
-export default function AdminHome() {
-  return (
-    <div>
-      <h2 className='text-2xl font-bold mb-4'>Admin Dashboard</h2>
-      <p className='text-gray-600 mb-6'>Manage users, jobs, and categories efficiently.</p>
-
-      {/* 🔹 요약 카드 */}
-      <div className='grid grid-cols-3 gap-6'>
-        <DashboardCard title='Total Users' count={128} icon={<FaUsers />} link='/admin/users' />
-        <DashboardCard
-          title='Total Job Posts'
-          count={45}
-          icon={<FaBriefcase />}
-          link='/admin/jobs'
-        />
-        <DashboardCard title='Categories' count={8} icon={<FaThList />} link='/admin/categories' />
-      </div>
-    </div>
-  );
-}
-
-/** 📌 대시보드 카드 컴포넌트 */
+// DashboardCard 컴포넌트 (아래에 그대로 사용)
 const DashboardCard = ({
   title,
   count,
@@ -44,3 +25,35 @@ const DashboardCard = ({
     </div>
   </Link>
 );
+
+export default function AdminHome() {
+  const { totalCount, users, fetchUsers } = useAdminStore();
+
+  useEffect(() => {
+    fetchUsers(1);
+  }, [fetchUsers]);
+
+  return (
+    <div>
+      <h2 className='text-2xl font-bold mb-4'>Admin Dashboard</h2>
+      <p className='text-gray-600 mb-6'>Manage users, jobs, and categories efficiently.</p>
+
+      {/* 요약 카드 */}
+      <div className='grid grid-cols-3 gap-6'>
+        <DashboardCard
+          title='Total Users'
+          count={totalCount}
+          icon={<FaUsers />}
+          link='/admin/users'
+        />
+        <DashboardCard
+          title='Total Job Posts'
+          count={45}
+          icon={<FaBriefcase />}
+          link='/admin/jobs'
+        />
+        <DashboardCard title='Categories' count={8} icon={<FaThList />} link='/admin/categories' />
+      </div>
+    </div>
+  );
+}

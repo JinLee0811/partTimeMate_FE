@@ -21,7 +21,7 @@ const initialFormData: JobPostingData = {
   salary: "",
   salaryType: "hourly", // 원하는 기본값으로 설정
   salaryNegotiable: false,
-  workHours: null, // 총 근무 시간을 계산해 저장할 필드
+  workHours: null,
   workTime: {
     start: null,
     end: null,
@@ -33,12 +33,16 @@ const initialFormData: JobPostingData = {
   workAddress: "",
   addressDetail: "",
   locationCoords: "",
+  location: "",
   description: "",
   contactName: "",
   contactPhone: "",
   contactEmail: "",
   applicationMethod: "",
   hiringCount: "",
+  exposureRegions: [],
+  nearbySubways: [],
+  nearbySchools: [],
 };
 
 /**

@@ -126,12 +126,34 @@ export default function WorkConditions() {
     // 이미 "To be discussed" 상태라면 무시
     if (formData.workTime === "To be discussed") return;
 
-    setFormData({
-      workTime: {
-        ...formData.workTime,
-        [type]: date,
-      },
-    });
+    // 기존 workTime 객체를 업데이트
+    const newWorkTime = {
+      ...formData.workTime,
+      [type]: date,
+    };
+    setFormData({ workTime: newWorkTime });
+
+    // start와 end 둘 중 하나라도 없으면 workHours에 "To be discussed" 저장
+    if (!newWorkTime.start || !newWorkTime.end) {
+      setFormData({ workHours: "To be discussed" });
+      return;
+    }
+
+    const start = new Date(newWorkTime.start);
+    const end = new Date(newWorkTime.end);
+    const diffMs = end.getTime() - start.getTime();
+
+    // 음수 차이나 유효하지 않은 경우에도 "To be discussed" 저장
+    if (diffMs < 0) {
+      setFormData({ workHours: "To be discussed" });
+      return;
+    }
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const totalHours = hours + minutes / 60;
+
+    setFormData({ workHours: totalHours });
   };
 
   // Benefits 사용자 정의 추가
@@ -230,9 +252,8 @@ export default function WorkConditions() {
 
       {/* Work Hours */}
       <div className='border border-gray-200 p-4 rounded-lg'>
-        <label className='block text-sm font-bold text-gray-700 mb-2'>Work Hours *</label>
+        <label className='block text-sm font-bold text-gray-700 mb-2'>Work Time *</label>
 
-        {/* 만약 workHours === "To be discussed" 라면 DatePicker 비활성화 */}
         {formData.workTime === "To be discussed" ? (
           <div className='text-sm text-gray-500'>
             (Start/End Time disabled because "To be discussed" is selected)
@@ -242,11 +263,11 @@ export default function WorkConditions() {
             <DatePicker
               selected={
                 typeof formData.workTime === "object" && formData.workTime.start
-                  ? formData.workTime.start
+                  ? new Date(formData.workTime.start)
                   : null
               }
               onChange={(date) => {
-                if (typeof formData.workHours === "object") {
+                if (typeof formData.workTime === "object") {
                   handleTimeChange(date, "start");
                 }
               }}
@@ -261,7 +282,7 @@ export default function WorkConditions() {
             <DatePicker
               selected={
                 typeof formData.workTime === "object" && formData.workTime.end
-                  ? formData.workTime.end
+                  ? new Date(formData.workTime.end)
                   : null
               }
               onChange={(date) => {

@@ -3,25 +3,48 @@ import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { useJobPostingStore } from "../../store/jobPostingStore";
 
+import MultiCategoryInput from "./category/MultiCategoryInput";
+
 // 지도의 초기 위치 (예: 시드니)
 const defaultCenter = { lat: -33.8688, lng: 151.2093 };
 
+// 미리 정의한 카테고리 목록 (MVP용)
+const regionCategories = [
+  "Sydney CBD",
+  "Inner West",
+  "Eastern Suburbs",
+  "Northern Beaches",
+  "Sutherland Shire",
+];
+
+// Extra region options (영어로 적절하게)
+const extraRegionOptions = ["Any Region", "All Regions", "None"];
+
+const subwayCategories = ["Town Hall", "Central", "Wynyard", "Circular Quay", "Martin Place"];
+
+const schoolCategories = [
+  "Sydney Grammar School",
+  "North Sydney Boys High",
+  "Pymble Ladies' College",
+  "St. Andrew's Cathedral School",
+];
+
 export default function MyMapPage() {
-  // LoadScript는 부모(예: MapLayout 또는 MainLayout)에서 이미 호출되었다고 가정
+  // LoadScript는 부모(예: MapLayout 또는 MainLayout)에서 호출된다고 가정
   return <MapWithAutocomplete />;
 }
 
 function MapWithAutocomplete() {
-  const { formData, setFormData } = useJobPostingStore(); // global state
+  const { formData, setFormData } = useJobPostingStore();
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [addressDetail, setAddressDetail] = useState("");
 
-  // 회사 정보 로컬 스테이트 대신, 직접 store에 setFormData를 호출할 수도 있음
-  // 여기서는 편의상 아래처럼 "추가/입력" 임시 값만 로컬에서 관리
+  // 임시 상태 (다중 선택 입력 전용)
+  const [tempRegion, setTempRegion] = useState("");
   const [tempSubway, setTempSubway] = useState("");
   const [tempSchool, setTempSchool] = useState("");
 
-  // usePlacesAutocomplete 설정
+  // usePlacesAutocomplete (주소 검색용)
   const {
     ready,
     value,
@@ -33,7 +56,7 @@ function MapWithAutocomplete() {
     debounce: 300,
   });
 
-  // 주소 자동완성에서 주소 선택 시
+  // 주소 선택 시 (Google Places)
   const handleSelect = async (address: string) => {
     setValue(address, false);
     clearSuggestions();
@@ -42,88 +65,124 @@ function MapWithAutocomplete() {
       const results = await getGeocode({ address });
       const { lat, lng } = await getLatLng(results[0]);
 
-      // 지도 상태 업데이트
-      setMapCenter({ lat, lng });
+      // 주소 컴포넌트에서 도시 및 주 정보 추출
+      let city = "";
+      let state = "";
+      const addressComponents = results[0].address_components;
+      addressComponents.forEach((comp) => {
+        if (comp.types.includes("locality")) {
+          city = comp.long_name; // 예: "Burwood"
+        }
+        if (comp.types.includes("administrative_area_level_1")) {
+          state = comp.short_name; // 예: "NSW"
+        }
+      });
+
+      // 예: "Burwood NSW" (둘 중 하나만 있으면 그것만 표시)
+      const locationString = [city, state].filter(Boolean).join(" ");
 
       // store에 업데이트
       setFormData({
+        // 사용자가 검색/선택한 전체 주소
         workAddress: address,
+        // 위/경도 좌표
         locationCoords: `${lat},${lng}`,
+        // 새로 만든 필드: 간단 표기를 위한 location
+        location: locationString,
       });
+
+      // 지도 상태 업데이트
+      setMapCenter({ lat, lng });
     } catch (error) {
       console.error("Error getting geocode:", error);
     }
   };
 
-  // 주소 검색 인풋 onChange 핸들러
+  // 주소 검색 입력 변경
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
-  // 추가 주소 인풋 onChange 핸들러
+  // 추가 주소 세부사항 입력 변경
   const handleDetailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const detail = e.target.value;
     setAddressDetail(detail);
-
-    setFormData({
-      addressDetail: detail,
-    });
+    setFormData({ addressDetail: detail });
   };
 
-  // ---------------------------------------------------
-  //  회사 정보 관련 핸들러
-  // ---------------------------------------------------
-
-  // 회사 이름
+  // 회사 정보 관련 핸들러
   const handleCompanyNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ companyName: e.target.value });
   };
 
-  // 회사 로고(파일 업로드)
   const handleCompanyLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // store에 파일 객체 저장
       setFormData({ companyLogo: file });
     }
   };
 
-  // 공고 노출 지역
-  const handleExposureRegionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ exposureRegion: e.target.value });
+  // Exposure Regions (다중 선택) 관련 핸들러
+  const regionOptions = [...regionCategories, ...extraRegionOptions];
+  const filteredRegionSuggestions = regionOptions.filter((region) =>
+    region.toLowerCase().includes(tempRegion.toLowerCase())
+  );
+
+  const handleSelectRegion = (region: string) => {
+    if (!formData.exposureRegions || !formData.exposureRegions.includes(region)) {
+      setFormData({ exposureRegions: [...(formData.exposureRegions || []), region] });
+    }
+    setTempRegion("");
   };
 
-  // 주변 지하철 추가
-  const handleAddSubway = () => {
-    const trimmed = tempSubway.trim();
-    if (!trimmed) return;
-
+  const handleRemoveRegion = (region: string) => {
     setFormData({
-      nearbySubways: [...(formData.nearbySubways || []), trimmed],
+      exposureRegions: (formData.exposureRegions || []).filter((r: string) => r !== region),
     });
+  };
+
+  // Nearby Subways (다중 선택) 관련 핸들러
+  const filteredSubwaySuggestions = subwayCategories.filter((station) =>
+    station.toLowerCase().includes(tempSubway.toLowerCase())
+  );
+
+  const handleSelectSubway = (station: string) => {
+    if (!formData.nearbySubways || !formData.nearbySubways.includes(station)) {
+      setFormData({ nearbySubways: [...(formData.nearbySubways || []), station] });
+    }
     setTempSubway("");
   };
 
-  // 주변 학교 추가
-  const handleAddSchool = () => {
-    const trimmed = tempSchool.trim();
-    if (!trimmed) return;
-
+  const handleRemoveSubway = (station: string) => {
     setFormData({
-      nearbySchools: [...(formData.nearbySchools || []), trimmed],
+      nearbySubways: (formData.nearbySubways || []).filter((s: string) => s !== station),
     });
+  };
+
+  // Nearby Schools (다중 선택) 관련 핸들러
+  const filteredSchoolSuggestions = schoolCategories.filter((school) =>
+    school.toLowerCase().includes(tempSchool.toLowerCase())
+  );
+
+  const handleSelectSchool = (school: string) => {
+    if (!formData.nearbySchools || !formData.nearbySchools.includes(school)) {
+      setFormData({ nearbySchools: [...(formData.nearbySchools || []), school] });
+    }
     setTempSchool("");
   };
 
-  // ---------------------------------------------------
-  //  렌더
-  // ---------------------------------------------------
+  const handleRemoveSchool = (school: string) => {
+    setFormData({
+      nearbySchools: (formData.nearbySchools || []).filter((s: string) => s !== school),
+    });
+  };
+
   return (
     <div className='flex flex-col gap-6 p-4'>
+      {/* 회사 정보 섹션 */}
       <div className='space-y-4'>
-        {/* ✅ 상단 섹션 제목 및 설명 */}
         <div className='bg-gray-100 p-4 rounded-lg'>
-          <h2 className='text-xl font-bold text-blue-600'>Company Infomation</h2>
+          <h2 className='text-xl font-bold text-blue-600'>Company Information</h2>
           <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
         </div>
 
@@ -148,134 +207,99 @@ function MapWithAutocomplete() {
             onChange={handleCompanyLogoChange}
             className='w-full'
           />
-          {/* 간단히 파일 이름만 표시 (선택했다면) */}
           {formData.companyLogo && typeof formData.companyLogo !== "string" && (
             <p className='text-sm text-gray-600 mt-1'>Selected file: {formData.companyLogo.name}</p>
           )}
         </div>
 
-        {/* 공고 노출 지역 */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Exposure Region</label>
-          <input
-            type='text'
-            value={formData.exposureRegion || ""}
-            onChange={handleExposureRegionChange}
-            placeholder='e.g., Seoul, Busan...'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
-        </div>
-
-        {/* 주변 지하철 */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Nearby Subways</label>
-          <div className='flex gap-2'>
+        {/* 주소 및 지도 섹션 */}
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold text-gray-700'>Work Address</h3>
+          {/* 주소 검색 인풋 */}
+          <div className='w-full'>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>Search Address</label>
             <input
               type='text'
-              value={tempSubway}
-              onChange={(e) => setTempSubway(e.target.value)}
-              placeholder='Enter a subway station'
-              className='p-2 border border-gray-300 rounded-md flex-1'
+              value={formData.workAddress || value}
+              onChange={handleInputChange}
+              disabled={!ready}
+              placeholder='Type an address...'
+              className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
-            <button
-              onClick={handleAddSubway}
-              className='px-4 py-2 bg-blue-500 text-white rounded-md'>
-              Add
-            </button>
+            {status === "OK" && (
+              <ul className='mt-1 border border-gray-300 rounded-md bg-white shadow-md max-h-60 overflow-y-auto'>
+                {data.map(({ place_id, description }) => (
+                  <li
+                    key={place_id}
+                    onClick={() => handleSelect(description)}
+                    className='p-2 cursor-pointer hover:bg-gray-100 border-b last:border-0'>
+                    {description}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {/* 현재까지 추가된 지하철 목록 표시 */}
-          {formData.nearbySubways && formData.nearbySubways.length > 0 && (
-            <ul className='mt-2 space-y-1'>
-              {formData.nearbySubways.map((station: string, idx: number) => (
-                <li key={idx} className='text-sm text-gray-700'>
-                  - {station}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
 
-        {/* 주변 학교 */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Nearby Schools</label>
-          <div className='flex gap-2'>
+          {/* 추가 주소 세부사항 인풋 */}
+          <div className='w-full'>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              Additional Address Details
+            </label>
             <input
               type='text'
-              value={tempSchool}
-              onChange={(e) => setTempSchool(e.target.value)}
-              placeholder='Enter a school name'
-              className='p-2 border border-gray-300 rounded-md flex-1'
+              value={formData.addressDetail || addressDetail}
+              onChange={handleDetailChange}
+              placeholder='Building, floor, suite number, etc.'
+              className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
-            <button
-              onClick={handleAddSchool}
-              className='px-4 py-2 bg-blue-500 text-white rounded-md'>
-              Add
-            </button>
           </div>
-          {/* 현재까지 추가된 학교 목록 표시 */}
-          {formData.nearbySchools && formData.nearbySchools.length > 0 && (
-            <ul className='mt-2 space-y-1'>
-              {formData.nearbySchools.map((school: string, idx: number) => (
-                <li key={idx} className='text-sm text-gray-700'>
-                  - {school}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
 
-      {/* ===================== 주소/지도 섹션 ===================== */}
-      <div className='space-y-4'>
-        <h3 className='text-lg font-semibold text-gray-700'>Work Address</h3>
-        {/* 주소 검색 인풋 */}
-        <div className='w-full'>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Search Address</label>
-          <input
-            type='text'
-            value={value}
-            onChange={handleInputChange}
-            disabled={!ready}
-            placeholder='Type an address...'
-            className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-          />
-          {status === "OK" && (
-            <ul className='mt-1 border border-gray-300 rounded-md bg-white shadow-md max-h-60 overflow-y-auto'>
-              {data.map(({ place_id, description }) => (
-                <li
-                  key={place_id}
-                  onClick={() => handleSelect(description)}
-                  className='p-2 cursor-pointer hover:bg-gray-100 border-b last:border-0'>
-                  {description}
-                </li>
-              ))}
-            </ul>
-          )}
+          {/* 지도 영역 */}
+          <div className='w-full md:w-[600px] h-96'>
+            <GoogleMap
+              center={mapCenter}
+              zoom={14}
+              mapContainerClassName='w-full h-full rounded-md border'>
+              <MarkerF position={mapCenter} />
+            </GoogleMap>
+          </div>
         </div>
 
-        {/* 추가 주소 입력 인풋 */}
-        <div className='w-full'>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>
-            Additional Address Details
-          </label>
-          <input
-            type='text'
-            value={addressDetail}
-            onChange={handleDetailChange}
-            placeholder='Building, floor, suite number, etc.'
-            className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-          />
-        </div>
+        {/* Exposure Regions (다중 선택) */}
+        <MultiCategoryInput
+          label='Exposure Regions'
+          tempValue={tempRegion}
+          addedItems={formData.exposureRegions || []}
+          placeholder='Enter a region'
+          suggestions={filteredRegionSuggestions}
+          onTempChange={(e) => setTempRegion(e.target.value)}
+          onSelectSuggestion={handleSelectRegion}
+          onRemoveItem={handleRemoveRegion}
+        />
 
-        {/* 지도 영역 */}
-        <div className='w-full md:w-[600px] h-96'>
-          <GoogleMap
-            center={mapCenter}
-            zoom={14}
-            mapContainerClassName='w-full h-full rounded-md border'>
-            <MarkerF position={mapCenter} />
-          </GoogleMap>
-        </div>
+        {/* Nearby Subways (다중 선택) */}
+        <MultiCategoryInput
+          label='Nearby Subways'
+          tempValue={tempSubway}
+          addedItems={formData.nearbySubways || []}
+          placeholder='Enter a subway station'
+          suggestions={filteredSubwaySuggestions}
+          onTempChange={(e) => setTempSubway(e.target.value)}
+          onSelectSuggestion={handleSelectSubway}
+          onRemoveItem={handleRemoveSubway}
+        />
+
+        {/* Nearby Schools (다중 선택) */}
+        <MultiCategoryInput
+          label='Nearby Schools'
+          tempValue={tempSchool}
+          addedItems={formData.nearbySchools || []}
+          placeholder='Enter a school name'
+          suggestions={filteredSchoolSuggestions}
+          onTempChange={(e) => setTempSchool(e.target.value)}
+          onSelectSuggestion={handleSelectSchool}
+          onRemoveItem={handleRemoveSchool}
+        />
       </div>
     </div>
   );

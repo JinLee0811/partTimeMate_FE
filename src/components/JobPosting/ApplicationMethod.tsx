@@ -31,13 +31,13 @@ export default function ApplicationMethod() {
       <div>
         {/* ✅ 상단 섹션 제목 및 설명 */}
         <div className='bg-gray-100 p-4 rounded-lg mb-3'>
-          <h2 className='text-xl font-bold text-blue-600'>Job Description</h2>
+          <h2 className='text-xl font-bold text-blue-600'>Application Method</h2>
           <p className='text-gray-600 text-sm mt-1'>
             This form is for you to provide any additional information or a detailed description
             about the job. Feel free to write your own text or attach images if you have them.
           </p>
         </div>
-        <label className='block text-sm font-medium text-gray-700 mb-2'>Application Method *</label>
+        <label className='block text-sm font-medium text-gray-700 mb-2'>Application Method</label>
         <div className='flex flex-wrap gap-2'>
           {applicationMethods.map((method) => (
             <button
@@ -55,21 +55,21 @@ export default function ApplicationMethod() {
         </div>
       </div>
       <PostingInputField
-        label='Contact Name *'
+        label='Contact Name'
         name='contactName'
         value={formData.contactName}
         onChange={handleChange}
         required
       />
       <PostingInputField
-        label='Contact Phone *'
+        label='Contact Phone'
         name='contactPhone'
         value={formData.contactPhone}
         onChange={handleChange}
         required
       />
       <PostingInputField
-        label='Contact Email *'
+        label='Contact Email'
         name='contactEmail'
         value={formData.contactEmail}
         onChange={handleChange}

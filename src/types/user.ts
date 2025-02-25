@@ -3,7 +3,7 @@ export type UserRole = "JOB_SEEKER" | "BUSINESS" | "ADMIN";
 
 /** ✅ 유저 기본 타입 */
 export interface User {
-  id?: string;
+  id: string;
   email: string;
   password?: string;
   confirmPassword: string;
