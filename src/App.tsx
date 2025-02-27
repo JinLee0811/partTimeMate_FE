@@ -14,7 +14,7 @@ import Register from "./pages/auth/Register";
 import SignUpBusiness from "./pages/auth/SignUpBusiness";
 import SignUpUser from "./pages/auth/SignUpUser";
 import Brands from "./pages/brands/Brands";
-import Mypage from "./pages/MyPage";
+import EditUser from "./pages/MyBusiness/EditUser";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import UserManagement from "./pages/admin/users/UserManagement";
@@ -23,6 +23,10 @@ import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
 import JobPosting from "./pages/jobs/JobPosting";
 import ErrorPage from "./pages/ErrorPage";
+import MyPageDashboard from "./pages/MyBusiness/MyPageDashBoard";
+import CompanyManagement from "./pages/MyBusiness/CompanyManagement";
+import CompanyList from "./pages/MyBusiness/CompanyList";
+import BusinessHome from "./pages/MyBusiness/BusinessHome";
 
 const queryClient = new QueryClient();
 
@@ -50,10 +54,14 @@ export default function App() {
               path='/mypage'
               element={
                 <ProtectedRoute>
-                  <Mypage />
+                  <MyPageDashboard />
                 </ProtectedRoute>
-              }
-            />
+              }>
+              <Route index element={<BusinessHome />} />
+              <Route path='user' element={<EditUser />} />
+              <Route path='company' element={<CompanyManagement />} />
+              <Route path='companylist' element={<CompanyList />} />
+            </Route>
 
             {/* Job Posting (Business or Admin만 가능) */}
             <Route

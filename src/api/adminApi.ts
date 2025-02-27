@@ -27,7 +27,7 @@ export const fetchUsersApi = async (page: number = 1): Promise<UsersResponse> =>
     page,
     ...(role === "ADMIN" && { role: "ADMIN" }),
   };
-  const response = await api.get<{ data: UsersResponse }>("/users", { params });
+  const response = await api.get<{ data: UsersResponse }>("/admin", { params });
   if (!response.data || !response.data.data) {
     throw new Error("Failed to fetch users data.");
   }
@@ -41,7 +41,7 @@ export const updateUserByIdApi = async (
   try {
     const role = getCurrentUserRole();
     const params = role === "ADMIN" ? { role: "ADMIN" } : {};
-    const response = await api.patch<{ data: User }>(`/users/${userId}`, updatedData, { params });
+    const response = await api.patch<{ data: User }>(`/admin/${userId}`, updatedData, { params });
     if (!response.data.data) {
       throw new Error("Invalid response from server.");
     }
@@ -56,7 +56,7 @@ export const deleteUserByIdApi = async (userId: string): Promise<void> => {
   try {
     const role = getCurrentUserRole();
     const params = role === "ADMIN" ? { role: "ADMIN" } : {};
-    await api.delete(`/users/${userId}`, { params });
+    await api.delete(`/admin/${userId}`, { params });
   } catch (error: any) {
     console.error("❌ Error deleting user:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Failed to delete user.");

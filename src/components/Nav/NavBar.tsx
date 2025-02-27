@@ -67,7 +67,7 @@ export default function Navbar() {
             <NavItem label='Branded Jobs' path='/brands' menuKey='brands' />
             <NavItem label='Talent Pool' path='/candidates' menuKey='candidates' />
             {isAuthenticated && user ? (
-              <NavItem label='My Page' path='/mypage' menuKey='mypages' />
+              <NavItem label='My Business' path='/mypage' menuKey='mypages' />
             ) : null}
             {user?.role === "ADMIN" && <NavItem label='Admin' path='/admin' menuKey='admin' />}
           </div>
