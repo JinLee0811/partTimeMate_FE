@@ -1,6 +1,5 @@
 import { useAuthStore } from "../../store/useAuthStore";
 import UserInfoForm from "../../components/MyPage/UserInfoEdit";
-import EmployerPage from "../../components/MyPage/EmployerPage";
 
 export default function MyPage() {
   const { user } = useAuthStore();

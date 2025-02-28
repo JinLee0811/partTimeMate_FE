@@ -19,16 +19,16 @@ export default function MyPageSidebar() {
       roles: ["JOB_SEEKER", "BUSINESS", "ADMIN"],
     },
     {
-      to: "/mypage/company",
+      to: "/mypage",
       icon: <FaBriefcase />,
-      label: "Company Registration",
-      roles: ["BUSINESS", "ADMIN"],
+      label: "Manage Resume",
+      roles: ["JOB_SEEKER", "ADMIN"],
     },
     {
-      to: "/mypage/companylist",
+      to: "/mypage",
       icon: <FaThList />,
-      label: "Set up Company",
-      roles: ["BUSINESS", "ADMIN"],
+      label: "My Wishlist",
+      roles: ["JOB_SEEKER", "ADMIN"],
     },
   ];
 

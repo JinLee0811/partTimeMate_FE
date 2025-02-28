@@ -1,24 +1,23 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { useEffect } from "react";
+import { useCategoryStore } from "../../../store/useCategoryStore";
 
 export default function CategoryDetail() {
   const { id } = useParams();
-  const [category, setCategory] = useState<Category | null>(null);
+  const { categories, fetchCategories, loading, error } = useCategoryStore();
 
   useEffect(() => {
-    // TODO: 실제 API 호출
-    setCategory({
-      id: Number(id),
-      name: "IT & Software",
-    });
-  }, [id]);
+    // 카테고리 목록이 없으면 첫 페이지 데이터를 불러옵니다.
+    if (categories.length === 0) {
+      fetchCategories(1);
+    }
+  }, [fetchCategories, categories.length]);
 
-  if (!category) return <p>Loading category details...</p>;
+  const category = categories.find((c) => c.id === Number(id));
+
+  if (loading) return <p>Loading category details...</p>;
+  if (error) return <p className='text-red-500'>{error}</p>;
+  if (!category) return <p>Category not found.</p>;
 
   return (
     <div className='p-6 bg-white shadow-md rounded-md'>

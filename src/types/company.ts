@@ -6,7 +6,7 @@ export interface Company {
   ceoName: string;
   website: string;
   contactEmail: string;
-  phoneNumber: string;
+  //   phoneNumber: string;
   logoUrl?: string;
-  description?: string;
+  //   description?: string;
 }

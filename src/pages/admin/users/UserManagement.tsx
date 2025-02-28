@@ -3,7 +3,7 @@ import Table from "../../../components/Table";
 import Modal from "../../../components/Modal";
 import UserEditForm from "./UserEditForm";
 import UserDetailModal from "./UserDetail";
-import Pagination from "../pagenation"; // Pagination 컴포넌트 경로에 맞게 수정
+import Pagination from "../../../components/pagenation"; // Pagination 컴포넌트 경로에 맞게 수정
 import { useAdminStore } from "../../../store/useAdminStore";
 
 export default function UserManagement() {
@@ -11,6 +11,7 @@ export default function UserManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"edit" | "view" | null>(null);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 컴포넌트 마운트 시 페이지 1의 데이터를 불러옴
   useEffect(() => {
@@ -50,9 +51,29 @@ export default function UserManagement() {
     }
   };
 
+  // 검색어에 따른 필터링 (이메일, firstName, lastName 기준)
+  const filteredUsers = users.filter((user) =>
+    [user.email, user.firstName, user.lastName]
+      .join(" ")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <h2 className='text-2xl font-bold mb-4'>User Management</h2>
+
+      {/* 검색 입력란 */}
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Search users...'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+        />
+      </div>
+
       <Table
         columns={[
           "Register Date",
@@ -63,7 +84,7 @@ export default function UserManagement() {
           "Language",
           "Actions",
         ]}
-        data={users.map((user) => [
+        data={filteredUsers.map((user) => [
           // 생성일(createdAt)을 Australian 날짜 형식으로 변환
           new Date(user.createdAt).toLocaleDateString("en-AU", {
             day: "2-digit",

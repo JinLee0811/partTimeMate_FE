@@ -61,6 +61,7 @@ export default function UserEditForm({ user, onUpdate, onCancel }: UserEditFormP
             className='w-full p-2 border rounded-md'>
             <option value='Job Seeker'>Job Seeker</option>
             <option value='Employer'>Employer</option>
+            <option value='Admin'>Admin</option>
           </select>
         </div>
 

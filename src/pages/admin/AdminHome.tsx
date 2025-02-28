@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { FaUsers, FaBriefcase, FaThList } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminStore";
+import { useCategoryStore } from "../../store/useCategoryStore";
 
 // DashboardCard 컴포넌트 (아래에 그대로 사용)
 const DashboardCard = ({
@@ -27,11 +28,16 @@ const DashboardCard = ({
 );
 
 export default function AdminHome() {
-  const { totalCount, users, fetchUsers } = useAdminStore();
+  const { totalCount, fetchUsers } = useAdminStore();
+  const { totalCount: categoryCount, fetchCategories } = useCategoryStore();
 
   useEffect(() => {
     fetchUsers(1);
   }, [fetchUsers]);
+
+  useEffect(() => {
+    fetchCategories(1);
+  }, [fetchCategories]);
 
   return (
     <div>
@@ -52,7 +58,12 @@ export default function AdminHome() {
           icon={<FaBriefcase />}
           link='/admin/jobs'
         />
-        <DashboardCard title='Categories' count={8} icon={<FaThList />} link='/admin/categories' />
+        <DashboardCard
+          title='Categories'
+          count={categoryCount}
+          icon={<FaThList />}
+          link='/admin/categories'
+        />
       </div>
     </div>
   );

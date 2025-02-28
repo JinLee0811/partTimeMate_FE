@@ -28,7 +28,8 @@ export default function PersonalInfo() {
     mutationFn: updateUserApi, // ✅ API 호출
     onSuccess: async (updatedUser) => {
       console.log("✅ 유저 정보 업데이트 성공:", updatedUser);
-      setUser(updatedUser); // ✅ Zustand 상태 업데이트
+      const updatedUserWithRole = { ...updatedUser, role: user.role };
+      setUser(updatedUserWithRole); // Zustand 상태 업데이트
       await refetch(); // ✅ 최신 유저 정보 불러오기
       alert("✅ Your information has been updated successfully!");
     },

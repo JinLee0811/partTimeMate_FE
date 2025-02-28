@@ -10,7 +10,7 @@ import { Company } from "../types/company";
 
 /** ✅ 회사 등록 폼에서 사용할 필드 타입 (UI에서 입력하는 데이터 구조) */
 interface CompanyFormData {
-  companyName: string; // formData.companyName
+  name: string; // formData.companyName
   ceo: string; // formData.ceo
   website: string;
   email: string;
@@ -56,7 +56,7 @@ interface CompanyStoreState {
 export const useCompanyStore = create<CompanyStoreState>((set, get) => ({
   // 초기 폼 데이터
   formData: {
-    companyName: "",
+    name: "",
     ceo: "",
     website: "",
     email: "",
@@ -108,13 +108,13 @@ export const useCompanyStore = create<CompanyStoreState>((set, get) => ({
 
       // API에서 필요한 구조(Company)로 변환
       const newCompanyData: Partial<Company> = {
-        name: formData.companyName,
+        name: formData.name,
         ceoName: formData.ceo,
         website: formData.website,
         contactEmail: formData.email,
-        phoneNumber: formData.phone,
+        // phoneNumber: formData.phone,
         logoUrl: formData.logoUrl,
-        description: formData.description,
+        // description: formData.description,
       };
 
       // 실제 API 호출 (POST /company)

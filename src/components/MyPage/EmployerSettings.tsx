@@ -1,18 +1,16 @@
-// src/pages/EmployerSettings.tsx (혹은 적절한 위치)
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCompanyStore } from "../../store/useCompanyStore";
 
 export default function EmployerSettings() {
   // 회사 폼 상태와 액션을 가져옵니다.
   const { formData, setFormData, createCompany } = useCompanyStore();
-
-  // 로고 미리보기 상태
   const [logoPreview, setLogoPreview] = useState<string | null>(formData.logoUrl || null);
+  const navigate = useNavigate();
 
   // 기본 입력값 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    // store의 formData 갱신
     setFormData({ [name]: value });
   };
 
@@ -22,9 +20,6 @@ export default function EmployerSettings() {
       const file = e.target.files[0];
       const fileURL = URL.createObjectURL(file);
       setLogoPreview(fileURL);
-
-      // 실제 업로드가 아니라 미리보기만 하는 경우,
-      // 스토어에는 임시로 파일 경로(URL)만 저장
       setFormData({ logoUrl: fileURL });
     }
   };
@@ -32,30 +27,36 @@ export default function EmployerSettings() {
   // 폼 저장(회사 등록) 버튼 핸들러
   const handleSubmit = async () => {
     try {
-      // 회사 등록 API 호출
       await createCompany();
       alert("Company created successfully!");
-      // 이후 폼 초기화 or 페이지 이동 등 원하는 동작 수행
+
+      // 폼 상태 초기화
+      setFormData({
+        name: "",
+        ceo: "",
+        website: "",
+        email: "",
+        logoUrl: "",
+        description: "",
+      });
+
+      // "/mybusiness/companylist"로 이동
+      navigate("/mybusiness/companylist");
     } catch (error) {
       alert("Error creating company. Please try again.");
     }
   };
 
   return (
-    <div className='p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto'>
-      <h3 className='text-2xl font-bold text-gray-800 mb-4'>Register Company</h3>
-      <p className='text-sm text-gray-600 mb-6'>
-        Manage your company information and hiring preferences.
-      </p>
-
-      <div className='space-y-4'>
-        {/* Company Name */}
-        <div>
+    <div>
+      <div className='grid grid-cols-2 gap-4'>
+        {/* Company Name (전체 폭 사용) */}
+        <div className='col-span-2'>
           <label className='block text-sm font-medium text-gray-700'>Company Name *</label>
           <input
             type='text'
-            name='companyName'
-            value={formData.companyName}
+            name='name'
+            value={formData.name}
             onChange={handleChange}
             placeholder='Enter company name'
             required
@@ -103,21 +104,8 @@ export default function EmployerSettings() {
           />
         </div>
 
-        {/* Phone Number */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700'>Phone Number</label>
-          <input
-            type='tel'
-            name='phone'
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder='Enter phone number'
-            className='w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
-          />
-        </div>
-
-        {/* Company Logo Upload */}
-        <div>
+        {/* Company Logo Upload (전체 폭 사용) */}
+        <div className='col-span-2'>
           <label className='block text-sm font-medium text-gray-700'>Company Logo</label>
           <input
             type='file'
@@ -134,19 +122,6 @@ export default function EmployerSettings() {
               />
             </div>
           )}
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700'>Company Description</label>
-          <textarea
-            name='description'
-            value={formData.description}
-            onChange={handleChange}
-            placeholder='Provide a short company description'
-            rows={3}
-            className='w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
-          />
         </div>
       </div>
 

@@ -15,8 +15,12 @@ const menuData: Record<string, { title: string; items: string[] }> = {
     title: "Candidate Services",
     items: ["Resume Assistance", "Job Match", "Career Advice"],
   },
-  mypages: {
+  mypage: {
     title: "My Page",
+    items: ["Resume Assistance", "Job Match", "Career Advice"],
+  },
+  mybusiness: {
+    title: "My Business",
     items: ["Resume Assistance", "Job Match", "Career Advice"],
   },
   admin: {
