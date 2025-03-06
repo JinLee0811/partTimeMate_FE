@@ -45,3 +45,14 @@ export const updatePasswordApi = async (password: string): Promise<User> => {
     throw new Error(error.response?.data?.message || "Failed to update password.");
   }
 };
+
+/** ✅ 유저 삭제 API  */
+export const deleteUserApi = async (password: string): Promise<void> => {
+  try {
+    await api.delete("/auth", { data: { password } });
+    return;
+  } catch (error: any) {
+    console.error("❌ API Error:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Failed to delete user.");
+  }
+};

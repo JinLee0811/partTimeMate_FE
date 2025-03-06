@@ -7,16 +7,16 @@ export default function JobCategories() {
   const { isAuthenticated, user, logout }: AuthProps = useAuthStore();
 
   return (
-    <div className='max-w-7xl mx-auto p-6 bg-white grid grid-cols-3 gap-5 mb-10'>
+    <div className='max-w-8xl mx-auto p-6 bg-white grid grid-cols-[3fr_1fr] gap-5 mb-10'>
       {/* 왼쪽 섹션: 배너 + 카테고리 */}
-      <div className='col-span-2 space-y-2'>
+      <div className='space-y-2'>
         {/* 배너 */}
-        <div className='grid grid-cols-[2fr_1fr] gap-2 bg-white text-white rounded-lg'>
-          <div className='flex justify-center items-center p-12 bg-white text-black border border-gray-200 rounded-lg'>
-            <h2 className='text-xl font-bold'>Find the Best Part-time Jobs in Sydney!</h2>
-          </div>
-          <div className='flex justify-center items-center bg-white text-black border border-gray-200 rounded-lg'>
+        <div className='grid grid-cols-[1fr_2fr] gap-2 bg-white text-white rounded-lg'>
+          <div className='flex justify-center items-center p-14 bg-white text-black border border-gray-200 rounded-lg'>
             <h2 className='text-xl font-bold'>Hot View!</h2>
+          </div>
+          <div className='flex justify-center items-center bg-yellow-300 text-black border border-gray-200 rounded-lg'>
+            <h2 className='text-xl font-bold '>Find the Best Part-time Jobs in Sydney!</h2>
           </div>
         </div>
 
@@ -25,7 +25,9 @@ export default function JobCategories() {
       </div>
 
       {/* 오른쪽 섹션: 로그인 여부에 따라 UI 변경 */}
-      <AuthSection isAuthenticated={isAuthenticated} user={user} logout={logout} />
+      <div>
+        <AuthSection isAuthenticated={isAuthenticated} user={user} logout={logout} />
+      </div>
     </div>
   );
 }

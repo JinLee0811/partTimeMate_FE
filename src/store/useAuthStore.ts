@@ -1,6 +1,8 @@
+// src/store/useAuthStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { loginApi, logoutApi, refreshAccessTokenApi } from "../api/authApi";
+import { deleteUserApi } from "../api/userApi";
 import { fetchUserApi } from "../api/userApi";
 import { User } from "../types/user";
 import { useJobPostingStore } from "../store/jobPostingStore";
@@ -12,6 +14,7 @@ interface AuthState {
   login: (email: string, password: string, role: User["role"]) => Promise<void>;
   logout: () => void;
   refreshAccessToken: () => Promise<string>;
+  deleteAccount: (password: string) => Promise<void>;
   setUser: (user: User | null) => void;
   setAccessToken: (token: string) => void;
 }
@@ -26,11 +29,9 @@ export const useAuthStore = create<AuthState>()(
       // ✅ 로그인
       login: async (email, password, role) => {
         const { accessToken, refreshToken } = await loginApi(email, password, role);
-
         set({ isAuthenticated: true, accessToken });
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-
         try {
           const userData = await fetchUserApi();
           set({ user: userData });
@@ -40,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // ✅ 로그아웃 (🚀 `navigate`를 직접 사용하지 않음)
+      // ✅ 로그아웃
       logout: () => {
         logoutApi();
         set({ user: null, accessToken: null, isAuthenticated: false });
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
         useJobPostingStore.getState().resetFormData();
       },
 
-      // ✅ Access Token 갱신 (🚀 `navigate`를 직접 사용하지 않음)
+      // ✅ Access Token 갱신
       refreshAccessToken: async (): Promise<string> => {
         try {
           const newAccessToken = await refreshAccessTokenApi();
@@ -60,6 +61,21 @@ export const useAuthStore = create<AuthState>()(
           console.error("❌ Token refresh failed", error);
           get().logout();
           throw new Error("Failed to refresh access token.");
+        }
+      },
+
+      // ✅ 계정 삭제 (유저 삭제)
+      deleteAccount: async (password: string) => {
+        try {
+          await deleteUserApi(password);
+          // API 호출이 성공했을 때만 상태 초기화
+          set({ user: null, accessToken: null, isAuthenticated: false });
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          useJobPostingStore.getState().resetFormData();
+        } catch (error) {
+          console.error("❌ Failed to delete account:", error);
+          throw error;
         }
       },
 

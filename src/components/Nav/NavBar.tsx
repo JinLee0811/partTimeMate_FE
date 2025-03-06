@@ -3,6 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser"; // ✅ 유저 정보 가져오기 훅
 import NavItem from "./NavItem";
+import mainLogo from "../../../public/mainLogo.png";
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -11,13 +12,14 @@ export default function Navbar() {
   return (
     <nav className='bg-white relative'>
       {/* 1️⃣ Top Bar: 로그인 / 회원가입 */}
-      <div className='flex justify-end items-center p-2 text-gray-500 text-sm max-w-7xl mx-auto'>
+      <div className='flex justify-end mr-5 items-center p-2 text-gray-500 text-sm max-w-8xl mx-auto'>
         {isLoading ? (
           <span>Loading...</span>
         ) : isAuthenticated && user ? (
           <>
             <span className='mr-2'>Welcome, {user.lastName}!</span>
-            <button onClick={logout} className='hover:text-red-500'>
+            <span className='mx-2 text-gray-400'>|</span>
+            <button onClick={logout} className='hover:text-red-500 ml-2'>
               Logout
             </button>
           </>
@@ -26,7 +28,7 @@ export default function Navbar() {
             <Link to='/auth/login' className='hover:text-gray-700'>
               Login
             </Link>
-            <span className='mx-2'>|</span>
+            <span className='mx-2 text-gray-400'>|</span>
             <Link to='/auth/register' className='hover:text-gray-700'>
               Sign Up
             </Link>
@@ -35,17 +37,17 @@ export default function Navbar() {
       </div>
 
       {/* 2️⃣ Middle Bar: 로고 + 검색창 + 광고 */}
-      <div className='flex justify-between items-center max-w-7xl mx-auto p-4'>
+      <div className='flex justify-between items-center max-w-8xl mx-auto p-4'>
         <Link to='/' className='flex items-center space-x-2'>
-          <img src='/logo.svg' alt='Part-Time Mate Logo' className='h-10' />
+          <img src={mainLogo} alt='Part-Time Mate Logo' className='ml-10 h-16' />
         </Link>
 
         {/* 검색창 */}
-        <div className='relative w-96'>
+        <div className='relative w-2/5'>
           <input
             type='text'
             placeholder='Search for jobs...'
-            className='w-full p-3 border m-auto rounded-full pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+            className='w-full p-3 border border-gray-700 m-auto rounded-full pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
           />
           <button className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-yellow-400 p-2 rounded-full'>
             <FaSearch className='text-black' />
@@ -53,8 +55,10 @@ export default function Navbar() {
         </div>
 
         {/* 광고 자리 */}
-        <div className='hidden md:block'>
-          <img src='/ad-banner.png' alt='Promotion' className='h-12' />
+        <div className='hidden md:block mr-5'>
+          <div className='bg-gray-800 p-8 w-40 rounded-lg flex justify-center text-white'>
+            AD Here!
+          </div>
         </div>
       </div>
 
@@ -86,18 +90,18 @@ export default function Navbar() {
           </div>
 
           {/* 오른쪽 버튼 */}
-          <div className='flex space-x-3'>
+          <div className='flex space-x-3 mr-5'>
             {(user?.role === "JOB_SEEKER" || user?.role === "ADMIN") && (
               <Link
                 to='/resume'
-                className='bg-yellow-300 px-4 py-2 rounded-full text-black font-semibold'>
+                className='bg-yellow-300 px-4 py-2 rounded-full justify-center items-center flex text-black font-bold text-m'>
                 Upload Resume
               </Link>
             )}
             {(user?.role === "BUSINESS" || user?.role === "ADMIN") && (
               <Link
                 to='/jobposting'
-                className='bg-blue-500 px-4 py-2 rounded-full text-white font-semibol'>
+                className='bg-blue-500 px-4 py-3 rounded-full text-white font-bold justify-center items-center flex text-m'>
                 Post a Job
               </Link>
             )}

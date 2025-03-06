@@ -32,16 +32,16 @@ const menuItems = [
   {
     label: "Post Job",
     icon: <FaClipboardList className='text-blue-500 text-2xl' />,
-    path: "/post-job",
+    path: "/jobposting",
   },
   {
     label: "Manage Listings",
     icon: <FaBriefcase className='text-blue-500 text-2xl' />,
-    path: "/manage-listings",
+    path: "/mybusiness",
   },
   {
     label: "Applicants",
     icon: <FaUsers className='text-blue-500 text-2xl' />,
-    path: "/applicants",
+    path: "/mybusiness",
   },
 ];

@@ -97,7 +97,7 @@ export default function LoginSection() {
           </Link>
         </div>
       </div>
-      <div className='flex-grow flex justify-center items-center bg-white text-black border border-gray-200 rounded-lg'>
+      <div className='flex justify-center items-center bg-yellow-600 p-14 text-black border border-gray-200 rounded-lg'>
         <h2 className='text-xl font-bold'>AD here!</h2>
       </div>
     </div>

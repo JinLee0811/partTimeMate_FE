@@ -4,7 +4,7 @@ const JobList = () => {
   const displayedJobs = jobs_en.slice(0, 20); // 첫 20개 공고만 표시
 
   return (
-    <section className='mt-2 py-14 px-7 w-10/12 mx-auto bg-white'>
+    <section className='mt-2 py-14 px-7 mx-auto bg-white'>
       <h2 className='text-2xl font-bold mb-6'>Newest Job List</h2>
 
       {/* 리스트 헤더 */}

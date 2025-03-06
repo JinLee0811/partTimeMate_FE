@@ -33,7 +33,7 @@ export default function MyPageSidebar() {
   ];
 
   return (
-    <div className='w-64 bg-white border-r shadow-lg h-screen p-4'>
+    <div className='w-68 bg-white border-r shadow-lg h-screen p-7'>
       <h2 className='text-xl font-bold text-gray-800 mb-6'>My Page</h2>
       <ul className='space-y-4'>
         {sidebarItems

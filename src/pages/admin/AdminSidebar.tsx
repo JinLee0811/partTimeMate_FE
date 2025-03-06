@@ -3,7 +3,7 @@ import { FaUsers, FaBriefcase, FaThList, FaHome } from "react-icons/fa";
 
 export default function AdminSidebar() {
   return (
-    <div className='w-64 bg-white border-r shadow-lg h-screen p-4'>
+    <div className='w-68 bg-white border-r shadow-lg h-screen p-8'>
       <h2 className='text-xl font-bold text-gray-800 mb-6'>Admin Panel</h2>
       <ul className='space-y-4'>
         <SidebarItem to='/admin' icon={<FaHome />} label='Dashboard' />
