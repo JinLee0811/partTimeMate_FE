@@ -29,23 +29,21 @@ export function useSignUp() {
       // 🔹 confirmPassword를 제외하고 서버로 보냄
       return registerApi(data);
     },
-    onSuccess: (userData) => {
-      if (userData) {
-        setUser(userData); // ✅ Zustand 상태 업데이트
-      }
+    onSuccess: () => {
+      // 서버에서 응답으로 userData를 주더라도, 여기서는 굳이 저장할 필요 없음
       alert("✅ Registration successful! Please log in.");
-      navigate("/auth/login");
+      navigate("/auth/login"); // 회원가입 후 로그인 페이지로 이동
     },
     onError: (error) => {
-      alert(error.message || "Signup failed. Please try again.");
+      alert("Signup failed. Please try again.");
     },
   });
 
   return { signUp: mutation.mutate, ...mutation };
 }
 
-// ✅ 비밀번호 유효성 검사 함수
+// ✅ 대문자, 소문자, 숫자, 특수문자가 각각 하나 이상 포함 & 8~32자
 const validatePassword = (password: string) => {
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
   return passwordRegex.test(password);
 };

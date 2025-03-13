@@ -4,14 +4,17 @@ import { User, UserRole } from "../types/user";
 import { SignUpData } from "../types/auth";
 
 /** 회원가입 API */
-export const registerApi = async (userData: SignUpData): Promise<User> => {
+export const registerApi = async (userData: SignUpData) => {
   const response = await api.post("/auth/signup", userData);
 
-  if (!response.data.success) {
+  // 서버가 2xx 범위, 특히 201을 주면 성공으로 본다 가정
+  // 만약 201이 아닌 경우 throw
+  if (response.status !== 201) {
     throw new Error(response.data.message || "Registration failed.");
   }
 
-  return response.data.user; // 회원가입 성공 시 user 데이터 반환
+  // 서버가 반환하는 실제 유저 정보는 response.data.data 안에 존재
+  return response.data.data;
 };
 
 /** 로그인 API */
