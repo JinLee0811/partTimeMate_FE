@@ -1,50 +1,43 @@
 import { create } from "zustand";
 import {
   fetchCategoriesApi,
+  fetchSubcategoriesApi,
   createCategoryApi,
-  updateCategoryApi,
-  deleteCategoryApi,
+  addSubcategoryApi,
 } from "../api/categoryApi";
-import { Category } from "../types/category";
-
-interface CategoriesResponse {
-  categories: Category[];
-  totalCount: number;
-  totalPage: number;
-  page: number;
-}
+import { Category, Subcategory } from "../types/category";
 
 interface CategoryStoreState {
   categories: Category[];
-  totalCount: number;
-  totalPage: number;
-  currentPage: number;
+  subcategories: { [key: number]: Subcategory[] };
   loading: boolean;
   error: string | null;
-  fetchCategories: (page?: number) => Promise<void>;
-  createCategory: (data: Partial<Category>) => Promise<void>;
-  updateCategory: (categoryId: number, updatedData: Partial<Category>) => Promise<void>;
-  deleteCategory: (categoryId: number) => Promise<void>;
+  fetchCategories: () => Promise<void>;
+  createCategory: (categoryName: string) => Promise<void>;
+  addSubcategory: (categoryId: number, subcategoryName: string) => Promise<void>;
 }
 
 export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
   categories: [],
-  totalCount: 0,
-  totalPage: 1,
-  currentPage: 1,
+  subcategories: {},
   loading: false,
   error: null,
 
-  fetchCategories: async (page: number = 1) => {
+  fetchCategories: async () => {
     set({ loading: true, error: null });
     try {
-      const response: CategoriesResponse = await fetchCategoriesApi(page);
-      set({
-        categories: response.categories,
-        totalCount: response.totalCount ?? response.categories.length, // totalCount가 없으면 categories.length로 대체
-        totalPage: response.totalPage || 1,
-        currentPage: response.page,
-      });
+      const categories = await fetchCategoriesApi();
+      const subcategoriesData: { [key: number]: Subcategory[] } = {};
+
+      // 🔹 각 카테고리별 하위 업직종 가져오기 (동시에 요청)
+      await Promise.all(
+        categories.map(async (category) => {
+          const subs = await fetchSubcategoriesApi(category.id);
+          subcategoriesData[category.id] = subs;
+        })
+      );
+
+      set({ categories, subcategories: subcategoriesData });
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch categories." });
     } finally {
@@ -52,48 +45,28 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     }
   },
 
-  createCategory: async (data: Partial<Category>) => {
-    set({ loading: true, error: null });
+  createCategory: async (categoryName) => {
+    set({ loading: true });
     try {
-      const newCategory = await createCategoryApi(data);
+      const newCategory = await createCategoryApi(categoryName);
       set((state) => ({
         categories: [...state.categories, newCategory],
       }));
-    } catch (err: any) {
-      set({ error: err.message || "Failed to create category." });
-      throw err;
     } finally {
       set({ loading: false });
     }
   },
 
-  updateCategory: async (categoryId: number, updatedData: Partial<Category>) => {
-    set({ loading: true, error: null });
+  addSubcategory: async (categoryId, subcategoryName) => {
+    set({ loading: true });
     try {
-      const updatedCategory = await updateCategoryApi(categoryId, updatedData);
+      const newSubcategory = await addSubcategoryApi(Number(categoryId), subcategoryName.trim()); // ✅ jobCategoryId로 변경
       set((state) => ({
-        categories: state.categories.map((category) =>
-          category.id === updatedCategory.id ? updatedCategory : category
-        ),
+        subcategories: {
+          ...state.subcategories,
+          [categoryId]: [...(state.subcategories[categoryId] || []), newSubcategory],
+        },
       }));
-    } catch (err: any) {
-      set({ error: err.message || "Failed to update category." });
-      throw err;
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  deleteCategory: async (categoryId: number) => {
-    set({ loading: true, error: null });
-    try {
-      await deleteCategoryApi(categoryId);
-      set((state) => ({
-        categories: state.categories.filter((category) => category.id !== categoryId),
-      }));
-    } catch (err: any) {
-      set({ error: err.message || "Failed to delete category." });
-      throw err;
     } finally {
       set({ loading: false });
     }

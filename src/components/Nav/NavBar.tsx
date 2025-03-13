@@ -3,14 +3,13 @@ import { FaSearch } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser"; // ✅ 유저 정보 가져오기 훅
 import NavItem from "./NavItem";
-import mainLogo from "../../../public/mainLogo.png";
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const { isLoading } = useUser(); // ✅ React Query에서 user 정보 가져오기
 
   return (
-    <nav className='bg-white relative'>
+    <nav className='bg-white relative shadow-md'>
       {/* 1️⃣ Top Bar: 로그인 / 회원가입 */}
       <div className='flex justify-end mr-5 items-center p-2 text-gray-500 text-sm max-w-8xl mx-auto'>
         {isLoading ? (
@@ -39,7 +38,7 @@ export default function Navbar() {
       {/* 2️⃣ Middle Bar: 로고 + 검색창 + 광고 */}
       <div className='flex justify-between items-center max-w-8xl mx-auto p-4'>
         <Link to='/' className='flex items-center space-x-2'>
-          <img src={mainLogo} alt='Part-Time Mate Logo' className='ml-10 h-16' />
+          <img src='/mainLogo.png' alt='Part-Time Mate Logo' className='ml-10 h-16' />
         </Link>
 
         {/* 검색창 */}
@@ -47,7 +46,7 @@ export default function Navbar() {
           <input
             type='text'
             placeholder='Search for jobs...'
-            className='w-full p-3 border border-gray-700 m-auto rounded-full pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
+            className='w-full p-3 border border-gray-400 rounded-full pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400'
           />
           <button className='absolute right-3 top-1/2 transform -translate-y-1/2 bg-yellow-400 p-2 rounded-full'>
             <FaSearch className='text-black' />
@@ -70,7 +69,7 @@ export default function Navbar() {
             <NavItem label='Job Listings' path='/jobs' menuKey='jobs' />
             <NavItem label='Branded Jobs' path='/brands' menuKey='brands' />
             <NavItem label='Talent Pool' path='/candidates' menuKey='candidates' />
-            {user && (
+            {isAuthenticated && user && (
               <>
                 {user.role === "JOB_SEEKER" && (
                   <NavItem label='My Page' path='/mypage' menuKey='mypage' />
@@ -91,17 +90,17 @@ export default function Navbar() {
 
           {/* 오른쪽 버튼 */}
           <div className='flex space-x-3 mr-5'>
-            {(user?.role === "JOB_SEEKER" || user?.role === "ADMIN") && (
+            {user?.role === "JOB_SEEKER" && (
               <Link
                 to='/resume'
-                className='bg-yellow-300 px-4 py-2 rounded-full justify-center items-center flex text-black font-bold text-m'>
+                className='bg-yellow-300 px-4 py-2 rounded-full flex justify-center items-center text-black font-bold text-m'>
                 Upload Resume
               </Link>
             )}
-            {(user?.role === "BUSINESS" || user?.role === "ADMIN") && (
+            {user?.role === "BUSINESS" && (
               <Link
                 to='/jobposting'
-                className='bg-blue-500 px-4 py-3 rounded-full text-white font-bold justify-center items-center flex text-m'>
+                className='bg-blue-500 px-4 py-3 rounded-full text-white font-bold flex justify-center items-center text-m'>
                 Post a Job
               </Link>
             )}
