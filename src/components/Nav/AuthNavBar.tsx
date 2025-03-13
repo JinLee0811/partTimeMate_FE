@@ -10,8 +10,7 @@ export default function AuthNavBar() {
     <nav className='flex justify-between items-center w-full max-w-5xl mx-auto p-5 bg-white'>
       {/* 왼쪽 로고 */}
       <Link to='/' className='flex items-center'>
-        <img src='/logo.svg' alt='Logo' className='w-10 h-10' />
-        <span className='ml-2 text-lg font-bold text-gray-800'>Part-Time Mate</span>
+        <img src='/mainLogo.png' alt='Part-Time Mate Logo' className='ml-10 h-16' />
       </Link>
 
       {/* 오른쪽 네비게이션 */}
