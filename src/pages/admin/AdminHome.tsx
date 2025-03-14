@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminStore";
 import { useCategoryStore } from "../../store/useCategoryStore";
 
-// DashboardCard 컴포넌트 (아래에 그대로 사용)
+// DashboardCard 컴포넌트
 const DashboardCard = ({
   title,
   count,
@@ -28,15 +28,19 @@ const DashboardCard = ({
 );
 
 export default function AdminHome() {
+  // 1) 유저 총 갯수와 fetchUsers를 AdminStore에서 가져옴
   const { totalCount, fetchUsers } = useAdminStore();
-  const { totalCount: categoryCount, fetchCategories } = useCategoryStore();
 
+  // 2) 카테고리 총 갯수와 fetchCategories를 CategoryStore에서 가져옴
+  const { categoryCount, fetchCategories } = useCategoryStore();
+
+  // 3) 마운트 시점에 유저와 카테고리 목록 불러오기
   useEffect(() => {
-    fetchUsers(1);
+    fetchUsers(1); // 필요하다면 페이지 번호 인자
   }, [fetchUsers]);
 
   useEffect(() => {
-    fetchCategories(1);
+    fetchCategories(); // 1) page 매개변수가 필요 없다면 그냥 호출
   }, [fetchCategories]);
 
   return (

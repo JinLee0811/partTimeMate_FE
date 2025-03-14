@@ -3,11 +3,17 @@ import { Category, Subcategory } from "../types/category";
 
 /** 전체 잡 카테고리 목록 가져오기 */
 export const fetchCategoriesApi = async (): Promise<Category[]> => {
-  const response = await api.get<{ data: Category[] }>("/job-categories");
-  if (!response.data || !response.data.data) {
+  const response = await api.get<{
+    message: string;
+    statusCode: number;
+    data: { categories: Category[] };
+  }>("/job-categories");
+
+  if (!response.data || !response.data.data || !response.data.data.categories) {
     throw new Error("Failed to fetch categories.");
   }
-  return response.data.data;
+
+  return response.data.data.categories;
 };
 
 /** 특정 카테고리의 하위 업직종 가져오기 */
@@ -69,15 +75,29 @@ export const updateCategoryApi = async (categoryId: number, newName: string): Pr
   return response.data.data;
 };
 
+/** 소분류(하위 업직종) 수정 - 이름만 변경 가능 */
+export const updateSubcategoryApi = async (
+  subcategoryId: number,
+  newName: string,
+  jobCategoryId: number
+): Promise<Subcategory> => {
+  const response = await api.patch<{ data: Subcategory }>(
+    `/job-categories/subcategory/${subcategoryId}`,
+    { name: newName, jobCategoryId }
+  );
+
+  if (!response.data || !response.data.data) {
+    throw new Error("Failed to update subcategory.");
+  }
+  return response.data.data;
+};
+
 /** 카테고리 삭제 */
 export const deleteCategoryApi = async (categoryId: number): Promise<void> => {
   await api.delete(`/job-categories/${categoryId}`);
 };
 
-/** 특정 카테고리에서 하위 업직종 삭제 */
-export const deleteSubcategoryApi = async (
-  categoryId: number,
-  subcategoryId: number
-): Promise<void> => {
-  await api.delete(`/job-categories/${categoryId}/subcategories/${subcategoryId}`);
+// 서브 카테고리 삭제
+export const deleteSubcategoryApi = async (subcategoryId: number): Promise<void> => {
+  await api.delete(`/job-categories/subcategory/${subcategoryId}`);
 };
