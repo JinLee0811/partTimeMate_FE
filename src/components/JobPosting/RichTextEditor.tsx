@@ -1,32 +1,49 @@
-import React, { useRef, useMemo, useCallback } from "react";
+import React, { useRef, useMemo, useCallback, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "./RichTextEditor.css"; // 추가
+import "./RichTextEditor.css";
+import { debounce } from "lodash";
 
-// 이미지 업로드를 위한 예제 함수 (실제 서비스에서는 서버 업로드 방식 필요)
+// Image upload function (needs to be replaced with actual server API)
 async function uploadImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      console.log(reader.result);
-      resolve(reader.result as string);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
+  // Image validation
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image files are allowed.");
+  }
+
+  // File size limit (5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Image size cannot exceed 5MB.");
+  }
+
+  // Return simulated image URL (should be replaced with actual server upload)
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(`https://example.com/images/${file.name}`);
+    }, 1000);
   });
 }
 
-// Props 타입 정의
 interface RichTextEditorProps {
   value: string;
   onChange: (content: string) => void;
+  onError?: (error: string) => void;
 }
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, onError }) => {
   const quillRef = useRef<ReactQuill | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  // ✅ useCallback을 사용하여 이미지 핸들러 함수가 재생성되지 않도록 최적화
-  const handleImage = useCallback(() => {
+  // Debounced onChange handler
+  const debouncedOnChange = useMemo(
+    () =>
+      debounce((content: string) => {
+        onChange(content);
+      }, 500),
+    [onChange]
+  );
+
+  const handleImage = useCallback(async () => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
@@ -35,22 +52,25 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
     input.onchange = async () => {
       if (!input.files?.length) return;
       const file = input.files[0];
+
       try {
+        setIsUploading(true);
         const imageUrl = await uploadImage(file);
 
-        // ✅ quillRef가 안전하게 초기화된 후 getEditor()를 호출
         const editor = quillRef.current?.getEditor();
         if (editor) {
           const range = editor.getSelection(true);
           editor.insertEmbed(range?.index ?? 0, "image", imageUrl, "user");
         }
       } catch (err) {
-        console.error("Image upload failed", err);
+        const errorMessage = err instanceof Error ? err.message : "Image upload failed.";
+        onError?.(errorMessage);
+      } finally {
+        setIsUploading(false);
       }
     };
-  }, []);
+  }, [onError]);
 
-  // ✅ useMemo를 사용하여 불필요한 리렌더링 방지 (modules가 매번 새로 생성되지 않도록)
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -62,7 +82,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
           ["clean"],
         ],
         handlers: {
-          image: handleImage, // ✅ 이미지 버튼 클릭 시 handleImage 실행
+          image: handleImage,
         },
       },
     }),
@@ -70,14 +90,21 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   );
 
   return (
-    <ReactQuill
-      ref={quillRef}
-      value={value}
-      onChange={onChange}
-      modules={modules}
-      theme='snow'
-      className='custom-quill'
-    />
+    <div className='relative'>
+      <ReactQuill
+        ref={quillRef}
+        value={value}
+        onChange={debouncedOnChange}
+        modules={modules}
+        theme='snow'
+        className='custom-quill'
+      />
+      {isUploading && (
+        <div className='absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500'></div>
+        </div>
+      )}
+    </div>
   );
 };
 

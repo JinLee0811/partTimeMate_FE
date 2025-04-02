@@ -1,33 +1,74 @@
-import JobCategoryList from "./JobCategoryList";
-import AuthSection from "./AuthSection";
+import { Link } from "react-router-dom";
+import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
-import { AuthProps } from "../../types/auth"; // ✅ AuthProps 가져오기
+import { useUser } from "../../hooks/useUser";
 
-export default function JobCategories() {
-  const { isAuthenticated, user, logout }: AuthProps = useAuthStore();
+const SYDNEY_AREAS = [
+  { name: "Sydney CBD", jobs: 450 },
+  { name: "Inner West", jobs: 320 },
+  { name: "Eastern Suburbs", jobs: 280 },
+  { name: "North Shore", jobs: 265 },
+  { name: "Parramatta", jobs: 156 },
+  { name: "Chatswood", jobs: 142 },
+  { name: "North Sydney", jobs: 123 },
+  { name: "Bondi", jobs: 98 },
+  { name: "Strathfield", jobs: 87 },
+  { name: "Burwood", jobs: 76 },
+  { name: "Hurstville", jobs: 65 },
+];
+
+export default function MainHeader() {
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isLoading } = useUser();
 
   return (
-    <div className='max-w-8xl mx-auto p-6 bg-white grid grid-cols-[3fr_1fr] gap-5 mb-10'>
-      {/* 왼쪽 섹션: 배너 + 카테고리 */}
-      <div className='space-y-2'>
-        {/* 배너 */}
-        <div className='grid grid-cols-[1fr_2fr] gap-2 bg-white text-white rounded-lg'>
-          <div className='flex justify-center items-center p-14 bg-white text-black border border-gray-200 rounded-lg'>
-            <h2 className='text-xl font-bold'>Hot View!</h2>
+    <>
+      {/* Main Hero Section */}
+      <main className='bg-gradient-to-b from-white to-gray-50'>
+        <div className='max-w-7xl mx-auto px-4 py-12'>
+          <div className='text-center mb-16'>
+            <h1 className='text-4xl font-bold text-gray-900 mb-2'>Part-Time Jobs in Sydney</h1>
+            <div className='h-1 w-24 bg-yellow-400 mx-auto mb-4'></div>
+            <p className='text-gray-600 text-lg'>
+              Explore the latest part-time opportunities in your preferred area
+            </p>
           </div>
-          <div className='flex justify-center items-center bg-yellow-300 text-black border border-gray-200 rounded-lg'>
-            <h2 className='text-xl font-bold '>Find the Best Part-time Jobs in Sydney!</h2>
+
+          {/* Sydney Areas Grid */}
+          <div className='max-w-6xl mx-auto'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4'>
+              {SYDNEY_AREAS.map((area) => (
+                <Link
+                  key={area.name}
+                  to={`/jobs/${area.name.toLowerCase().replace(/\s+/g, "-")}`}
+                  className='group bg-white p-5 rounded-lg border border-gray-200 hover:border-yellow-400 hover:shadow-md transition-all'>
+                  <div className='space-y-3'>
+                    <h3 className='font-semibold text-gray-900 group-hover:text-yellow-500'>
+                      {area.name}
+                    </h3>
+                    <div className='flex items-center gap-2'>
+                      <FaMapMarkerAlt className='text-yellow-500' />
+                      <span className='text-sm font-medium text-yellow-600'>{area.jobs}+ jobs</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className='mt-12 flex justify-center gap-8 text-center text-sm text-gray-600'>
+            <div className='flex items-center gap-2'>
+              <FaMapMarkerAlt className='text-yellow-500' />
+              <span>11 Areas in Sydney</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <FaClock className='text-yellow-500' />
+              <span>Updated hourly</span>
+            </div>
           </div>
         </div>
-
-        {/* 직업 카테고리 리스트 */}
-        <JobCategoryList />
-      </div>
-
-      {/* 오른쪽 섹션: 로그인 여부에 따라 UI 변경 */}
-      <div>
-        <AuthSection isAuthenticated={isAuthenticated} user={user} logout={logout} />
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

@@ -1,111 +1,89 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import StepProgress from "../../components/JobPosting/StepProgress";
 import BasicInfo from "../../components/JobPosting/BasicInfo";
-import WorkConditions from "../../components/JobPosting/WorkConditions";
-import WorkLocation from "../../components/JobPosting/WorkLocation";
 import JobDescription from "../../components/JobPosting/JobDescription";
 import ApplicationMethod from "../../components/JobPosting/ApplicationMethod";
 import PreviewModal from "./PreviewModal";
 import { useJobPostingStore } from "../../store/jobPostingStore";
-import { JobPostingData } from "../../types/jobPosting";
-
-const steps = [
-  "Basic Infomation",
-  "Work Conditions",
-  "Work Location",
-  "Job Description",
-  "Application",
-];
 
 export default function JobPosting() {
-  const [currentStep, setCurrentStep] = useState<number>(0);
-  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
-
-  // 모달에서 보여줄 "스냅샷" 데이터를 저장할 로컬 상태
-  const [previewData, setPreviewData] = useState<JobPostingData | null>(null);
-
-  // store에서 실시간 formData
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showPreview, setShowPreview] = useState(false);
   const { formData } = useJobPostingStore();
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    }
+  const steps = [
+    { number: 1, title: "Basic Info" },
+    { number: 2, title: "Description" },
+    { number: 3, title: "Application" },
+  ];
+
+  const handleStepClick = (stepNumber: number) => {
+    setCurrentStep(stepNumber);
   };
 
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
-    }
-  };
-
-  // 스텝 아이콘 클릭 시 해당 단계로 이동
-  const handleStepClick = (stepIndex: number) => {
-    setCurrentStep(stepIndex);
-  };
-
-  // 미리보기 모달 열기
   const openPreviewModal = () => {
-    // 모달을 열기 직전에, store의 formData를 로컬 상태에 복사
-    setPreviewData({ ...formData });
-    setIsPreviewOpen(true);
+    setShowPreview(true);
   };
 
-  // 미리보기 모달 닫기
   const closePreviewModal = () => {
-    setIsPreviewOpen(false);
+    setShowPreview(false);
   };
 
   return (
-    <div className='max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6'>
-      <h2 className='text-2xl font-bold mb-6 text-gray-900'>Job Posting</h2>
+    <div className='max-w-4xl mx-auto px-4 py-8'>
+      <h1 className='text-2xl font-bold mb-8'>Post a Job</h1>
 
-      {/* 진행 바 (Step Progress) */}
-      <StepProgress steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
-
-      <div className='mt-6'>
-        {currentStep === 0 && <BasicInfo />}
-        {currentStep === 1 && <WorkConditions />}
-        {currentStep === 2 && <WorkLocation />}
-        {currentStep === 3 && <JobDescription />}
-        {currentStep === 4 && <ApplicationMethod />}
+      {/* Progress Bar */}
+      <div className='mb-12'>
+        <StepProgress steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
       </div>
 
-      {/* 하단 네비게이션 버튼 */}
-      <div className='flex justify-between items-center mt-6'>
-        {currentStep > 0 && (
+      {/* Step Content */}
+      <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8'>
+        {currentStep === 1 && <BasicInfo />}
+        {currentStep === 2 && <JobDescription />}
+        {currentStep === 3 && <ApplicationMethod />}
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className='flex justify-between items-center'>
+        <button
+          onClick={() => setCurrentStep(currentStep - 1)}
+          disabled={currentStep === 1}
+          className={`px-6 py-2 rounded-lg ${
+            currentStep === 1
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}>
+          Back
+        </button>
+        <div className='flex gap-4'>
           <button
-            onClick={handleBack}
-            className='bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400'>
-            Back
+            onClick={openPreviewModal}
+            className='px-6 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200'>
+            Preview
           </button>
-        )}
-        {currentStep < steps.length - 1 ? (
-          <button
-            onClick={handleNext}
-            className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 ml-auto'>
-            Next Step
-          </button>
-        ) : (
-          <div className='flex items-center space-x-3'>
+          {currentStep < 3 ? (
+            <button
+              onClick={() => setCurrentStep(currentStep + 1)}
+              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'>
+              Next
+            </button>
+          ) : (
             <button
               onClick={openPreviewModal}
-              className='bg-yellow-300 text-black px-4 py-2 rounded-md hover:bg-yellow-400 ml-auto'>
-              Preview
+              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'>
+              Submit
             </button>
-            <button className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 ml-auto'>
-              Submit Job Posting
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* 미리보기 모달 */}
+      {/* Preview Modal */}
       <PreviewModal
-        isOpen={isPreviewOpen}
+        isOpen={showPreview}
         onClose={closePreviewModal}
-        // 전역 store의 formData 대신, 로컬에 복사된 previewData를 전달
-        formData={previewData}
+        formData={null} // 초기에는 null을 전달하여 샘플 데이터를 보여줍니다
       />
     </div>
   );

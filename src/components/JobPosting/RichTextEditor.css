@@ -1,4 +1,43 @@
 /* RichTextEditor.css */
+.custom-quill {
+  margin-bottom: 1rem;
+}
+
 .custom-quill .ql-editor {
-  min-height: 200px;
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 1rem;
+}
+
+.custom-quill .ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: #f8fafc;
+}
+
+.custom-quill .ql-container {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 640px) {
+  .custom-quill .ql-editor {
+    min-height: 200px;
+  }
+
+  .custom-quill .ql-toolbar button {
+    padding: 0.25rem;
+  }
+}
+
+/* 이미지 스타일 */
+.custom-quill .ql-editor img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
 }

@@ -1,58 +1,63 @@
 import React from "react";
 
-interface StepProgressProps {
-  steps: string[];
-  currentStep: number;
-  onStepClick?: (stepIndex: number) => void; // 클릭 핸들러 (선택적)
+interface Step {
+  number: number;
+  title: string;
 }
 
-const StepProgress: React.FC<StepProgressProps> = ({ steps, currentStep, onStepClick }) => {
+interface StepProgressProps {
+  steps: Step[];
+  currentStep: number;
+  onStepClick: (stepNumber: number) => void;
+}
+
+export default function StepProgress({ steps, currentStep, onStepClick }: StepProgressProps) {
   return (
-    <div className='flex items-center justify-between w-full relative'>
-      {steps.map((step, index) => {
-        // 이미 완료했거나 현재 진행중인 단계라면 클릭 가능
-        const isClickable = index <= currentStep;
+    <div className='relative'>
+      {/* Progress Line */}
+      <div className='absolute top-5 left-0 w-full h-0.5 bg-gray-200'>
+        <div
+          className='absolute h-full bg-blue-600 transition-all duration-300'
+          style={{
+            width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
+          }}
+        />
+      </div>
 
-        return (
-          <div
-            key={index}
-            className='relative flex flex-col items-center flex-1'
-            // isClickable이면 onClick 설정
-            onClick={() => {
-              if (isClickable && onStepClick) {
-                onStepClick(index);
-              }
-            }}
-            // 클릭 가능/불가능 시 마우스 포인터 스타일 달리하기
-            style={{ cursor: isClickable ? "pointer" : "default" }}>
-            {/* 진행 바 (왼쪽에서 오른쪽으로) */}
-            {index > 0 && (
-              <div
-                className={`absolute top-1/4 right-20 w-full h-[3px] -translate-y-1/2 ${
-                  index <= currentStep ? "bg-blue-600" : "bg-gray-300"
-                }`}></div>
-            )}
-
-            {/* 단계 아이콘 */}
+      {/* Steps */}
+      <div className='relative flex justify-between'>
+        {steps.map((step) => (
+          <button
+            key={step.number}
+            onClick={() => onStepClick(step.number)}
+            className='flex flex-col items-center'
+            disabled={step.number > currentStep}>
+            {/* Step Circle */}
             <div
-              className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold ${
-                index <= currentStep ? "bg-blue-600" : "bg-gray-300"
+              className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${
+                step.number === currentStep
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : step.number < currentStep
+                    ? "border-blue-600 bg-white text-blue-600"
+                    : "border-gray-300 bg-white text-gray-300"
               }`}>
-              {index + 1}
+              {step.number}
             </div>
 
-            {/* 단계 텍스트 */}
+            {/* Step Title */}
             <span
-              className={`mt-2 text-sm ${
-                index <= currentStep ? "text-blue-600 font-medium" : "text-gray-400"
+              className={`mt-2 text-sm font-medium ${
+                step.number === currentStep
+                  ? "text-blue-600"
+                  : step.number < currentStep
+                    ? "text-gray-600"
+                    : "text-gray-400"
               }`}>
-              {step}
+              {step.title}
             </span>
-          </div>
-        );
-      })}
+          </button>
+        ))}
+      </div>
     </div>
   );
-};
-
-export default StepProgress;
+}

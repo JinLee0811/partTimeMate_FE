@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import { GoogleMap, MarkerF } from "@react-google-maps/api";
+import React, { useState, useEffect } from "react";
+import { GoogleMap, MarkerF, useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { useJobPostingStore } from "../../store/jobPostingStore";
+import { useCompanyStore } from "../../store/useCompanyStore";
+import axios from "axios";
 
 import MultiCategoryInput from "./category/MultiCategoryInput";
 
 // 지도의 초기 위치 (예: 시드니)
 const defaultCenter = { lat: -33.8688, lng: 151.2093 };
+
+// Google Maps API 설정
+const libraries = ["places"];
 
 // 미리 정의한 카테고리 목록 (MVP용)
 const regionCategories = [
@@ -29,15 +34,38 @@ const schoolCategories = [
   "St. Andrew's Cathedral School",
 ];
 
+// Company 인터페이스 정의
+interface Company {
+  id: number;
+  name: string;
+  logoUrl?: string;
+  description?: string;
+}
+
 export default function MyMapPage() {
-  // LoadScript는 부모(예: MapLayout 또는 MainLayout)에서 호출된다고 가정
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: libraries as any,
+    language: "en",
+  });
+
+  if (!isLoaded) return <div>Loading...</div>;
   return <MapWithAutocomplete />;
 }
 
 function MapWithAutocomplete() {
   const { formData, setFormData } = useJobPostingStore();
+  const {
+    companies,
+    loading: companiesLoading,
+    error: companiesError,
+    fetchCompanies,
+  } = useCompanyStore();
+
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [addressDetail, setAddressDetail] = useState("");
+  const [showCompanySelector, setShowCompanySelector] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // 임시 상태 (다중 선택 입력 전용)
   const [tempRegion, setTempRegion] = useState("");
@@ -52,9 +80,34 @@ function MapWithAutocomplete() {
     suggestions: { status, data },
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: { componentRestrictions: { country: "AU" } },
+    requestOptions: {
+      componentRestrictions: { country: "AU" },
+      language: "en",
+    },
     debounce: 300,
   });
+
+  // 회사 목록 가져오기
+  useEffect(() => {
+    if (showCompanySelector) {
+      fetchCompanies();
+    }
+  }, [showCompanySelector, fetchCompanies]);
+
+  // 회사 검색 필터링
+  const filteredCompanies = companies.filter((company) =>
+    company.name.toLowerCase().includes((searchTerm || "").toLowerCase())
+  );
+
+  // 회사 선택 핸들러
+  const handleCompanySelect = (company: any) => {
+    setFormData({
+      companyName: company.name,
+      companyLogo: company.logoUrl || null,
+      companyId: company.id.toString(),
+    });
+    setShowCompanySelector(false);
+  };
 
   // 주소 선택 시 (Google Places)
   const handleSelect = async (address: string) => {
@@ -183,34 +236,136 @@ function MapWithAutocomplete() {
       <div className='space-y-4'>
         <div className='bg-gray-100 p-4 rounded-lg'>
           <h2 className='text-xl font-bold text-blue-600'>Company Information</h2>
-          <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
+          <p className='text-gray-600 text-sm mt-1'>Who's your ideal Part-time Mate?</p>
         </div>
 
-        {/* 회사 이름 */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Company Name</label>
-          <input
-            type='text'
-            value={formData.companyName || ""}
-            onChange={handleCompanyNameChange}
-            placeholder='Enter company name'
-            className='w-full p-2 border border-gray-300 rounded-md'
-          />
+        {/* 기존 회사 선택 버튼 */}
+        <div className='mb-4'>
+          <button
+            onClick={() => setShowCompanySelector(!showCompanySelector)}
+            className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>
+            {showCompanySelector ? "Register New Company" : "Select Existing Company"}
+          </button>
         </div>
 
-        {/* 회사 로고 */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>Company Logo</label>
-          <input
-            type='file'
-            accept='image/*'
-            onChange={handleCompanyLogoChange}
-            className='w-full'
-          />
-          {formData.companyLogo && typeof formData.companyLogo !== "string" && (
-            <p className='text-sm text-gray-600 mt-1'>Selected file: {formData.companyLogo.name}</p>
-          )}
-        </div>
+        {/* 회사 선택 모달 */}
+        {showCompanySelector && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+            <div className='bg-white p-6 rounded-lg w-full max-w-2xl'>
+              <h3 className='text-lg font-semibold mb-4'>Select Company</h3>
+              <input
+                type='text'
+                placeholder='Search by company name...'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className='w-full p-2 border rounded-md mb-4'
+              />
+              <div className='max-h-96 overflow-y-auto'>
+                {companiesLoading ? (
+                  <div className='text-center py-4'>Loading...</div>
+                ) : companiesError ? (
+                  <div className='text-center py-4 text-red-600'>{companiesError}</div>
+                ) : filteredCompanies.length > 0 ? (
+                  filteredCompanies.map((company) => (
+                    <div
+                      key={company.id}
+                      onClick={() => handleCompanySelect(company)}
+                      className='flex items-center p-3 border-b hover:bg-gray-50 cursor-pointer'>
+                      {company.logoUrl && (
+                        <img
+                          src={company.logoUrl}
+                          alt={company.name}
+                          className='w-12 h-12 object-contain mr-4'
+                        />
+                      )}
+                      <div>
+                        <h4 className='font-medium'>{company.name}</h4>
+                        <p className='text-sm text-gray-600'>CEO: {company.ceoName}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className='text-center py-4'>No results found</div>
+                )}
+              </div>
+              <div className='mt-4 flex justify-end'>
+                <button
+                  onClick={() => setShowCompanySelector(false)}
+                  className='px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300'>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 회사 정보 입력 폼 (회사를 선택하지 않았을 때만 표시) */}
+        {!formData.companyId && !showCompanySelector && (
+          <>
+            {/* 회사 이름 */}
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>Company Name</label>
+              <input
+                type='text'
+                value={formData.companyName || ""}
+                onChange={handleCompanyNameChange}
+                placeholder='Enter company name'
+                className='w-full p-2 border border-gray-300 rounded-md'
+              />
+            </div>
+
+            {/* 회사 로고 */}
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>Company Logo</label>
+              <input
+                type='file'
+                accept='image/*'
+                onChange={handleCompanyLogoChange}
+                className='w-full'
+              />
+              {formData.companyLogo && typeof formData.companyLogo !== "string" && (
+                <p className='text-sm text-gray-600 mt-1'>
+                  Selected file: {(formData.companyLogo as File).name}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* 선택된 회사 정보 미리보기 */}
+        {formData.companyId && (
+          <div className='mt-4 p-4 border rounded-lg bg-gray-50'>
+            <h3 className='text-lg font-semibold mb-2'>Selected Company Information</h3>
+            <div className='flex items-center gap-4'>
+              {formData.companyLogo && (
+                <img
+                  src={
+                    typeof formData.companyLogo === "string"
+                      ? formData.companyLogo
+                      : URL.createObjectURL(formData.companyLogo as File)
+                  }
+                  alt={formData.companyName}
+                  className='w-16 h-16 object-contain'
+                />
+              )}
+              <div>
+                <p className='font-medium'>{formData.companyName}</p>
+                <p className='text-sm text-gray-600'>Company ID: {formData.companyId}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setFormData({
+                    companyName: "",
+                    companyLogo: null,
+                    companyId: undefined,
+                  });
+                }}
+                className='ml-auto text-red-600 hover:text-red-800'>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 주소 및 지도 섹션 */}
         <div className='space-y-4'>

@@ -1,126 +1,188 @@
-import React from "react";
+import React, { useState } from "react";
 import { useJobPostingStore } from "../../store/jobPostingStore";
+import { JobCategory, JobLocation } from "../../types/jobPosting";
+
+interface WorkingHours {
+  day: string;
+  isWorking: boolean;
+  startTime: string;
+  endTime: string;
+}
 
 export default function BasicInfo() {
-  const { formData, setFormData } = useJobPostingStore();
+  const { formData, updateFormData } = useJobPostingStore();
+  const [isHourlyRateNegotiable, setIsHourlyRateNegotiable] = useState(false);
+  const [workingHours, setWorkingHours] = useState<WorkingHours[]>([
+    { day: "Monday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Tuesday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Wednesday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Thursday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Friday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Saturday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+    { day: "Sunday", isWorking: false, startTime: "09:00", endTime: "17:00" },
+  ]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ [name]: value });
+    updateFormData({ [name]: value });
   };
 
-  const employmentTypes = [
-    "Part-time",
-    "Full-time",
-    "Contract",
-    "Freelance",
-    "Temporary",
-    "Internship",
-  ];
+  const handleWorkingHoursChange = (
+    index: number,
+    field: keyof WorkingHours,
+    value: string | boolean
+  ) => {
+    const newWorkingHours = [...workingHours];
+    newWorkingHours[index] = { ...newWorkingHours[index], [field]: value };
+    setWorkingHours(newWorkingHours);
+    updateFormData({ workingHours: newWorkingHours });
+  };
+
+  const handleHourlyRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isHourlyRateNegotiable) {
+      updateFormData({ hourlyRate: "Negotiable after interview" });
+    } else {
+      updateFormData({ hourlyRate: e.target.value });
+    }
+  };
 
   return (
     <div className='space-y-6'>
-      {/* ✅ 상단 섹션 제목 및 설명 */}
-      <div className='bg-gray-100 p-4 rounded-lg'>
-        <h2 className='text-xl font-bold text-blue-600'>Basic Information</h2>
-        <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
-      </div>
-
-      {/* 공고 제목 */}
+      {/* Job Title */}
       <div>
-        <label className='block text-lg font-bold text-gray-800'>
-          Posting Title <span className='text-red-500'>*</span>
+        <label htmlFor='title' className='block text-sm font-medium text-gray-700'>
+          Job Title <span className='text-red-500'>*</span>
         </label>
         <input
           type='text'
+          id='title'
           name='title'
-          value={formData.title}
-          onChange={handleChange}
+          value={formData?.title || ""}
+          onChange={handleInputChange}
+          className='mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none'
           placeholder='Enter job title'
-          className='w-full mt-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+          required
         />
       </div>
 
-      {/* 업직종 선택 */}
+      {/* Job Category */}
       <div>
-        <label className='block text-lg font-bold text-gray-800'>
-          Job Category <span className='text-red-500'>*</span>
+        <label htmlFor='category' className='block text-sm font-medium text-gray-700'>
+          Category <span className='text-red-500'>*</span>
         </label>
-        <div className='flex gap-2 mt-1'>
-          <input
-            type='text'
-            name='jobCategory'
-            value={formData.jobCategory}
-            onChange={handleChange}
-            placeholder='Search or select a category'
-            className='flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
-          />
-          <button className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100'>
-            Select
-          </button>
-          <button className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100'>
-            Reset
-          </button>
-        </div>
+        <select
+          id='category'
+          name='category'
+          value={formData?.category || ""}
+          onChange={handleInputChange}
+          className='mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none'
+          required>
+          <option value=''>Select a category</option>
+          {Object.values(JobCategory).map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* 고용 형태 */}
+      {/* Location */}
       <div>
-        <label className='block text-lg font-bold text-gray-800'>
-          Employment Type <span className='text-red-500'>*</span>
+        <label htmlFor='location' className='block text-sm font-medium text-gray-700'>
+          Location <span className='text-red-500'>*</span>
         </label>
-        <div className='flex flex-wrap gap-2 mt-1'>
-          {employmentTypes.map((type) => (
-            <label
-              key={type}
-              className={`px-4 py-2 border rounded-md cursor-pointer ${
-                formData.employmentType === type
-                  ? "bg-blue-600 text-white"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-100"
-              }`}>
-              <input
-                type='checkbox'
-                name='employmentType'
-                value={type}
-                checked={formData.employmentType === type}
-                onChange={() => setFormData({ employmentType: type })}
-                className='hidden'
-              />
-              {type}
-            </label>
+        <select
+          id='location'
+          name='location'
+          value={formData?.location || ""}
+          onChange={handleInputChange}
+          className='mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none'
+          required>
+          <option value=''>Select a location</option>
+          {Object.values(JobLocation).map((location) => (
+            <option key={location} value={location}>
+              {location}
+            </option>
           ))}
-        </div>
+        </select>
       </div>
 
-      {/* 모집 인원 */}
+      {/* Hourly Rate */}
       <div>
-        <label className='block text-lg font-bold text-gray-800'>
-          Number of Hires <span className='text-red-500'>*</span>
+        <label className='block text-sm font-medium text-gray-700'>
+          Hourly Rate <span className='text-red-500'>*</span>
         </label>
-        <div className='flex items-center gap-4 mt-1'>
-          {["Less than 10", "1 person", "Less than 100", "Custom"].map((option, index) => (
-            <label key={index} className='flex items-center gap-2 cursor-pointer'>
-              <input
-                type='radio'
-                name='hiringCount'
-                value={option}
-                checked={formData.hiringCount === option}
-                onChange={handleChange}
-                className='w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300'
-              />
-              {option}
-            </label>
-          ))}
-          {formData.hiringCount === "Custom" && (
+        <div className='mt-1 space-y-2'>
+          <div className='flex items-center'>
             <input
-              type='number'
-              name='customHiringCount'
-              placeholder='Enter number'
-              className='w-36 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+              type='checkbox'
+              id='negotiable'
+              checked={isHourlyRateNegotiable}
+              onChange={(e) => setIsHourlyRateNegotiable(e.target.checked)}
+              className='mr-2'
             />
+            <label htmlFor='negotiable' className='text-sm text-gray-600'>
+              Negotiable after interview
+            </label>
+          </div>
+          {!isHourlyRateNegotiable && (
+            <div className='flex items-center'>
+              <span className='text-gray-500 mr-2'>$</span>
+              <input
+                type='number'
+                name='hourlyRate'
+                value={formData?.hourlyRate || ""}
+                onChange={handleHourlyRateChange}
+                className='block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none'
+                placeholder='Enter hourly rate'
+                min='0'
+                step='0.01'
+              />
+              <span className='text-gray-500 ml-2'>per hour</span>
+            </div>
           )}
+        </div>
+      </div>
+
+      {/* Working Hours */}
+      <div>
+        <label className='block text-sm font-medium text-gray-700 mb-2'>
+          Working Hours <span className='text-red-500'>*</span>
+        </label>
+        <div className='space-y-3 border rounded-lg p-4'>
+          {workingHours.map((day, index) => (
+            <div key={day.day} className='flex items-center space-x-4'>
+              <div className='w-28'>
+                <input
+                  type='checkbox'
+                  id={`working-${day.day}`}
+                  checked={day.isWorking}
+                  onChange={(e) => handleWorkingHoursChange(index, "isWorking", e.target.checked)}
+                  className='mr-2'
+                />
+                <label htmlFor={`working-${day.day}`} className='text-sm'>
+                  {day.day}
+                </label>
+              </div>
+              {day.isWorking && (
+                <div className='flex items-center space-x-2'>
+                  <input
+                    type='time'
+                    value={day.startTime}
+                    onChange={(e) => handleWorkingHoursChange(index, "startTime", e.target.value)}
+                    className='rounded-md border border-gray-300 px-2 py-1 text-sm'
+                  />
+                  <span>to</span>
+                  <input
+                    type='time'
+                    value={day.endTime}
+                    onChange={(e) => handleWorkingHoursChange(index, "endTime", e.target.value)}
+                    className='rounded-md border border-gray-300 px-2 py-1 text-sm'
+                  />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>

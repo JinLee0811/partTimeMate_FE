@@ -29,6 +29,8 @@ import CompanyManagement from "./pages/MyBusiness/CompanyManagement";
 import CompanyList from "./pages/MyBusiness/CompanyList";
 import BusinessHome from "./pages/MyBusiness/BusinessHome";
 import MyPageHome from "./pages/MyPages/MyPageHome";
+import TalentPool from "./pages/talent/TalentPool";
+import TalentDetail from "./pages/talent/TalentDetail";
 
 const queryClient = new QueryClient();
 
@@ -80,7 +82,7 @@ export default function App() {
             <Route
               path='/jobposting'
               element={
-                <ProtectedRoute requiredRole='BUSINESS'>
+                <ProtectedRoute requiredRole={["BUSINESS", "ADMIN"]}>
                   <JobPosting />
                 </ProtectedRoute>
               }
@@ -103,6 +105,10 @@ export default function App() {
               <Route path='categories' element={<CategoryManagement />} />
               <Route path='categories/:id' element={<CategoryDetail />} />
             </Route>
+
+            {/* Talent Pool Routes */}
+            <Route path='/talent' element={<TalentPool />} />
+            <Route path='/talent/:id' element={<TalentDetail />} />
           </Route>
 
           {/* 로그인 및 회원가입 */}

@@ -1,31 +1,38 @@
 // types/jobPosting.ts
 
+export enum JobCategory {
+  CAFE = "Cafe",
+  STORE = "Retail Store",
+  DELIVERY = "Delivery",
+  RESTAURANT = "Restaurant",
+  OFFICE = "Office",
+  WAREHOUSE = "Warehouse",
+}
+
+export enum JobLocation {
+  SYDNEY_CBD = "Sydney CBD",
+  NORTH_SYDNEY = "North Sydney",
+  INNER_WEST = "Inner West",
+  EASTERN_SUBURBS = "Eastern Suburbs",
+  WESTERN_SYDNEY = "Western Sydney",
+  NORTHERN_BEACHES = "Northern Beaches",
+}
+
+export interface WorkingHours {
+  day: string;
+  isWorking: boolean;
+  startTime: string;
+  endTime: string;
+}
+
 export interface JobPostingData {
   title: string;
-  companyName: string;
-  workPeriod: string;
-  companyLogo: File | string | null;
-  jobCategory: string;
-  salary: string;
-  salaryType: string;
-  salaryNegotiable: boolean;
-  workHours: number | "To be discussed" | null;
-  workTime: { start: null; end: null } | "To be discussed";
-  workDays: string[];
-  employmentType: string;
-  benefits: string[];
-  customBenefit: string;
-  workAddress: string;
-  addressDetail: string;
-  locationCoords: string;
-  location: string;
+  category: JobCategory;
+  location: JobLocation;
+  hourlyRate: string | number;
+  isHourlyRateNegotiable?: boolean;
+  workingHours: WorkingHours[];
   description: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
-  applicationMethod: string;
-  hiringCount: string;
-  exposureRegions: string[];
-  nearbySubways: string[];
-  nearbySchools: string[];
+  contact: string;
+  deadline?: string;
 }

@@ -5,27 +5,27 @@ interface DropdownMenuProps {
 const menuData: Record<string, { title: string; items: string[] }> = {
   jobs: {
     title: "Job Categories",
-    items: ["Full-time", "Part-time", "Casual"],
+    items: ["Part-time", "Casual", "Internship"],
   },
   brands: {
     title: "Popular Brands",
     items: ["McDonald's", "Starbucks", "Coles"],
   },
-  candidates: {
-    title: "Candidate Services",
-    items: ["Resume Assistance", "Job Match", "Career Advice"],
+  talent: {
+    title: "Talent Pool",
+    items: ["Browse Talents", "Featured Profiles"],
   },
   mypage: {
     title: "My Page",
-    items: ["Resume Assistance", "Job Match", "Career Advice"],
+    items: ["My Profile", "My Applications", "My Resume"],
   },
   mybusiness: {
     title: "My Business",
-    items: ["Resume Assistance", "Job Match", "Career Advice"],
+    items: ["Posted Jobs", "Applications", "Company Profile"],
   },
   admin: {
     title: "Admin Panel",
-    items: ["Dashboard", "User Management", "Job Management", "Category Management"],
+    items: ["User Management", "Job Management"],
   },
 };
 

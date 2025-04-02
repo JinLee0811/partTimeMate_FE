@@ -177,7 +177,7 @@ export default function WorkConditions() {
       {/* ✅ 상단 섹션 제목 및 설명 */}
       <div className='bg-gray-100 p-4 rounded-lg'>
         <h2 className='text-xl font-bold text-blue-600'>Work Conditions</h2>
-        <p className='text-gray-600 text-sm mt-1'>Who’s your ideal Part-time Mate?</p>
+        <p className='text-gray-600 text-sm mt-1'>Who's your ideal Part-time Mate?</p>
       </div>
 
       {/* Work Period */}
@@ -193,6 +193,8 @@ export default function WorkConditions() {
                 formData.workPeriod === period
                   ? "bg-blue-600 text-white"
                   : "border-gray-300 text-gray-700"
+              } ${
+                formData.workPeriod === "To be discussed" ? "opacity-50 cursor-not-allowed" : ""
               }`}>
               {period}
             </button>
@@ -229,6 +231,8 @@ export default function WorkConditions() {
                 formData.workDays.includes(day)
                   ? "bg-blue-600 text-white"
                   : "border-gray-300 text-gray-700"
+              } ${
+                formData.workDays.includes("To be discussed") ? "opacity-50 cursor-not-allowed" : ""
               }`}>
               {day}
             </button>
@@ -276,7 +280,11 @@ export default function WorkConditions() {
               timeIntervals={30}
               dateFormat='h:mm aa'
               placeholderText='Start Time'
-              className='p-2 border border-gray-300 rounded-md'
+              className={`p-2 border border-gray-300 rounded-md ${
+                typeof formData.workTime === "string" && formData.workTime === "To be discussed"
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             />
 
             <DatePicker
@@ -295,7 +303,11 @@ export default function WorkConditions() {
               timeIntervals={30}
               dateFormat='h:mm aa'
               placeholderText='End Time'
-              className='p-2 border border-gray-300 rounded-md'
+              className={`p-2 border border-gray-300 rounded-md ${
+                typeof formData.workTime === "string" && formData.workTime === "To be discussed"
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             />
           </div>
         )}
@@ -339,7 +351,9 @@ export default function WorkConditions() {
             onChange={handleSalaryChange}
             placeholder='Amount'
             disabled={formData.salary === "To be discussed"}
-            className='p-2 border border-gray-300 rounded-md'
+            className={`p-2 border border-gray-300 rounded-md ${
+              formData.salary === "To be discussed" ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           />
         </div>
 
@@ -372,6 +386,8 @@ export default function WorkConditions() {
                 formData.benefits.includes(benefit)
                   ? "bg-blue-600 text-white"
                   : "bg-white text-gray-600 border-gray-300"
+              } ${
+                formData.benefits.includes("To be discussed") ? "opacity-50 cursor-not-allowed" : ""
               }`}>
               {benefit}
             </button>
@@ -386,7 +402,9 @@ export default function WorkConditions() {
             value={formData.customBenefit}
             onChange={(e) => setFormData({ customBenefit: e.target.value })}
             disabled={formData.benefits.includes("To be discussed")}
-            className='p-2 border border-gray-300 rounded-md w-full'
+            className={`p-2 border border-gray-300 rounded-md w-full ${
+              formData.benefits.includes("To be discussed") ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           />
           <button
             onClick={handleAddBenefit}
