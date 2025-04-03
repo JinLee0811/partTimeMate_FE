@@ -1,49 +1,71 @@
 // axiosInstance.ts
 import axios from "axios";
-import { useAuthStore } from "../store/useAuthStore";
-
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+import { refreshAccessTokenApi } from "../api/authApi";
 
 const api = axios.create({
-  baseURL: SERVER_URL,
-  withCredentials: true, // HTTP-Only 쿠키 사용
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000",
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true, // CORS 요청에 쿠키 포함
 });
 
-// 요청 인터셉터: access token 자동 추가 (Zustand에서 가져옴)
+// 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
-    const { accessToken } = useAuthStore.getState();
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token = localStorage.getItem("accessToken"); // accessToken으로 키 이름 변경
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// 응답 인터셉터: 401 에러(액세스 토큰 만료) 발생 시 자동으로 리프레시 토큰으로 갱신
+// 응답 인터셉터
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    const { refreshAccessToken, logout, setAccessToken } = useAuthStore.getState();
 
-    // 401 에러 && 재시도한 적이 없는 요청이면
-    if (error.response?.status === 403 && !originalRequest._retry) {
+    // 401 에러이고 재시도하지 않은 요청인 경우
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
-        // Zustand에 등록된 refreshAccessToken 함수를 통해 새 access token 발급받기
-        const newAccessToken = await refreshAccessToken();
-        setAccessToken(newAccessToken);
 
-        // 새 access token을 헤더에 업데이트하고 원래 요청 재시도
+      try {
+        // 기존 authApi의 refreshAccessTokenApi 사용
+        const newAccessToken = await refreshAccessTokenApi();
+
+        // 새 토큰 저장
+        localStorage.setItem("accessToken", newAccessToken);
+
+        // 원래 요청의 헤더 업데이트
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api.request(originalRequest);
+
+        // 원래 요청 재시도
+        return api(originalRequest);
       } catch (refreshError) {
-        console.error("❌ Token refresh failed:", refreshError);
-        logout(); // 토큰 갱신 실패 시 로그아웃 처리
+        // 리프레시 토큰도 만료된 경우
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login"; // 로그인 페이지로 리다이렉트
         return Promise.reject(refreshError);
       }
+    }
+
+    // 다른 에러 처리
+    if (error.response) {
+      console.error("API Error Response:", {
+        status: error.response.status,
+        data: error.response.data,
+      });
+    } else if (error.request) {
+      console.error("API Request Error:", error.request);
+    } else {
+      console.error("API Error:", error.message);
     }
     return Promise.reject(error);
   }

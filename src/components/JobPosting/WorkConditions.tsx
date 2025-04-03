@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useJobPostingStore } from "../../store/jobPostingStore";
+import useJobPostingStore from "../../store/jobPostingStore";
+import { JobPostingData } from "../../types/jobPosting";
 
 export default function WorkConditions() {
-  // 글로벌 스토어에서 formData와 setFormData를 직접 구독
-  const { formData, setFormData } = useJobPostingStore();
-
-  // Benefits 옵션은 로컬 상태에서 관리
+  const { formData, updateFormData } = useJobPostingStore();
   const [benefitsList, setBenefitsList] = useState<string[]>([
     "Flexible Hours",
     "Paid Leave",
@@ -30,147 +28,145 @@ export default function WorkConditions() {
 
   const salaryTypes = ["Hourly", "Daily", "Weekly", "Monthly"];
 
-  // ----------------------------
-  //   "To be discussed" 체크박스 핸들러
-  // ----------------------------
-
-  // 1) Work Period
   const handleWorkPeriodToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      // 체크됨 -> "To be discussed"로 저장
-      setFormData({ workPeriod: "To be discussed" });
-    } else {
-      // 체크 해제 -> 초기화(또는 이전 값 복원 로직)
-      setFormData({ workPeriod: "" });
-    }
+    if (!formData) return;
+    updateFormData({
+      ...formData,
+      workPeriod: e.target.checked ? "To be discussed" : "",
+    });
   };
 
-  // 2) Work Days
   const handleWorkDaysToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setFormData({ workDays: ["To be discussed"] });
-    } else {
-      setFormData({ workDays: [] });
-    }
+    if (!formData) return;
+    updateFormData({
+      ...formData,
+      workDays: e.target.checked ? ["To be discussed"] : [],
+    });
   };
 
-  // 3) Work Time
   const handleWorkHoursToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      // 체크됨 -> 문자열 "To be discussed"로 저장
-      setFormData({ workTime: "To be discussed" });
-    } else {
-      // 체크 해제 -> 다시 { start: null, end: null } 로
-      setFormData({ workTime: { start: null, end: null } });
-    }
+    if (!formData) return;
+    updateFormData({
+      ...formData,
+      workTime: e.target.checked ? "To be discussed" : "",
+    });
   };
 
-  // 4) Salary
   const handleSalaryToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setFormData({ salary: "To be discussed" });
-    } else {
-      setFormData({ salary: "" });
-    }
+    if (!formData) return;
+    updateFormData({
+      ...formData,
+      hourly_rate: e.target.checked ? 0 : formData.hourly_rate,
+      isHourlyRateNegotiable: e.target.checked,
+    });
   };
 
-  // 5) Benefits
   const handleBenefitsToBeDiscussedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setFormData({ benefits: ["To be discussed"] });
-    } else {
-      setFormData({ benefits: [] });
-    }
+    if (!formData) return;
+    updateFormData({
+      ...formData,
+      benefits: e.target.checked ? ["To be discussed"] : [],
+    });
   };
 
-  // ----------------------------
-  //   일반 핸들러
-  // ----------------------------
-
-  // Work Days나 Benefits 등 배열에 대한 일반 토글
   const handleCheckboxToggle = (key: "workDays" | "benefits", value: string) => {
-    // 만약 현재가 "To be discussed"라면 다른 항목은 선택 불가
-    // (UI에서 disabled 처리도 필요할 수 있음)
+    if (!formData) return;
     const current = formData[key];
     if (Array.isArray(current)) {
-      // 이미 "To be discussed"가 들어있으면 무시
       if (current.includes("To be discussed")) return;
-
       const isSelected = current.includes(value);
       const updated = isSelected ? current.filter((item) => item !== value) : [...current, value];
-      setFormData({ [key]: updated });
+      updateFormData({
+        ...formData,
+        [key]: updated,
+      });
     }
   };
 
-  // Work Period 일반 선택
   const handleWorkPeriodSelect = (period: string) => {
-    // 이미 "To be discussed" 상태라면 무시
+    if (!formData) return;
     if (formData.workPeriod === "To be discussed") return;
-    setFormData({ workPeriod: period });
+    updateFormData({
+      ...formData,
+      workPeriod: period,
+    });
   };
 
-  // SalaryType 변경
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    if (!formData) return;
     const { name, value } = e.target;
-    setFormData({ [name]: value });
+    updateFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  // Salary 숫자만 입력
   const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!formData) return;
     const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
-    setFormData({ salary: onlyNumbers });
+    updateFormData({
+      ...formData,
+      hourly_rate: Number(onlyNumbers),
+    });
   };
 
-  // Work Hours DatePicker 변경
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   const handleTimeChange = (date: Date | null, type: "start" | "end") => {
-    // 이미 "To be discussed" 상태라면 무시
+    if (!formData) return;
     if (formData.workTime === "To be discussed") return;
 
-    // 기존 workTime 객체를 업데이트
+    const selectedDays = formData.workDays || [];
+    if (selectedDays.length === 0 || selectedDays.includes("To be discussed")) {
+      return;
+    }
+
+    const currentWorkTime = typeof formData.workTime === "object" ? formData.workTime : {};
     const newWorkTime = {
-      ...formData.workTime,
-      [type]: date,
+      ...currentWorkTime,
+      [type]: date ? formatTime(date) : "",
     };
-    setFormData({ workTime: newWorkTime });
 
-    // start와 end 둘 중 하나라도 없으면 workHours에 "To be discussed" 저장
-    if (!newWorkTime.start || !newWorkTime.end) {
-      setFormData({ workHours: "To be discussed" });
-      return;
+    if (newWorkTime.start && newWorkTime.end) {
+      const workTimeStr = selectedDays
+        .map((day) => `${day} ${newWorkTime.start} - ${newWorkTime.end}`)
+        .join("\n");
+
+      updateFormData({
+        ...formData,
+        workTime: workTimeStr,
+      });
+    } else {
+      updateFormData({
+        ...formData,
+        workTime: newWorkTime,
+      });
     }
-
-    const start = new Date(newWorkTime.start);
-    const end = new Date(newWorkTime.end);
-    const diffMs = end.getTime() - start.getTime();
-
-    // 음수 차이나 유효하지 않은 경우에도 "To be discussed" 저장
-    if (diffMs < 0) {
-      setFormData({ workHours: "To be discussed" });
-      return;
-    }
-
-    const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const totalHours = hours + minutes / 60;
-
-    setFormData({ workHours: totalHours });
   };
 
-  // Benefits 사용자 정의 추가
   const handleAddBenefit = () => {
-    const trimmedBenefit = formData.customBenefit.trim();
+    if (!formData) return;
+    const trimmedBenefit = formData.customBenefit?.trim() || "";
     if (!trimmedBenefit) return;
-    // 이미 "To be discussed"인 상태라면 무시
     if (formData.benefits.includes("To be discussed")) return;
 
     if (!benefitsList.includes(trimmedBenefit)) {
       setBenefitsList([...benefitsList, trimmedBenefit]);
     }
-    setFormData({
+    updateFormData({
+      ...formData,
       benefits: [...formData.benefits, trimmedBenefit],
       customBenefit: "",
     });
   };
+
+  if (!formData) return null;
 
   return (
     <div className='space-y-4'>
@@ -400,7 +396,7 @@ export default function WorkConditions() {
             type='text'
             placeholder='Add custom benefit'
             value={formData.customBenefit}
-            onChange={(e) => setFormData({ customBenefit: e.target.value })}
+            onChange={(e) => updateFormData({ customBenefit: e.target.value })}
             disabled={formData.benefits.includes("To be discussed")}
             className={`p-2 border border-gray-300 rounded-md w-full ${
               formData.benefits.includes("To be discussed") ? "opacity-50 cursor-not-allowed" : ""

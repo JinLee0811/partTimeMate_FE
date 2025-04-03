@@ -1,7 +1,7 @@
 // App.tsx
 import { Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LoadScript } from "@react-google-maps/api"; // ✅
+import { LoadScript, Libraries } from "@react-google-maps/api";
 import { useUser } from "./hooks/useUser";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
@@ -18,7 +18,7 @@ import EditUser from "./pages/MyBusiness/EditUser";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import UserManagement from "./pages/admin/users/UserManagement";
-import JobManagement from "./pages/admin/jobs/JobManagement";
+// import JobManagement from "./pages/admin/jobs/JobManagement";
 import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
 import JobPosting from "./pages/jobs/JobPosting";
@@ -34,24 +34,26 @@ import TalentDetail from "./pages/talent/TalentDetail";
 
 const queryClient = new QueryClient();
 
-// ✅ 라이브러리 배열을 컴포넌트 밖에서 상수로 선언
-const libraries: ("places" | "drawing" | "geometry" | "visualization")[] = ["places"];
+const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+
+const libraries: Libraries = ["places"];
 
 export default function App() {
   useUser(); // ✅ 유저 상태 관리 (Zustand + React Query 통합)
 
   return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""}
-      libraries={libraries}
-      language='en'>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <LoadScript
+        googleMapsApiKey={googleMapsApiKey}
+        libraries={libraries}
+        language='en'
+        loadingElement={<div>Loading...</div>}>
         <Routes>
           {/* 메인 레이아웃 적용 */}
           <Route element={<MainLayout />}>
             <Route path='/' element={<Home />} />
             <Route path='/jobs' element={<JobBoard />} />
-            <Route path='/brands' element={<Brands />} />
+            {/* <Route path='/brands' element={<Brands />} /> */}
 
             {/* 보호된 페이지 (로그인 필수, Admin 가능) */}
             <Route
@@ -101,7 +103,7 @@ export default function App() {
               }>
               <Route index element={<AdminHome />} />
               <Route path='users' element={<UserManagement />} />
-              <Route path='jobs' element={<JobManagement />} />
+              {/* <Route path='jobs' element={<JobManagement />} /> */}
               <Route path='categories' element={<CategoryManagement />} />
               <Route path='categories/:id' element={<CategoryDetail />} />
             </Route>
@@ -122,7 +124,7 @@ export default function App() {
           {/* 404 에러 처리 */}
           <Route path='*' element={<ErrorPage />} />
         </Routes>
-      </QueryClientProvider>
-    </LoadScript>
+      </LoadScript>
+    </QueryClientProvider>
   );
 }

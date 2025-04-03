@@ -5,7 +5,7 @@ import { loginApi, logoutApi, refreshAccessTokenApi } from "../api/authApi";
 import { deleteUserApi } from "../api/userApi";
 import { fetchUserApi } from "../api/userApi";
 import { User } from "../types/user";
-import { useJobPostingStore } from "../store/jobPostingStore";
+import useJobPostingStore from "../store/jobPostingStore";
 
 interface AuthState {
   user: User | null;

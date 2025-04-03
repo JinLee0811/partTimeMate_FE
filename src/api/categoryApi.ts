@@ -3,17 +3,22 @@ import { Category, Subcategory } from "../types/category";
 
 /** 전체 잡 카테고리 목록 가져오기 */
 export const fetchCategoriesApi = async (): Promise<Category[]> => {
-  const response = await api.get<{
-    message: string;
-    statusCode: number;
-    data: { categories: Category[] };
-  }>("/job-categories");
+  try {
+    const response = await api.get<{
+      message: string;
+      statusCode: number;
+      data: { categories: Category[] };
+    }>("/job-categories");
 
-  if (!response.data || !response.data.data || !response.data.data.categories) {
-    throw new Error("Failed to fetch categories.");
+    if (!response.data || !response.data.data || !response.data.data.categories) {
+      throw new Error("Failed to fetch categories.");
+    }
+
+    return response.data.data.categories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return []; // 에러 발생 시 빈 배열 반환
   }
-
-  return response.data.data.categories;
 };
 
 /** 특정 카테고리의 하위 업직종 가져오기 */
@@ -22,13 +27,15 @@ export const fetchSubcategoriesApi = async (categoryId: number): Promise<Subcate
     const response = await api.get<{ data: { subCategories: Subcategory[] } }>(
       `/job-categories/${categoryId}/subcategories`
     );
+
     if (!response.data || !response.data.data) {
-      return []; // 🔹 데이터가 없을 경우 빈 배열 반환
+      return []; // 데이터가 없을 경우 빈 배열 반환
     }
+
     return response.data.data.subCategories;
   } catch (error) {
-    console.error(`Error fetching subcategories for category ${categoryId}:`, error);
-    return []; // 🔹 404 등의 에러가 발생하면 빈 배열 반환
+    console.warn(`Error fetching subcategories for category ${categoryId}:`, error);
+    return []; // 404 등의 에러가 발생하면 빈 배열 반환
   }
 };
 

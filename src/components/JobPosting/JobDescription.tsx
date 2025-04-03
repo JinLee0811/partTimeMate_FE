@@ -1,4 +1,4 @@
-import { useJobPostingStore } from "../../store/jobPostingStore";
+import useJobPostingStore from "../../store/jobPostingStore";
 import RichTextEditor from "./RichTextEditor";
 
 export default function JobDescription() {

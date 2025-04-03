@@ -1,14 +1,12 @@
-import { faker } from "@faker-js/faker";
-
 export interface JobPosting {
   id: string;
   title: string;
   company: string;
   location: string;
   address: string;
-  jobType: string;
+  jobType: string; // e.g., "Part-time", "Casual"
   salary: string;
-  duration: string;
+  duration: string; // e.g., "6 months - 1 year"
   workDays: string[];
   workHours: string;
   description: string;
@@ -22,38 +20,54 @@ export interface JobPosting {
   postedDate: string;
 }
 
-// 🇦🇺 **Sydney Version (English) - Random Data Generator**
-export const generateFakeJobs = (count = 50): JobPosting[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: (i + 1).toString(),
-    title: faker.person.jobTitle(),
-    company: faker.company.name(),
-    location: `${faker.location.city()}, ${faker.location.state()}`,
-    address: faker.location.streetAddress(),
-    jobType: faker.helpers.arrayElement(["Part-time", "Casual", "Full-time", "Contract"]),
-    salary: `AUD ${faker.number.float({ min: 22.5, max: 35 }).toFixed(2)}/hr`,
-    duration: faker.helpers.arrayElement(["3 months", "6 months", "1 year", "Flexible"]),
-    workDays: faker.helpers.arrayElements(
-      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekends"],
-      2
-    ),
-    workHours: faker.helpers.arrayElement([
-      "8:00 AM - 12:00 PM",
-      "12:00 PM - 6:00 PM",
-      "6:00 PM - 10:00 PM",
-      "Night Shift",
-    ]),
-    description: faker.lorem.sentence(),
-    requirements: [faker.lorem.sentence(5), faker.lorem.sentence(5), faker.lorem.sentence(5)],
-    preferred: [faker.lorem.sentence(5), faker.lorem.sentence(5)],
+// 🇦🇺 **Sydney Version (English)**
+export const jobs_en: JobPosting[] = [
+  {
+    id: "1",
+    title: "Convenience Store Staff (Evening Shift)",
+    company: "7-Eleven Sydney CBD",
+    location: "Sydney, NSW",
+    address: "123 George St, Sydney NSW 2000",
+    jobType: "Part-time",
+    salary: "AUD 25.00/hr",
+    duration: "6 months - 1 year",
+    workDays: ["Wednesday", "Thursday"],
+    workHours: "8:30 PM - 11:30 PM",
+    description:
+      "We are looking for a part-time evening shift staff for our convenience store. Responsibilities include cashier duties, stocking shelves, and customer service.",
+    requirements: ["No prior experience required", "Basic English communication skills"],
+    preferred: ["Previous experience in retail or convenience stores", "Nearby residents"],
     contact: {
-      email: faker.internet.email(),
-      phone: faker.phone.number(),
-      website: faker.internet.url(),
+      email: "jobs@7eleven.com.au",
+      phone: "0412 345 678",
+      website: "https://7eleven.com.au/jobs",
     },
-    postedDate: faker.date.recent().toISOString(),
-  }));
-};
+    postedDate: "2025-02-07",
+  },
+];
 
-// 자동 생성된 더미 데이터 저장
-export const jobs_en: JobPosting[] = generateFakeJobs();
+// 🇰🇷 **Sydney Version (Korean)**
+export const jobs_kr: JobPosting[] = [
+  {
+    id: "1",
+    title: "편의점 스태프 (야간 근무)",
+    company: "7-Eleven 시드니 CBD",
+    location: "시드니, NSW",
+    address: "123 George St, Sydney NSW 2000",
+    jobType: "파트타임",
+    salary: "AUD 25.00/시간",
+    duration: "6개월 - 1년",
+    workDays: ["수요일", "목요일"],
+    workHours: "20:30 - 23:30",
+    description:
+      "시드니 CBD 편의점에서 야간 근무 스태프를 모집합니다. 주요 업무는 캐셔, 상품 정리, 고객 응대입니다.",
+    requirements: ["경력 무관", "기본적인 영어 의사소통 가능"],
+    preferred: ["소매업 또는 편의점 근무 경험자 우대", "인근 거주자 우대"],
+    contact: {
+      email: "jobs@7eleven.com.au",
+      phone: "0412 345 678",
+      website: "https://7eleven.com.au/jobs",
+    },
+    postedDate: "2025-02-07",
+  },
+];

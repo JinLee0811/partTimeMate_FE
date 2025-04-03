@@ -3,10 +3,9 @@
 export interface Company {
   id: string;
   name: string;
-  ceoName: string;
-  website: string;
-  contactEmail: string;
-  //   phoneNumber: string;
   logoUrl?: string;
-  //   description?: string;
+  contactEmail: string;
+  contactPhone: string;
+  website?: string;
+  ceoName: string;
 }

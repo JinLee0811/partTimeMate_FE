@@ -1,70 +1,159 @@
-import React from "react";
-import { useJobPostingStore } from "../../store/jobPostingStore";
+import React, { useState, useEffect } from "react";
+import useJobPostingStore from "../../store/jobPostingStore";
+import { ApplicationMethod } from "../../types/jobPosting";
+import { Company } from "../../types/company";
+import { fetchCompaniesApi } from "../../api/companyApi";
 
-export default function ApplicationMethod() {
+const ApplicationMethodComponent: React.FC = () => {
   const { formData, updateFormData } = useJobPostingStore();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    updateFormData({ [name]: value });
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchCompaniesApi(1);
+        setCompanies(response.companies);
+      } catch (err) {
+        setError("Failed to load companies");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompanies();
+  }, []);
+
+  const handleMethodToggle = (method: ApplicationMethod) => {
+    const currentMethods = formData?.applicationMethods || [];
+    const newMethods = currentMethods.includes(method)
+      ? currentMethods.filter((m) => m !== method)
+      : [...currentMethods, method];
+    updateFormData({ applicationMethods: newMethods });
+  };
+
+  const handleCompanySelect = (company: Company) => {
+    updateFormData({
+      companyId: company.id,
+      company: company,
+      contactInfo: `${company.contactEmail}\n${company.contactPhone}`,
+    });
+  };
+
+  const handleDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateFormData({ deadline: e.target.value });
   };
 
   return (
-    <div className='space-y-8'>
-      {/* Section Header */}
-      <div className='border-b border-gray-200 pb-4'>
-        <h3 className='text-lg font-semibold text-gray-900'>Application Details</h3>
-        <p className='mt-1 text-sm text-gray-500'>
-          Provide contact information and application deadline for potential candidates.
-        </p>
+    <div className='space-y-6'>
+      {/* Company Selection */}
+      <div className='space-y-4'>
+        <label className='block text-sm font-medium text-gray-700'>Select Company</label>
+        {loading ? (
+          <p>Loading companies...</p>
+        ) : error ? (
+          <p className='text-red-500'>{error}</p>
+        ) : (
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            {companies.map((company) => (
+              <button
+                key={company.id}
+                onClick={() => handleCompanySelect(company)}
+                className={`p-4 border rounded-lg text-left transition-all ${
+                  formData?.companyId === company.id
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}>
+                <div className='flex items-center space-x-3'>
+                  {company.logoUrl && (
+                    <img
+                      src={company.logoUrl}
+                      alt={company.name}
+                      className='w-10 h-10 rounded-full object-cover'
+                    />
+                  )}
+                  <div>
+                    <h3 className='font-medium'>{company.name}</h3>
+                    <p className='text-sm text-gray-600'>{company.ceoName}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {/* Contact Information */}
-        <div>
-          <label htmlFor='contact' className='block text-sm font-medium text-gray-700 mb-1'>
-            Contact Information <span className='text-red-500'>*</span>
-          </label>
-          <input
-            type='text'
-            id='contact'
-            name='contact'
-            value={formData?.contact || ""}
-            onChange={handleChange}
-            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            placeholder='Phone number or email address'
-          />
-          <p className='mt-1 text-xs text-gray-500'>This will be visible to all applicants</p>
-        </div>
-
-        {/* Application Deadline */}
-        <div>
-          <label htmlFor='deadline' className='block text-sm font-medium text-gray-700 mb-1'>
-            Application Deadline
-          </label>
-          <input
-            type='date'
-            id='deadline'
-            name='deadline'
-            value={
-              formData?.deadline ? new Date(formData.deadline).toISOString().split("T")[0] : ""
-            }
-            onChange={handleChange}
-            min={new Date().toISOString().split("T")[0]}
-            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-          />
-          <p className='mt-1 text-xs text-gray-500'>Leave blank if there's no specific deadline</p>
+      {/* Application Methods */}
+      <div className='space-y-4'>
+        <label className='block text-sm font-medium text-gray-700'>Application Methods</label>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {Object.values(ApplicationMethod).map((method) => (
+            <button
+              key={method}
+              onClick={() => handleMethodToggle(method)}
+              className={`p-4 border rounded-lg text-left transition-all ${
+                formData?.applicationMethods?.includes(method)
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}>
+              <div className='flex items-center justify-between'>
+                <span>{method}</span>
+                {formData?.applicationMethods?.includes(method) && (
+                  <span className='text-blue-500'>✓</span>
+                )}
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Help Text */}
-      <div className='mt-6 bg-yellow-50 p-4 rounded-lg'>
-        <h4 className='text-sm font-medium text-yellow-800 mb-2'>Important Notice</h4>
-        <p className='text-sm text-yellow-700'>
-          Make sure to respond to applications promptly and keep your contact information up to
-          date. Regular communication with applicants helps maintain a professional image.
-        </p>
+      {/* Contact Information */}
+      {formData?.company && (
+        <div className='space-y-4'>
+          <label className='block text-sm font-medium text-gray-700'>Contact Information</label>
+          <div className='p-4 bg-gray-50 rounded-lg'>
+            <div className='space-y-2'>
+              <div className='flex items-center space-x-2'>
+                <span className='text-gray-600'>Email:</span>
+                <span>{formData.company.contactEmail}</span>
+              </div>
+              <div className='flex items-center space-x-2'>
+                <span className='text-gray-600'>Phone:</span>
+                <span>{formData.company.contactPhone}</span>
+              </div>
+              {formData.company.website && (
+                <div className='flex items-center space-x-2'>
+                  <span className='text-gray-600'>Website:</span>
+                  <a
+                    href={formData.company.website}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-blue-500 hover:underline'>
+                    {formData.company.website}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Application Deadline */}
+      <div className='space-y-4'>
+        <label className='block text-sm font-medium text-gray-700'>Application Deadline</label>
+        <input
+          type='date'
+          value={formData?.deadline || ""}
+          onChange={handleDeadlineChange}
+          className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+          min={new Date().toISOString().split("T")[0]}
+        />
       </div>
     </div>
   );
-}
+};
+
+export default ApplicationMethodComponent;
