@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { FaSearch, FaChevronDown, FaUser, FaExchangeAlt } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaUser } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser"; // ✅ 유저 정보 가져오기 훅
-import NavItem from "./NavItem";
 import { useState } from "react";
 
 type UserRole = "ADMIN" | "JOB_SEEKER" | "BUSINESS";
@@ -18,21 +17,53 @@ export default function NavBar() {
     setIsDropdownOpen(false);
   };
 
-  const renderNavigationLinks = () => {
-    return (
-      <>
-        <Link to='/' className='font-medium hover:text-yellow-600'>
-          Home
-        </Link>
-        <Link to='/jobs' className='font-medium hover:text-yellow-600'>
-          Search Jobs
-        </Link>
-      </>
-    );
+  // 네비게이션 링크 배열
+  const navigationLinks = [
+    { to: "/", label: "Home" },
+    { to: "/jobs", label: "Search Jobs" },
+  ];
+
+  // 드롭다운 메뉴 아이템 설정 (역할별)
+  const dropdownConfig: Record<UserRole, Array<{ to?: string; label: string }>> = {
+    ADMIN: [
+      { to: "/jobs/applications", label: "My Applications" },
+      { to: "/mypage", label: "My Page" },
+      { to: "/mybusiness", label: "My Business" },
+      { to: "/admin", label: "Admin" },
+    ],
+    JOB_SEEKER: [
+      { to: "/jobs/applications", label: "My Applications" },
+      { to: "/mypage", label: "My Page" },
+    ],
+    BUSINESS: [{ to: "/mybusiness", label: "My Business" }],
   };
+
+  // 역할별 상단 액션 버튼 설정
+  const roleButtonsConfig: Record<UserRole, Array<{ to: string; label: string }>> = {
+    ADMIN: [
+      { to: "/admin/users", label: "User Management" },
+      { to: "/admin/jobs", label: "Job Management" },
+    ],
+    JOB_SEEKER: [
+      { to: "/resume", label: "Upload Resume" },
+      { to: "/jobs/applications", label: "My Applications" },
+    ],
+    BUSINESS: [
+      { to: "/jobposting", label: "Post a Job" },
+      { to: "/company/register", label: "Register Company" },
+    ],
+  };
+
+  const renderNavigationLinks = () =>
+    navigationLinks.map((link) => (
+      <Link key={link.to} to={link.to} className='font-medium hover:text-yellow-600'>
+        {link.label}
+      </Link>
+    ));
 
   const renderAdminViewSelector = () => {
     if (user?.role !== "ADMIN") return null;
+    const views: UserRole[] = ["ADMIN", "JOB_SEEKER", "BUSINESS"];
 
     return (
       <>
@@ -40,33 +71,22 @@ export default function NavBar() {
         <div className='px-4 py-2'>
           <div className='text-xs font-medium text-gray-500 mb-1'>SWITCH VIEW</div>
           <div className='space-y-1'>
-            <button
-              onClick={() => handleViewChange("ADMIN")}
-              className={`w-full text-left px-2 py-1 text-sm rounded ${
-                currentView === "ADMIN"
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}>
-              Admin View
-            </button>
-            <button
-              onClick={() => handleViewChange("JOB_SEEKER")}
-              className={`w-full text-left px-2 py-1 text-sm rounded ${
-                currentView === "JOB_SEEKER"
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}>
-              Job Seeker View
-            </button>
-            <button
-              onClick={() => handleViewChange("BUSINESS")}
-              className={`w-full text-left px-2 py-1 text-sm rounded ${
-                currentView === "BUSINESS"
-                  ? "bg-orange-50 text-orange-600"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}>
-              Business View
-            </button>
+            {views.map((role) => (
+              <button
+                key={role}
+                onClick={() => handleViewChange(role)}
+                className={`w-full text-left px-2 py-1 text-sm rounded ${
+                  currentView === role
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}>
+                {role === "ADMIN"
+                  ? "Admin View"
+                  : role === "JOB_SEEKER"
+                    ? "Job Seeker View"
+                    : "Business View"}
+              </button>
+            ))}
           </div>
         </div>
       </>
@@ -75,202 +95,89 @@ export default function NavBar() {
 
   const renderUserDropdownItems = () => {
     if (!user) return null;
-
-    switch (user.role) {
-      case "ADMIN":
-        return (
-          <>
-            <Link
-              to='/jobs/applications'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Applications
-            </Link>
-            <Link
-              to='/mypage'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Page
-            </Link>
-            <Link
-              to='/mybusiness'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Business
-            </Link>
-            <Link
-              to='/admin'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              Admin
-            </Link>
-            {renderAdminViewSelector()}
-            <div className='border-t border-gray-100 my-1'></div>
-            <button
-              onClick={() => {
-                logout();
-                setIsDropdownOpen(false);
-              }}
-              className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
-              Logout
-            </button>
-          </>
-        );
-      case "JOB_SEEKER":
-        return (
-          <>
-            <Link
-              to='/jobs/applications'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Applications
-            </Link>
-            <Link
-              to='/mypage'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Page
-            </Link>
-            <div className='border-t border-gray-100 my-1'></div>
-            <button
-              onClick={() => {
-                logout();
-                setIsDropdownOpen(false);
-              }}
-              className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
-              Logout
-            </button>
-          </>
-        );
-      case "BUSINESS":
-        return (
-          <>
-            <Link
-              to='/mybusiness'
-              className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
-              onClick={() => setIsDropdownOpen(false)}>
-              My Business
-            </Link>
-            <div className='border-t border-gray-100 my-1'></div>
-            <button
-              onClick={() => {
-                logout();
-                setIsDropdownOpen(false);
-              }}
-              className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
-              Logout
-            </button>
-          </>
-        );
-      default:
-        return (
-          <button
-            onClick={() => {
-              logout();
-              setIsDropdownOpen(false);
-            }}
-            className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
-            Logout
-          </button>
-        );
-    }
-  };
-
-  const renderUserDropdown = () => {
+    const items = dropdownConfig[user.role as UserRole] || [];
     return (
-      <div className='relative'>
+      <>
+        {items.map((item) => (
+          <Link
+            key={item.label}
+            to={item.to!}
+            className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
+            onClick={() => setIsDropdownOpen(false)}>
+            {item.label}
+          </Link>
+        ))}
+        {user.role === "ADMIN" && renderAdminViewSelector()}
+        <div className='border-t border-gray-100 my-1'></div>
         <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className='flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium border rounded-full'>
-          <FaUser className='text-gray-500' />
-          <span>{user?.lastName || "User"}</span>
-          <FaChevronDown
-            className={`text-gray-500 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-          />
+          onClick={() => {
+            logout();
+            setIsDropdownOpen(false);
+          }}
+          className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
+          Logout
         </button>
-
-        {isDropdownOpen && (
-          <div className='absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
-            {renderUserDropdownItems()}
-          </div>
-        )}
-      </div>
+      </>
     );
   };
+
+  const renderUserDropdown = () => (
+    <div className='relative'>
+      <button
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className='flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium border rounded-full'>
+        <FaUser className='text-gray-500' />
+        <span>{user?.lastName || "User"}</span>
+        <FaChevronDown
+          className={`text-gray-500 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isDropdownOpen && (
+        <div className='absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
+          {renderUserDropdownItems()}
+        </div>
+      )}
+    </div>
+  );
 
   const renderRoleSpecificButtons = () => {
     if (!user) return null;
-
-    // For admin, use currentView instead of user.role
     const effectiveRole = user.role === "ADMIN" ? currentView : user.role;
-
-    switch (effectiveRole) {
-      case "ADMIN":
-        return (
-          <>
-            <Link
-              to='/admin/users'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              User Management
-            </Link>
-            <Link
-              to='/admin/jobs'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              Job Management
-            </Link>
-          </>
-        );
-      case "JOB_SEEKER":
-        return (
-          <>
-            <Link
-              to='/resume'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              Resume
-            </Link>
-            <Link
-              to='/jobs/applications'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              My Applications
-            </Link>
-          </>
-        );
-      case "BUSINESS":
-        return (
-          <>
-            <Link
-              to='/jobposting'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              Post a Job
-            </Link>
-            <Link
-              to='/company/register'
-              className='px-4 py-1.5 border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
-              Register Company
-            </Link>
-          </>
-        );
-      default:
-        return null;
-    }
+    const buttons = roleButtonsConfig[effectiveRole as UserRole] || [];
+    return buttons.map((button) => (
+      <Link
+        key={button.to}
+        to={button.to}
+        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        {button.label}
+      </Link>
+    ));
   };
 
-  const renderActionButtons = () => {
-    return (
-      <div className='flex items-center gap-2'>
-        <Link
-          to='/auth/login'
-          className='px-4 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium'>
-          Login
-        </Link>
-        <Link
-          to='/auth/register'
-          className='px-4 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium'>
-          Sign Up
-        </Link>
-      </div>
-    );
-  };
+  const renderActionButtons = () => (
+    <div className='flex items-center gap-2'>
+      <Link
+        to='/auth/login'
+        className='px-4 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium'>
+        Login
+      </Link>
+      <Link
+        to='/auth/register'
+        className='px-4 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium'>
+        Sign Up
+      </Link>
+      <Link
+        to='/jobposting'
+        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        Upload Resume
+      </Link>
+      <Link
+        to='/company/register'
+        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        Post a Job
+      </Link>
+    </div>
+  );
 
   return (
     <div className='w-full'>
@@ -282,7 +189,6 @@ export default function NavBar() {
             <Link to='/' className='flex-shrink-0'>
               <img src='/mainLogo.png' alt='Part-Time Mate' className='h-14' />
             </Link>
-
             {/* Search Bar */}
             <div className='w-[450px]'>
               <div className='relative'>
@@ -296,7 +202,6 @@ export default function NavBar() {
                 </button>
               </div>
             </div>
-
             {/* Promo */}
             <div className='flex flex-col items-end gap-1 text-sm'>
               <span className='text-orange-500 font-medium'>Find Your Perfect Part-Time Job!</span>
@@ -305,7 +210,6 @@ export default function NavBar() {
           </div>
         </div>
       </div>
-
       {/* Navigation Menu */}
       <div className='bg-white border-b'>
         <div className='max-w-7xl mx-auto px-4'>

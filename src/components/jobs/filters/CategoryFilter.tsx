@@ -11,7 +11,7 @@ export default function CategoryFilter({
   selectedCategories,
   setSelectedCategories,
 }: CategoryFilterProps) {
-  const [activeCategory, setActiveCategory] = useState<string>(jobCategories[0]?.id || "");
+  const [activeCategory, setActiveCategory] = useState<number>(jobCategories[0]?.id || 0);
 
   const handleSelectCategory = (subcategory: string) => {
     setSelectedCategories(

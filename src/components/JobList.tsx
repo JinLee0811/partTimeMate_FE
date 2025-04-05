@@ -7,7 +7,7 @@ const JobList = () => {
 
   return (
     <section className='py-10 px-7 w-auto mx-auto bg-slate-100'>
-      <h2 className='text-2xl font-bold mb-6'>Featured Job Listings</h2>
+      <h2 className='text-2xl font-bold mb-6'>New Part-Time Job Listings</h2>
       <div className='grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-4 sm:grid-cols-2 gap-3 px-4 py-3'>
         {displayedJobs.map((job) => (
           <Link to={`/jobs/${job.id}`} key={job.id} className='job-card'>

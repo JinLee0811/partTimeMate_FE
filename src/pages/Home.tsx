@@ -6,8 +6,8 @@ export default function Home() {
   return (
     <>
       <MainHeader />
-      {/* <JobList />
-      <FilterJobList /> */}
+      <JobList />
+      {/* <FilterJobList /> */}
     </>
   );
 }

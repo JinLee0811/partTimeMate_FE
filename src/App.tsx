@@ -18,7 +18,7 @@ import EditUser from "./pages/MyBusiness/EditUser";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import UserManagement from "./pages/admin/users/UserManagement";
-// import JobManagement from "./pages/admin/jobs/JobManagement";
+import JobManagement from "./pages/admin/jobs/JobManagement";
 import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
 import JobPosting from "./pages/jobs/JobPosting";
