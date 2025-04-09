@@ -4,48 +4,55 @@ const JobList = () => {
   const displayedJobs = jobs_en.slice(0, 20); // 첫 20개 공고만 표시
 
   return (
-    <section className='mt-2 py-14 px-7 mx-auto bg-white'>
-      <h2 className='text-2xl font-bold mb-6'>Newest Job List</h2>
-
-      {/* 리스트 헤더 */}
-      <div className='bg-gray-100 font-semibold text-gray-700 grid grid-cols-[1fr_3fr_1fr_1fr_1fr] px-5 py-3 rounded-md'>
-        <span>Location</span>
-        <span>Job Title / Company</span>
-        <span>Salary</span>
-        <span>Hours</span>
-        <span>Posted</span>
-      </div>
-
-      {/* 채용 공고 리스트 */}
-      <div className='divide-y divide-gray-300'>
-        {displayedJobs.map((job) => (
-          <Link
-            to={`/jobs/${job.id}`}
-            key={job.id}
-            className='grid grid-cols-[1fr_3fr_1fr_1fr_1fr] px-5 py-4 items-center hover:bg-gray-50 transition'>
-            {/* 지역 */}
-            <span className='text-gray-700 font-medium'>{job.location}</span>
-
-            {/* 채용 공고 제목 및 회사명 */}
-            <div>
-              <h3 className='text-md font-bold text-gray-800'>{job.title}</h3>
-              <p className='text-sm text-gray-600'>{job.company}</p>
-            </div>
-
-            {/* 급여 */}
-            <span className='text-gray-800 font-medium'>
-              {job.salary} <span className='text-gray-500 text-xs'>{job.payType}</span>
-            </span>
-
-            {/* 근무 시간 */}
-            <span className='text-gray-700'>{job.hours || "TBD"}</span>
-
-            {/* 등록일 */}
-            <span className='text-blue-500 text-sm'>{job.posted}</span>
+    <div className='flex justify-center'>
+      <section className='w-full max-w-5xl mt-2 py-14 px-7 bg-white'>
+        <div className='flex justify-between'>
+          <h2 className='text-2xl font-bold mb-6'>Newest Job List</h2>
+          <Link to='/jobs' className='text-sm text-gray-500 mb-6'>
+            <h3 className='text-sm text-gray-500 mb-6 hover:text-gray-700'>View All</h3>
           </Link>
-        ))}
-      </div>
-    </section>
+        </div>
+
+        {/* 리스트 헤더 */}
+        <div className='bg-gray-100 font-semibold text-gray-700 grid grid-cols-[1fr_3fr_1fr_1fr_1fr] px-5 py-3 rounded-md'>
+          <span>Location</span>
+          <span>Job Title / Company</span>
+          <span>Salary</span>
+          <span>Hours</span>
+          <span>Posted</span>
+        </div>
+
+        {/* 채용 공고 리스트 */}
+        <div className='divide-y divide-gray-300'>
+          {displayedJobs.map((job) => (
+            <Link
+              to={`/jobs/${job.id}`}
+              key={job.id}
+              className='grid grid-cols-[1fr_3fr_1fr_1fr_1fr] px-5 py-4 items-center hover:bg-gray-50 transition'>
+              {/* 지역 */}
+              <span className='text-gray-700 font-medium'>{job.location}</span>
+
+              {/* 채용 공고 제목 및 회사명 */}
+              <div>
+                <h3 className='text-md font-bold text-gray-800'>{job.title}</h3>
+                <p className='text-sm text-gray-600'>{job.company}</p>
+              </div>
+
+              {/* 급여 */}
+              <span className='text-gray-800 font-medium'>
+                {job.salary} <span className='text-gray-500 text-xs'>{job.payType}</span>
+              </span>
+
+              {/* 근무 시간 */}
+              <span className='text-gray-700'>{job.hours || "TBD"}</span>
+
+              {/* 등록일 */}
+              <span className='text-blue-500 text-sm'>{job.posted}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 };
 

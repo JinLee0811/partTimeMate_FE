@@ -8,13 +8,31 @@ import SelectedFilters from "./SelectedFilters";
 import ResetButton from "./ResetButton";
 import SearchInput from "./SearchInput";
 
+const MAX_FILTERS = 10;
+
 export default function JobFilterPage() {
+  const [activeTab, setActiveTab] = useState<
+    "Job Category" | "Location" | "Work Period" | "Detail"
+  >("Job Category");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchActive, setSearchActive] = useState(false);
+  const [excludeBar, setExcludeBar] = useState(false);
+
+  // 필터 상태들
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedPeriods, setSelectedPeriods] = useState<string[]>([]);
   const [selectedDetails, setSelectedDetails] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("업직종");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  // 전체 선택된 필터 개수
+  const totalSelectedFilters =
+    selectedCategories.length +
+    selectedLocations.length +
+    selectedPeriods.length +
+    selectedDetails.length;
+
+  // 추가 필터 선택 가능 여부
+  const canAddMoreFilters = totalSelectedFilters < MAX_FILTERS;
 
   // 전체 필터 초기화
   const resetFilters = () => {
@@ -22,63 +40,134 @@ export default function JobFilterPage() {
     setSelectedLocations([]);
     setSelectedPeriods([]);
     setSelectedDetails([]);
+    setSearchQuery("");
+    setSearchActive(false);
+    setExcludeBar(false);
+  };
+
+  const counts = {
+    "Job Category": selectedCategories.length,
+    Location: selectedLocations.length,
+    "Work Period": selectedPeriods.length,
+    Detail: selectedDetails.length,
+  };
+
+  // 각 탭에 따라 다른 placeholder를 지정
+  const getPlaceholder = () => {
+    if (activeTab === "Job Category") {
+      return "Search categories (e.g., barista, cashier)";
+    } else if (activeTab === "Location") {
+      return "Search locations (e.g., Townhall, Wynyard )";
+    } else {
+      return "";
+    }
+  };
+
+  // 검색 실행
+  const handleSearch = () => {
+    if (searchQuery.trim() !== "") {
+      setSearchActive(true);
+    }
+  };
+
+  // 검색어 변경 시 검색 활성화 상태 초기화
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setSearchActive(false);
   };
 
   return (
-    <div className='max-w-5xl mx-auto p-6 mt-10 bg-white border rounded-md border-gray-300'>
-      <h2 className='text-2xl font-bold mb-6'>Filtering</h2>
+    <div className='max-w-5xl mx-auto bg-white border border-gray-300 rounded-md shadow p-6'>
+      {/* 1) Top Header: FilterTabs & Selected/Max Filters Count */}
+      <div className='flex items-center justify-between mb-4'>
+        <FilterTabs activeTab={activeTab} setActiveTab={setActiveTab} counts={counts} />
+        <div className='text-gray-500 text-sm'>
+          {totalSelectedFilters}/{MAX_FILTERS}
+        </div>
+      </div>
 
-      {/* 검색창 */}
-      <SearchInput
-        placeholder='Search...'
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-
-      {/* 필터 탭 */}
-      <FilterTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {/* 선택된 필터에 따라 UI 렌더링 */}
-      {activeTab === "업직종" && (
-        <CategoryFilter
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-        />
-      )}
-      {activeTab === "지역" && (
-        <LocationFilter
-          selectedLocations={selectedLocations}
-          setSelectedLocations={setSelectedLocations}
-        />
-      )}
-      {activeTab === "근무기간" && (
-        <WorkPeriodFilter
-          selectedFilters={selectedPeriods}
-          setSelectedFilters={setSelectedPeriods}
-        />
-      )}
-      {activeTab === "상세조건" && (
-        <DetailFilter selectedFilters={selectedDetails} setSelectedFilters={setSelectedDetails} />
+      {/* 2) Search Input & Exclude Bar Checkbox */}
+      {(activeTab === "Job Category" || activeTab === "Location") && (
+        <div className='flex items-center space-x-4 mb-4'>
+          <div className='w-96'>
+            <SearchInput
+              searchQuery={searchQuery}
+              setSearchQuery={handleSearchChange}
+              onSearch={handleSearch}
+              placeholder={getPlaceholder()}
+            />
+          </div>
+          {activeTab === "Job Category" && (
+            <label className='flex items-center text-sm text-gray-700 gap-1'>
+              <input
+                type='checkbox'
+                className='form-checkbox'
+                checked={excludeBar}
+                onChange={() => setExcludeBar(!excludeBar)}
+              />
+              <span>Exclude Bar</span>
+            </label>
+          )}
+        </div>
       )}
 
-      {/* 선택된 필터들 표시 */}
-      <SelectedFilters
-        selectedFilters={[
-          ...selectedCategories,
-          ...selectedLocations,
-          ...selectedPeriods,
-          ...selectedDetails,
-        ]}
-        onRemoveFilter={(filter) => {
-          setSelectedCategories(selectedCategories.filter((c) => c !== filter));
-          setSelectedLocations(selectedLocations.filter((c) => c !== filter));
-          setSelectedPeriods(selectedPeriods.filter((c) => c !== filter));
-          setSelectedDetails(selectedDetails.filter((c) => c !== filter));
-        }}
-      />
+      {/* 3) Filter Component According to Active Tab */}
+      <div className='border-t border-gray-200 pt-4'>
+        {activeTab === "Job Category" && (
+          <CategoryFilter
+            searchQuery={searchQuery}
+            excludeBar={excludeBar}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            searchActive={searchActive}
+            canAddMoreFilters={canAddMoreFilters}
+          />
+        )}
+        {activeTab === "Location" && (
+          <LocationFilter
+            searchQuery={searchQuery}
+            selectedLocations={selectedLocations}
+            setSelectedLocations={setSelectedLocations}
+            searchActive={searchActive}
+            canAddMoreFilters={canAddMoreFilters}
+          />
+        )}
+        {activeTab === "Work Period" && (
+          <WorkPeriodFilter
+            selectedFilters={selectedPeriods}
+            setSelectedFilters={setSelectedPeriods}
+            canAddMoreFilters={canAddMoreFilters}
+          />
+        )}
+        {activeTab === "Detail" && (
+          <DetailFilter
+            selectedFilters={selectedDetails}
+            setSelectedFilters={setSelectedDetails}
+            canAddMoreFilters={canAddMoreFilters}
+          />
+        )}
+      </div>
 
-      {/* 초기화 버튼 */}
+      {/* 4) Selected Filters Display */}
       <div className='mt-4'>
+        <SelectedFilters
+          selectedFilters={[
+            ...selectedCategories,
+            ...selectedLocations,
+            ...selectedPeriods,
+            ...selectedDetails,
+          ]}
+          onRemoveFilter={(filter) => {
+            setSelectedCategories(selectedCategories.filter((c) => c !== filter));
+            setSelectedLocations(selectedLocations.filter((c) => c !== filter));
+            setSelectedPeriods(selectedPeriods.filter((c) => c !== filter));
+            setSelectedDetails(selectedDetails.filter((c) => c !== filter));
+          }}
+        />
+      </div>
+
+      {/* 5) Reset Button */}
+      <div className='mt-6'>
         <ResetButton onReset={resetFilters} />
       </div>
     </div>

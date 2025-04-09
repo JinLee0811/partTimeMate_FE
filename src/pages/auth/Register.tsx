@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebookF, FaApple } from "react-icons/fa"; // Social Icons
+import { FaGoogle, FaFacebookF, FaApple } from "react-icons/fa";
+import logo2 from "../../assets/logo2.png";
+import jobseeker from "../../assets/jobseeker.png";
+import recruiter from "../../assets/recruiter.png";
 
 const Register = () => {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50 pb-10'>
       {/* Title */}
       <h1 className='text-xl md:text-3xl font-bold text-gray-900 text-center mb-4'>
-        All the Job is Here <span className='text-blue-600'>Part-Time Mate</span>
+        All the Job is Here <span className='text-gray-900'>Part-Time Mate</span>
       </h1>
-      <h2 className='text-4xl md:text-5xl font-extrabold text-blue-600'>
-        Find <span className='text-orange-500'>Your Part-Time Job</span>
+      <h2 className='text-4xl md:text-5xl font-extrabold text-gray-900'>
+        Find <span className='text-albamon'>Your Part-Time Job</span>
       </h2>
 
       {/* Registration Options */}
@@ -17,22 +20,22 @@ const Register = () => {
         {/* Job Seeker */}
         <UserCard
           title='Job Seeker'
-          description='Register your resume and apply for part-time jobs in Sydney.'
+          description='Register your resume and apply for part-time jobs.'
           buttonText='Sign Up as Job Seeker'
-          bgColor='bg-orange-500 hover:bg-orange-600'
+          bgColor='bg-albamon hover:bg-albamon-dark'
           textColor='text-white'
-          imageSrc='/job-seeker.png'
+          imageSrc={jobseeker}
           navigateTo='/auth/signup/user'
         />
 
         {/* Employer */}
         <UserCard
-          title='Employer'
+          title='Recruiter'
           description='Post job listings and find the best talent for your business.'
           buttonText='Sign Up as Employer'
           bgColor='bg-black hover:bg-gray-900'
           textColor='text-white'
-          imageSrc='/employer.png'
+          imageSrc={recruiter}
           navigateTo='/auth/signup/business'
         />
       </div>

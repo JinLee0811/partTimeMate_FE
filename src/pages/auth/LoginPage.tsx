@@ -23,16 +23,18 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     setLoading(true);
     setErrorMessage(null);
-
     try {
-      await login(email, password, activeTab); // ✅ 백엔드가 요구하는 role 전송
-      navigate("/"); // ✅ 로그인 성공 시 홈으로 이동
+      await login(email, password, activeTab); // 백엔드가 요구하는 role 전송
+      navigate("/"); // 로그인 성공 시 홈으로 이동
     } catch (err: any) {
       setErrorMessage(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  // 이메일과 패스워드가 비어있으면 버튼 비활성화
+  const isDisabled = loading || email.trim() === "" || password.trim() === "";
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100 pb-10'>
@@ -42,7 +44,7 @@ const Login: React.FC = () => {
           <h2 className='text-lg font-semibold text-gray-800'>Log in to access our services.</h2>
           <p className='text-sm text-gray-500'>
             If you are not a member yet,{" "}
-            <Link to={"/auth/register"} className='text-blue-500 cursor-pointer hover:underline'>
+            <Link to={"/auth/register"} className='text-albamon cursor-pointer hover:underline'>
               Sign up here
             </Link>
             .
@@ -51,6 +53,7 @@ const Login: React.FC = () => {
           {/* 🔹 Role Selection Tabs */}
           <div className='flex mt-5 border-b'>
             <button
+              type='button'
               className={`w-1/2 py-2 text-center font-medium ${
                 activeTab === "JOB_SEEKER" ? "border-b-2 border-black text-black" : "text-gray-400"
               }`}
@@ -59,6 +62,7 @@ const Login: React.FC = () => {
               <p className='text-sm text-gray-500'>(Finding Job)</p>
             </button>
             <button
+              type='button'
               className={`w-1/2 py-2 text-center font-medium ${
                 activeTab === "BUSINESS" ? "border-b-2 border-black text-black" : "text-gray-400"
               }`}
@@ -68,8 +72,13 @@ const Login: React.FC = () => {
             </button>
           </div>
 
-          {/* 🔹 Login Form */}
-          <div className='mt-5'>
+          {/* 🔹 Login Form - form 태그로 감싸고 onSubmit에서 preventDefault */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // 페이지 새로고침 방지
+              handleLogin();
+            }}
+            className='mt-5'>
             <input
               type='email'
               placeholder='Email'
@@ -89,7 +98,7 @@ const Login: React.FC = () => {
               <label className='flex items-center text-sm text-gray-500'>
                 <input type='checkbox' className='mr-2' /> Remember Me
               </label>
-              <span className='text-sm text-blue-500 cursor-pointer hover:underline'>
+              <span className='text-sm text-albamon cursor-pointer hover:underline'>
                 Forgot Password?
               </span>
             </div>
@@ -98,16 +107,14 @@ const Login: React.FC = () => {
             {errorMessage && <p className='text-red-500 text-sm mt-3'>{errorMessage}</p>}
 
             <button
-              onClick={handleLogin}
-              disabled={loading}
-              className={`w-full mt-5 p-3 rounded-md font-semibold transition ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+              type='submit'
+              disabled={isDisabled}
+              className={`w-full mt-5 p-3 rounded-md font-semibold transition bg-albamon text-white hover:bg-albamon-dark ${
+                isDisabled ? "cursor-not-allowed" : ""
               }`}>
               {loading ? "Logging in..." : "Log In"}
             </button>
-          </div>
+          </form>
 
           {/* 🔹 Social Login */}
           <div className='mt-6 text-center'>
@@ -122,7 +129,7 @@ const Login: React.FC = () => {
 
         {/* 🏷️ Right Panel - Additional Features */}
         <div className='hidden md:flex w-2/5 bg-white border border-l-gray-400 p-6 flex-col text-center justify-center'>
-          <h3 className='text-lg font-semibold text-blue-600'>Exclusive Benefits</h3>
+          <h3 className='text-lg font-semibold text-albamon'>Exclusive Benefits</h3>
           {activeTab === "JOB_SEEKER" ? (
             <ul className='mt-3 text-sm text-gray-600 space-y-3'>
               <li>🔹 One-click job applications</li>
@@ -144,7 +151,9 @@ const Login: React.FC = () => {
 
 /** 🔹 Social Login Button Component */
 const SocialLoginButton = ({ icon, text }: { icon: JSX.Element; text: string }) => (
-  <button className='flex items-center gap-2 bg-white border px-4 py-2 rounded-md shadow hover:bg-gray-100'>
+  <button
+    type='button'
+    className='flex items-center gap-2 bg-white border px-4 py-2 rounded-md shadow hover:bg-gray-100'>
     {icon}
     <span className='text-sm font-medium'>{text}</span>
   </button>

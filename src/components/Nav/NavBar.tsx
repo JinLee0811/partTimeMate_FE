@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { FaSearch, FaChevronDown, FaUser } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
-import { useUser } from "../../hooks/useUser"; // ✅ 유저 정보 가져오기 훅
+import { useUser } from "../../hooks/useUser";
 import { useState } from "react";
 
 type UserRole = "ADMIN" | "JOB_SEEKER" | "BUSINESS";
 
 export default function NavBar() {
   const { isAuthenticated, user, logout } = useAuthStore();
-  const { isLoading } = useUser(); // ✅ React Query에서 user 정보 가져오기
+  const { isLoading } = useUser();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentView, setCurrentView] = useState<UserRole>((user?.role as UserRole) || "ADMIN");
 
@@ -17,13 +17,11 @@ export default function NavBar() {
     setIsDropdownOpen(false);
   };
 
-  // 네비게이션 링크 배열
   const navigationLinks = [
     { to: "/", label: "Home" },
     { to: "/jobs", label: "Search Jobs" },
   ];
 
-  // 드롭다운 메뉴 아이템 설정 (역할별)
   const dropdownConfig: Record<UserRole, Array<{ to?: string; label: string }>> = {
     ADMIN: [
       { to: "/jobs/applications", label: "My Applications" },
@@ -38,7 +36,6 @@ export default function NavBar() {
     BUSINESS: [{ to: "/mybusiness", label: "My Business" }],
   };
 
-  // 역할별 상단 액션 버튼 설정
   const roleButtonsConfig: Record<UserRole, Array<{ to: string; label: string }>> = {
     ADMIN: [
       { to: "/admin/users", label: "User Management" },
@@ -50,13 +47,13 @@ export default function NavBar() {
     ],
     BUSINESS: [
       { to: "/jobposting", label: "Post a Job" },
-      { to: "/company/register", label: "Register Company" },
+      { to: "/mybusiness/company", label: "Register Company" },
     ],
   };
 
   const renderNavigationLinks = () =>
     navigationLinks.map((link) => (
-      <Link key={link.to} to={link.to} className='font-medium hover:text-yellow-600'>
+      <Link key={link.to} to={link.to} className='font-medium hover:text-albamon'>
         {link.label}
       </Link>
     ));
@@ -77,7 +74,7 @@ export default function NavBar() {
                 onClick={() => handleViewChange(role)}
                 className={`w-full text-left px-2 py-1 text-sm rounded ${
                   currentView === role
-                    ? "bg-orange-50 text-orange-600"
+                    ? "bg-orange-50 text-albamon"
                     : "text-gray-700 hover:bg-gray-50"
                 }`}>
                 {role === "ADMIN"
@@ -102,7 +99,7 @@ export default function NavBar() {
           <Link
             key={item.label}
             to={item.to!}
-            className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
+            className='block px-4 py-2 text-sm text-gray-700 hover:bg-albamon-light'
             onClick={() => setIsDropdownOpen(false)}>
             {item.label}
           </Link>
@@ -114,7 +111,7 @@ export default function NavBar() {
             logout();
             setIsDropdownOpen(false);
           }}
-          className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'>
+          className='w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-albamon-light'>
           Logout
         </button>
       </>
@@ -148,7 +145,7 @@ export default function NavBar() {
       <Link
         key={button.to}
         to={button.to}
-        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        className='px-4 py-2 border border-albamon rounded-md text-albamon hover:border-albamon-dark hover:text-albamon-dark text-sm font-medium'>
         {button.label}
       </Link>
     ));
@@ -167,13 +164,13 @@ export default function NavBar() {
         Sign Up
       </Link>
       <Link
-        to='/jobposting'
-        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        to='/auth/login'
+        className='px-4 py-2 border border-albamon rounded-md text-albamon hover:border-albamon-dark hover:text-albamon-dark text-sm font-medium'>
         Upload Resume
       </Link>
       <Link
-        to='/company/register'
-        className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:border-gray-400 hover:text-gray-900 text-sm font-medium'>
+        to='/auth/login'
+        className='px-4 py-2 border border-albamon rounded-md text-albamon hover:border-albamon-dark hover:text-albamon-dark text-sm font-medium'>
         Post a Job
       </Link>
     </div>
@@ -195,16 +192,18 @@ export default function NavBar() {
                 <input
                   type='text'
                   placeholder='Search for jobs in Sydney...'
-                  className='w-full py-2.5 px-5 pr-12 border-2 border-orange-500 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400'
+                  className='w-full py-2.5 px-5 pr-12 border-2 border-albamon rounded-full focus:outline-none focus:ring-2 focus:ring-albamon'
                 />
-                <button className='absolute right-4 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600'>
+                <button className='absolute right-4 top-1/2 -translate-y-1/2 text-albamon hover:text-albamon-dark'>
                   <FaSearch className='text-lg' />
                 </button>
               </div>
             </div>
             {/* Promo */}
             <div className='flex flex-col items-end gap-1 text-sm'>
-              <span className='text-orange-500 font-medium'>Find Your Perfect Part-Time Job!</span>
+              <span className='text-albamon-dark font-medium'>
+                Find Your Perfect Part-Time Job!
+              </span>
               <span className='text-gray-600'>Over 1,000+ New Jobs Every Day</span>
             </div>
           </div>

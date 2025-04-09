@@ -2,7 +2,7 @@ import React from "react";
 
 const JobStats: React.FC = () => {
   return (
-    <div className='flex justify-center mt-6'>
+    <div className='flex justify-center pt-7'>
       <div className='w-full max-w-5xl bg-orange-50 p-6 rounded-lg flex flex-col sm:flex-row items-center sm:justify-between space-y-6 sm:space-y-0'>
         {/* Total Jobs */}
         <div className='flex-1 text-center'>

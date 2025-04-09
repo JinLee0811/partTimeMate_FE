@@ -3,7 +3,7 @@ import Table from "../../../components/Table";
 import Modal from "../../../components/Modal";
 import UserEditForm from "./UserEditForm";
 import UserDetailModal from "./UserDetail";
-import Pagination from "../../../components/pagenation"; // Pagination 컴포넌트 경로에 맞게 수정
+import Pagination from "../../../components/pagenation";
 import { useAdminStore } from "../../../store/useAdminStore";
 
 export default function UserManagement() {
@@ -60,77 +60,80 @@ export default function UserManagement() {
   );
 
   return (
-    <div>
-      <h2 className='text-2xl font-bold mb-4'>User Management</h2>
+    // 상위 wrapper에 min-h-screen과 pb-20을 추가하여 하단 여백 확보
+    <div className='min-h-screen pb-20'>
+      <div className='max-w-5xl mx-auto p-6 mt-10 bg-white border border-gray-300 rounded-md shadow'>
+        <h2 className='text-2xl font-bold mb-4'>User Management</h2>
 
-      {/* 검색 입력란 */}
-      <div className='mb-4'>
-        <input
-          type='text'
-          placeholder='Search users...'
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+        {/* 검색 입력란 */}
+        <div className='mb-4'>
+          <input
+            type='text'
+            placeholder='Search users...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
+          />
+        </div>
+
+        <Table
+          columns={[
+            "Register Date",
+            "Email",
+            "First Name",
+            "Last Name",
+            "Role",
+            "Language",
+            "Actions",
+          ]}
+          data={filteredUsers.map((user) => [
+            // 생성일(createdAt)을 Australian 날짜 형식으로 변환
+            new Date(user.createdAt || "").toLocaleDateString("en-AU", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }),
+            user.email,
+            user.firstName,
+            user.lastName,
+            user.role,
+            user.preferredLanguage,
+            <div key={user.id} className='flex gap-2'>
+              <button onClick={() => openModal("view", user)} className='text-blue-500'>
+                View
+              </button>
+              <button onClick={() => openModal("edit", user)} className='text-green-500'>
+                Edit
+              </button>
+              <button onClick={() => handleDelete(user.id)} className='text-red-500'>
+                Delete
+              </button>
+            </div>,
+          ])}
         />
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPage}
+          onPageChange={handlePageChange}
+        />
+
+        {/* 모달 (수정 / 상세 보기) */}
+        {isModalOpen && selectedUser && (
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            {modalType === "edit" ? (
+              <UserEditForm
+                user={selectedUser}
+                onUpdate={handleUpdateUser}
+                onCancel={() => setIsModalOpen(false)}
+              />
+            ) : (
+              <UserDetailModal user={selectedUser} />
+            )}
+          </Modal>
+        )}
       </div>
-
-      <Table
-        columns={[
-          "Register Date",
-          "Email",
-          "First Name",
-          "Last Name",
-          "Role",
-          "Language",
-          "Actions",
-        ]}
-        data={filteredUsers.map((user) => [
-          // 생성일(createdAt)을 Australian 날짜 형식으로 변환
-          new Date(user.createdAt).toLocaleDateString("en-AU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }),
-          user.email,
-          user.firstName,
-          user.lastName,
-          user.role,
-          user.preferredLanguage,
-          <div key={user.id} className='flex gap-2'>
-            <button onClick={() => openModal("view", user)} className='text-blue-500'>
-              View
-            </button>
-            <button onClick={() => openModal("edit", user)} className='text-green-500'>
-              Edit
-            </button>
-            <button onClick={() => handleDelete(user.id)} className='text-red-500'>
-              Delete
-            </button>
-          </div>,
-        ])}
-      />
-
-      {/* Pagination */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPage}
-        onPageChange={handlePageChange}
-      />
-
-      {/* 모달 (수정 / 상세 보기) */}
-      {isModalOpen && selectedUser && (
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          {modalType === "edit" ? (
-            <UserEditForm
-              user={selectedUser}
-              onUpdate={handleUpdateUser}
-              onCancel={() => setIsModalOpen(false)}
-            />
-          ) : (
-            <UserDetailModal user={selectedUser} />
-          )}
-        </Modal>
-      )}
     </div>
   );
 }

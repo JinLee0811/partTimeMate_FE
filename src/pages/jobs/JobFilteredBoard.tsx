@@ -1,18 +1,16 @@
 import React from "react";
 
-import JobStats from "../../components/jobs/JobStats";
 import JobFilter from "../../components/jobs/filters/JobFilter";
 import FilterJobList from "../../components/jobs/FilterJobList";
 
-const JobBoard: React.FC = () => {
+const JobFilteredBoard: React.FC = () => {
   return (
-    <div className=' bg-white'>
+    <div className=' bg-white pt-10'>
       {/* 헤더 - 채용 통계 */}
-      <JobStats />
-      {/* <JobFilter /> */}
+      <JobFilter />
       <FilterJobList />
     </div>
   );
 };
 
-export default JobBoard;
+export default JobFilteredBoard;

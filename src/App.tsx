@@ -31,6 +31,7 @@ import BusinessHome from "./pages/MyBusiness/BusinessHome";
 import MyPageHome from "./pages/MyPages/MyPageHome";
 import TalentPool from "./pages/talent/TalentPool";
 import TalentDetail from "./pages/talent/TalentDetail";
+import JobFilteredBoard from "./pages/jobs/JobFilteredBoard";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ export default function App() {
           <Route element={<MainLayout />}>
             <Route path='/' element={<Home />} />
             <Route path='/jobs' element={<JobBoard />} />
+            <Route path='/jobs/filtered' element={<JobFilteredBoard />} />
             {/* <Route path='/brands' element={<Brands />} /> */}
 
             {/* 보호된 페이지 (로그인 필수, Admin 가능) */}
@@ -103,7 +105,7 @@ export default function App() {
               }>
               <Route index element={<AdminHome />} />
               <Route path='users' element={<UserManagement />} />
-              {/* <Route path='jobs' element={<JobManagement />} /> */}
+              <Route path='jobs' element={<JobManagement />} />
               <Route path='categories' element={<CategoryManagement />} />
               <Route path='categories/:id' element={<CategoryDetail />} />
             </Route>

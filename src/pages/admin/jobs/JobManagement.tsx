@@ -52,10 +52,10 @@ export default function JobManagement() {
           </div>,
         ])}
       />
-      ✅ 모달 (상세 보기)
+      {/* ✅ 모달 (상세 보기) */}
       {selectedJob && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <JobDetailModal job={selectedJob} />
+          <JobDetailModal job={selectedJob} onClose={() => setIsModalOpen(false)} />
         </Modal>
       )}
     </div>

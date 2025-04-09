@@ -52,7 +52,9 @@ export default function EmployerSettings() {
       <div className='grid grid-cols-2 gap-4'>
         {/* Company Name (전체 폭 사용) */}
         <div className='col-span-2'>
-          <label className='block text-sm font-medium text-gray-700'>Company Name *</label>
+          <label className='block text-sm font-medium text-gray-700'>
+            Company Name <span className='text-red-500'>*</span>
+          </label>
           <input
             type='text'
             name='name'
@@ -66,7 +68,9 @@ export default function EmployerSettings() {
 
         {/* CEO Name */}
         <div>
-          <label className='block text-sm font-medium text-gray-700'>CEO Name</label>
+          <label className='block text-sm font-medium text-gray-700'>
+            CEO Name <span className='text-red-500'>*</span>
+          </label>
           <input
             type='text'
             name='ceo'
@@ -79,7 +83,9 @@ export default function EmployerSettings() {
 
         {/* Website */}
         <div>
-          <label className='block text-sm font-medium text-gray-700'>Company Website</label>
+          <label className='block text-sm font-medium text-gray-700'>
+            Company Website <span className='text-red-500'>*</span>
+          </label>
           <input
             type='url'
             name='website'
@@ -92,7 +98,9 @@ export default function EmployerSettings() {
 
         {/* Company Email */}
         <div>
-          <label className='block text-sm font-medium text-gray-700'>Contact Email *</label>
+          <label className='block text-sm font-medium text-gray-700'>
+            Contact Email <span className='text-red-500'>*</span>
+          </label>
           <input
             type='email'
             name='email'
