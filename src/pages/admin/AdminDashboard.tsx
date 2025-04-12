@@ -3,12 +3,12 @@ import { Outlet } from "react-router-dom";
 
 export default function AdminDashboard() {
   return (
-    <div className='flex h-screen'>
+    <div className='flex min-h-screen'>
       {/* 왼쪽 사이드바 */}
       <AdminSidebar />
 
       {/* 메인 콘텐츠 영역 */}
-      <div className='flex-1 p-6 bg-gray-100 min-h-screen pb-20'>
+      <div className='flex-1 p-6 bg-gray-100 pb-20'>
         <Outlet /> {/* 각 페이지의 콘텐츠가 여기에 표시됨 */}
       </div>
     </div>

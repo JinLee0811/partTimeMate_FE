@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import CategoryFilter from "./CategoryFilter";
 import LocationFilter from "./LocationFilter";
 import WorkPeriodFilter from "./WorkPeriodFilter";
@@ -7,10 +8,12 @@ import FilterTabs from "./FilterTabs";
 import SelectedFilters from "./SelectedFilters";
 import ResetButton from "./ResetButton";
 import SearchInput from "./SearchInput";
+import { locations } from "../../../data/locations";
 
 const MAX_FILTERS = 10;
 
 export default function JobFilterPage() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<
     "Job Category" | "Location" | "Work Period" | "Detail"
   >("Job Category");
@@ -22,13 +25,42 @@ export default function JobFilterPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedPeriods, setSelectedPeriods] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedHours, setSelectedHours] = useState<string[]>([]);
   const [selectedDetails, setSelectedDetails] = useState<string[]>([]);
+
+  // URL 파라미터에서 지역 정보를 읽어와 자동으로 선택
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const locationParam = params.get("location");
+
+    if (locationParam) {
+      const formattedLocation = locationParam
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      const regionExists = locations.some(
+        (region) => region.name.toLowerCase() === formattedLocation.toLowerCase()
+      );
+
+      if (regionExists) {
+        const allLocationName = `${formattedLocation} - All`;
+        if (!selectedLocations.includes(allLocationName)) {
+          setSelectedLocations([allLocationName]);
+        }
+        setActiveTab("Location");
+      }
+    }
+  }, [location.search]);
 
   // 전체 선택된 필터 개수
   const totalSelectedFilters =
     selectedCategories.length +
     selectedLocations.length +
     selectedPeriods.length +
+    selectedDays.length +
+    selectedHours.length +
     selectedDetails.length;
 
   // 추가 필터 선택 가능 여부
@@ -39,6 +71,8 @@ export default function JobFilterPage() {
     setSelectedCategories([]);
     setSelectedLocations([]);
     setSelectedPeriods([]);
+    setSelectedDays([]);
+    setSelectedHours([]);
     setSelectedDetails([]);
     setSearchQuery("");
     setSearchActive(false);
@@ -48,7 +82,7 @@ export default function JobFilterPage() {
   const counts = {
     "Job Category": selectedCategories.length,
     Location: selectedLocations.length,
-    "Work Period": selectedPeriods.length,
+    "Work Period": selectedPeriods.length + selectedDays.length + selectedHours.length,
     Detail: selectedDetails.length,
   };
 
@@ -74,6 +108,16 @@ export default function JobFilterPage() {
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
     setSearchActive(false);
+  };
+
+  // 필터 제거 핸들러
+  const handleRemoveFilter = (filter: string) => {
+    setSelectedCategories(selectedCategories.filter((c) => c !== filter));
+    setSelectedLocations(selectedLocations.filter((l) => l !== filter));
+    setSelectedPeriods(selectedPeriods.filter((p) => p !== filter));
+    setSelectedDays(selectedDays.filter((d) => d !== filter));
+    setSelectedHours(selectedHours.filter((h) => h !== filter));
+    setSelectedDetails(selectedDetails.filter((d) => d !== filter));
   };
 
   return (
@@ -134,9 +178,12 @@ export default function JobFilterPage() {
         )}
         {activeTab === "Work Period" && (
           <WorkPeriodFilter
-            selectedFilters={selectedPeriods}
-            setSelectedFilters={setSelectedPeriods}
-            canAddMoreFilters={canAddMoreFilters}
+            selectedPeriods={selectedPeriods}
+            setSelectedPeriods={setSelectedPeriods}
+            selectedDays={selectedDays}
+            setSelectedDays={setSelectedDays}
+            selectedHours={selectedHours}
+            setSelectedHours={setSelectedHours}
           />
         )}
         {activeTab === "Detail" && (
@@ -155,14 +202,11 @@ export default function JobFilterPage() {
             ...selectedCategories,
             ...selectedLocations,
             ...selectedPeriods,
+            ...selectedDays,
+            ...selectedHours,
             ...selectedDetails,
           ]}
-          onRemoveFilter={(filter) => {
-            setSelectedCategories(selectedCategories.filter((c) => c !== filter));
-            setSelectedLocations(selectedLocations.filter((c) => c !== filter));
-            setSelectedPeriods(selectedPeriods.filter((c) => c !== filter));
-            setSelectedDetails(selectedDetails.filter((c) => c !== filter));
-          }}
+          onRemoveFilter={handleRemoveFilter}
         />
       </div>
 

@@ -117,6 +117,7 @@ export default function CategoryManagement() {
     if (window.confirm("Are you sure you want to update this subcategory?")) {
       try {
         await updateSubcategory(subcategoryId, editingSubcategory.name.trim());
+        await fetchCategories();
         setEditingSubcategory(null);
       } catch (err) {
         console.error("Failed to update subcategory", err);

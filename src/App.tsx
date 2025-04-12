@@ -32,7 +32,9 @@ import MyPageHome from "./pages/MyPages/MyPageHome";
 import TalentPool from "./pages/talent/TalentPool";
 import TalentDetail from "./pages/talent/TalentDetail";
 import JobFilteredBoard from "./pages/jobs/JobFilteredBoard";
-
+import UserSetting from "./pages/MyPages/UserSetting";
+import ManageResume from "./pages/MyPages/ManageResume";
+import MyWishlist from "./pages/MyPages/MyWishlist";
 const queryClient = new QueryClient();
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
@@ -79,7 +81,9 @@ export default function App() {
                 </ProtectedRoute>
               }>
               <Route index element={<MyPageHome />} />
-              <Route path='user' element={<EditUser />} />
+              <Route path='usersetting' element={<UserSetting />} />
+              <Route path='resume' element={<ManageResume />} />
+              <Route path='wishlist' element={<MyWishlist />} />
             </Route>
 
             {/* Job Posting (Business or Admin만 가능) */}

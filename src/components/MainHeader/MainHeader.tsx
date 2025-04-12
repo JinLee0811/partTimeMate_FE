@@ -2,21 +2,13 @@ import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser";
+import { locations } from "../../data/locations";
 
-const SYDNEY_AREAS = [
-  { name: "Sydney CBD", jobs: 450 },
-  { name: "Inner West", jobs: 320 },
-  { name: "Eastern Suburbs", jobs: 280 },
-  { name: "North Shore", jobs: 265 },
-  { name: "Parramatta", jobs: 156 },
-  { name: "Chatswood", jobs: 142 },
-  { name: "North Sydney", jobs: 123 },
-  { name: "Bondi", jobs: 98 },
-  { name: "Strathfield", jobs: 87 },
-  { name: "Burwood", jobs: 76 },
-  { name: "Hurstville", jobs: 65 },
-  { name: "Other Areas", jobs: 65 },
-];
+// locations.ts 파일에서 지역 데이터를 가져와서 사용
+const SYDNEY_AREAS = locations.map((region) => ({
+  name: region.name,
+  jobs: Math.floor(Math.random() * 300) + 50, // 임의의 일자리 수 생성
+}));
 
 export default function MainHeader() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -61,7 +53,7 @@ export default function MainHeader() {
         <div className='mt-12 flex justify-center gap-8 text-center text-sm text-gray-600'>
           <div className='flex items-center gap-2'>
             <FaMapMarkerAlt className='text-albamon' />
-            <span>11 Areas in Sydney</span>
+            <span>{SYDNEY_AREAS.length} Areas in Sydney</span>
           </div>
           <div className='flex items-center gap-2'>
             <FaClock className='text-albamon' />

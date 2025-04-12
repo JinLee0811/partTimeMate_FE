@@ -32,7 +32,7 @@ const Register = () => {
         <UserCard
           title='Recruiter'
           description='Post job listings and find the best talent for your business.'
-          buttonText='Sign Up as Employer'
+          buttonText='Sign Up as Recruiter'
           bgColor='bg-black hover:bg-gray-900'
           textColor='text-white'
           imageSrc={recruiter}

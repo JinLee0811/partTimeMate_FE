@@ -106,7 +106,7 @@ export default function SignUpBusiness() {
         lastName: formData.lastName,
         phoneNumber: formattedPhoneNumber,
         preferredLanguage: formData.preferredLanguage,
-        role: "BUSINESS",
+        role: "JOB_SEEKER",
       },
       {
         onError: (signupError: any) => {
@@ -119,7 +119,7 @@ export default function SignUpBusiness() {
   return (
     <div className='flex flex-col items-center bg-gray-50 py-10 px-4'>
       <div className='w-full max-w-lg bg-white shadow-md p-6 rounded-lg'>
-        <h2 className='text-2xl font-semibold text-gray-800 mb-6'>Business Sign Up</h2>
+        <h2 className='text-2xl font-semibold text-gray-800 mb-6'>Job Seeker Sign Up</h2>
 
         {/* 오류 메시지 표시 */}
         {localError && <p className='text-red-500 text-sm mb-4 text-center'>{localError}</p>}
@@ -274,7 +274,7 @@ export default function SignUpBusiness() {
                 : "bg-gray-600 text-white hover:bg-gray-700"
             }`}
             disabled={!isRequiredTermsChecked || isPending}>
-            {isPending ? "Signing Up..." : "Create Business Account"}
+            {isPending ? "Signing Up..." : "Create Job Seeker Account"}
           </button>
         </form>
       </div>

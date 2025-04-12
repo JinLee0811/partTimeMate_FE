@@ -33,6 +33,36 @@ export default function LocationFilter({
     }
   }, [activeRegion, activeSubRegion]);
 
+  // URL에서 선택된 지역이 있는지 확인하고 해당 지역의 "All" 항목을 선택
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const locationParam = urlParams.get("location");
+
+    if (locationParam) {
+      const formattedLocation = locationParam
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+      // 해당 지역 찾기
+      const region = locations.find(
+        (region) => region.name.toLowerCase() === formattedLocation.toLowerCase()
+      );
+
+      if (region) {
+        setActiveRegion(region.id);
+        // 중분류 "All" 항목 선택
+        setActiveSubRegion("all");
+
+        // 해당 지역의 "All" 항목 선택
+        const allLocationName = `${region.name} - All`;
+        if (!selectedLocations.includes(allLocationName)) {
+          setSelectedLocations([allLocationName]);
+        }
+      }
+    }
+  }, []);
+
   const handleSelectLocation = (location: string) => {
     // 이미 선택된 지역인 경우 제거
     if (selectedLocations.includes(location)) {
@@ -134,44 +164,90 @@ export default function LocationFilter({
 
           {/* Middle Panel: Subregions */}
           <div className='border-r pr-4 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
-            {activeRegion &&
-              locations
-                .find((region) => region.id === activeRegion)
-                ?.subcategories.map((sub) => (
-                  <div
-                    key={sub.id}
-                    className={`cursor-pointer p-2 transition ${
-                      activeSubRegion === sub.id
-                        ? "bg-orange-50 text-orange-600 font-semibold"
-                        : "text-gray-700 hover:text-orange-500"
-                    }`}
-                    onClick={() => setActiveSubRegion(sub.id)}>
-                    {sub.name}
-                  </div>
-                ))}
+            {activeRegion && (
+              <>
+                {/* All 항목 추가 */}
+                <div
+                  className={`cursor-pointer p-2 transition ${
+                    activeSubRegion === "all"
+                      ? "bg-orange-50 text-orange-600 font-semibold"
+                      : "text-gray-700 hover:text-orange-500"
+                  }`}
+                  onClick={() => {
+                    setActiveSubRegion("all");
+                    const region = locations.find((r) => r.id === activeRegion);
+                    if (region) {
+                      const allLocationName = `${region.name} - All`;
+                      if (!selectedLocations.includes(allLocationName)) {
+                        setSelectedLocations([allLocationName]);
+                      }
+                    }
+                  }}>
+                  All
+                </div>
+                {/* 기존 서브카테고리 */}
+                {locations
+                  .find((region) => region.id === activeRegion)
+                  ?.subcategories.map((sub) => (
+                    <div
+                      key={sub.id}
+                      className={`cursor-pointer p-2 transition ${
+                        activeSubRegion === sub.id
+                          ? "bg-orange-50 text-orange-600 font-semibold"
+                          : "text-gray-700 hover:text-orange-500"
+                      }`}
+                      onClick={() => setActiveSubRegion(sub.id)}>
+                      {sub.name}
+                    </div>
+                  ))}
+              </>
+            )}
           </div>
 
           {/* Right Panel: Areas */}
           <div className='max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
-            {activeSubRegion &&
-              locations
-                .find((region) => region.id === activeRegion)
-                ?.subcategories.find((sub) => sub.id === activeSubRegion)
-                ?.areas.map((area) => {
-                  const isSelected = selectedLocations.includes(area);
-                  return (
-                    <div
-                      key={area}
-                      className={`cursor-pointer flex justify-between items-center p-2 transition 
-                        ${isSelected ? "text-orange-500 font-semibold" : "text-gray-700"} 
-                        hover:text-orange-500
-                        ${!isSelected && !canAddMoreFilters ? "opacity-50 cursor-not-allowed" : ""}`}
-                      onClick={() => handleSelectLocation(area)}>
-                      <span>{area}</span>
-                      {isSelected && <FaCheck className='text-orange-500 ml-1' />}
-                    </div>
-                  );
-                })}
+            {activeSubRegion === "all"
+              ? // All이 선택된 경우 해당 지역의 모든 지역 표시
+                activeRegion &&
+                locations
+                  .find((region) => region.id === activeRegion)
+                  ?.subcategories.flatMap((sub) =>
+                    sub.areas.map((area) => {
+                      const isSelected = selectedLocations.includes(area);
+                      return (
+                        <div
+                          key={area}
+                          className={`cursor-pointer flex justify-between items-center p-2 transition 
+                            ${isSelected ? "text-orange-500 font-semibold" : "text-gray-700"} 
+                            hover:text-orange-500
+                            ${!isSelected && !canAddMoreFilters ? "opacity-50 cursor-not-allowed" : ""}`}
+                          onClick={() => handleSelectLocation(area)}>
+                          <span>{area}</span>
+                          {isSelected && <FaCheck className='text-orange-500 ml-1' />}
+                        </div>
+                      );
+                    })
+                  )
+              : // 특정 서브카테고리가 선택된 경우
+                activeSubRegion &&
+                locations
+                  .find((region) => region.id === activeRegion)
+                  ?.subcategories.find((sub) => sub.id === activeSubRegion)
+                  ?.areas.map((area) => {
+                    const isSelected = selectedLocations.includes(area);
+                    return (
+                      <div
+                        key={area}
+                        className={`cursor-pointer flex justify-between items-center p-2 transition 
+                          ${isSelected ? "text-orange-500 font-semibold" : "text-gray-700"} 
+                          hover:text-orange-500
+                          ${!isSelected && !canAddMoreFilters ? "opacity-50 cursor-not-allowed" : ""}`}
+                        onClick={() => handleSelectLocation(area)}>
+                        <span>{area}</span>
+                        {isSelected && <FaCheck className='text-orange-500 ml-1' />}
+                      </div>
+                    );
+                  })}
           </div>
         </div>
       )}

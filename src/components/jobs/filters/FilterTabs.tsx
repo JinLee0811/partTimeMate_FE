@@ -33,7 +33,7 @@ export default function FilterTabs({ activeTab, setActiveTab, counts }: FilterTa
             onClick={() => setActiveTab(tab.key)}
             className={`
               relative flex items-center px-4 py-2 rounded-md border
-              transition-colors font-semibold
+              transition-all font-semibold
               ${
                 isActive
                   ? "border-2 border-black bg-white text-black"
@@ -46,7 +46,13 @@ export default function FilterTabs({ activeTab, setActiveTab, counts }: FilterTa
                 {count}
               </span>
             )}
-            {isActive && <span className='ml-2 text-sm'>▲</span>}
+            <span
+              className={`
+              ml-2 text-sm transition-transform duration-200
+              ${isActive ? "rotate-180" : ""}
+            `}>
+              ▲
+            </span>
           </button>
         );
       })}

@@ -1,6 +1,10 @@
+// Work Period Options
 export const workPeriods = [
-  "Short-term (1-3 months)",
-  "Mid-term (3-6 months)",
-  "Long-term (6+ months)",
-  "Flexible",
+  "One day",
+  "Within 1 week",
+  "1 week - 1 month",
+  "1-3 months",
+  "3-6 months",
+  "6 months - 1 year",
+  "Over 1 year",
 ];

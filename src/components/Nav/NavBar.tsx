@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { FaSearch, FaChevronDown, FaUser } from "react-icons/fa";
+import { FaSearch, FaChevronUp, FaUser } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type UserRole = "ADMIN" | "JOB_SEEKER" | "BUSINESS";
 
@@ -11,6 +11,20 @@ export default function NavBar() {
   const { isLoading } = useUser();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentView, setCurrentView] = useState<UserRole>((user?.role as UserRole) || "ADMIN");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleViewChange = (newView: UserRole) => {
     setCurrentView(newView);
@@ -119,13 +133,13 @@ export default function NavBar() {
   };
 
   const renderUserDropdown = () => (
-    <div className='relative'>
+    <div className='relative' ref={dropdownRef}>
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         className='flex items-center gap-2 px-3 py-1.5 text-gray-700 hover:text-gray-900 text-sm font-medium border rounded-full'>
         <FaUser className='text-gray-500' />
         <span>{user?.lastName || "User"}</span>
-        <FaChevronDown
+        <FaChevronUp
           className={`text-gray-500 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
         />
       </button>
