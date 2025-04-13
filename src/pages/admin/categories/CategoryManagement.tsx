@@ -1,25 +1,8 @@
 import { useEffect, useState } from "react";
-import Table from "../../../components/Table";
 import { useCategoryStore } from "../../../store/useCategoryStore";
-
-/** 간단한 Pencil 아이콘 (Heroicons 예시) */
-function PencilIcon() {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      className='w-4 h-4 ml-1 text-blue-500'
-      fill='none'
-      viewBox='0 0 24 24'
-      stroke='currentColor'>
-      <path
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth={2}
-        d='M11 17l-5 5m0 0l-2-2m2 2l5-5M16.586 2.586a2 2 0 00-2.828 0L3 13.344a2 2 0 000 2.828l4.586 4.586a2 2 0 002.828 0l10.758-10.758a2 2 0 000-2.828L16.586 2.586z'
-      />
-    </svg>
-  );
-}
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import Modal from "../../../components/Modal";
+import { Category, Subcategory } from "../../../types/category";
 
 export default function CategoryManagement() {
   const {
@@ -52,19 +35,21 @@ export default function CategoryManagement() {
     name: string;
   } | null>(null);
 
-  const itemsPerPage = 5; // 한 페이지당 표시할 카테고리 개수
-  const [currentPage, setCurrentPage] = useState(1);
+  // 확장된 카테고리 상태 관리
+  const [expandedCategories, setExpandedCategories] = useState<{ [key: number]: boolean }>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
-  const paginatedCategories = categories.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // 카테고리 확장/축소 토글
+  const toggleCategory = (categoryId: number) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [categoryId]: !prev[categoryId],
+    }));
+  };
 
   /** =====================
    *  대분류(카테고리) 추가
@@ -88,6 +73,7 @@ export default function CategoryManagement() {
     try {
       await addSubcategory(Number(selectedCategory), newSubcategoryName.trim());
       setNewSubcategoryName("");
+      alert("✅ Subcategory added successfully!");
     } catch (err) {
       console.error("Failed to add subcategory", err);
     }
@@ -103,6 +89,7 @@ export default function CategoryManagement() {
         await updateCategory(categoryId, editedCategoryName.trim());
         setEditingCategoryId(null);
         setEditedCategoryName("");
+        alert("✅ Category updated successfully!");
       } catch (err) {
         console.error("Failed to update category", err);
       }
@@ -119,201 +106,275 @@ export default function CategoryManagement() {
         await updateSubcategory(subcategoryId, editingSubcategory.name.trim());
         await fetchCategories();
         setEditingSubcategory(null);
+        alert("✅ Subcategory updated successfully!");
       } catch (err) {
         console.error("Failed to update subcategory", err);
       }
     }
   };
 
+  /** =====================
+   *  대분류(카테고리) 삭제
+   *  ===================== */
+  const handleDeleteCategory = async (categoryId: number) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this category? All subcategories will also be deleted."
+      )
+    ) {
+      try {
+        await deleteCategory(categoryId);
+        alert("✅ Category deleted successfully!");
+      } catch (err) {
+        console.error("Failed to delete category", err);
+      }
+    }
+  };
+
+  /** =====================
+   *  소분류 삭제
+   *  ===================== */
+  const handleDeleteSubcategory = async (subcategoryId: number) => {
+    if (window.confirm("Are you sure you want to delete this subcategory?")) {
+      try {
+        await deleteSubcategory(subcategoryId);
+        alert("✅ Subcategory deleted successfully!");
+      } catch (err) {
+        console.error("Failed to delete subcategory", err);
+      }
+    }
+  };
+
+  // 검색 필터링
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className='p-6 bg-white shadow-md rounded-md max-w-6xl mx-auto'>
-      <h2 className='text-3xl font-bold text-gray-800 mb-6 text-center'>Job Category Management</h2>
+    <div className='max-w-7xl mx-auto'>
+      <div className='mb-8'>
+        <h1 className='text-2xl font-bold text-gray-900'>Category Management</h1>
+        <p className='mt-2 text-sm text-gray-600'>Manage job categories and subcategories</p>
+      </div>
 
-      {/* 대분류 & 소분류 추가 UI */}
-      <div className='grid grid-cols-[2fr_3fr] gap-6 mb-6'>
-        {/* 대분류 추가 */}
-        <div className='p-4 bg-gray-100 border rounded-md'>
-          <h3 className='text-lg font-semibold mb-2'>Add New Category</h3>
-          <input
-            type='text'
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            placeholder='Enter category name'
-            className='p-2 border border-gray-300 rounded-md w-full'
-          />
-          <button
-            onClick={handleAddCategory}
-            className='mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full'
-            disabled={!newCategoryName.trim()}>
-            Add
-          </button>
-        </div>
-
-        {/* 소분류 추가 */}
-        <div className='p-4 bg-gray-100 border rounded-md'>
-          <h3 className='text-lg font-semibold mb-2'>Add Subcategory</h3>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className='p-2 border border-gray-300 rounded-md w-full'>
-            <option value=''>Select Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type='text'
-            value={newSubcategoryName}
-            onChange={(e) => setNewSubcategoryName(e.target.value)}
-            placeholder='Enter subcategory name'
-            className='p-2 border border-gray-300 rounded-md w-full mt-2'
-          />
-          <button
-            onClick={handleAddSubcategory}
-            className='mt-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full'
-            disabled={!newSubcategoryName.trim() || !selectedCategory}>
-            Add
-          </button>
+      {/* 대분류 추가 섹션 */}
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6'>
+        <div className='p-6'>
+          <h2 className='text-lg font-medium text-gray-900 mb-4'>Add Main Category</h2>
+          <div className='flex flex-col md:flex-row gap-4'>
+            <input
+              type='text'
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder='Enter new category name'
+              className='flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+            />
+            <button
+              onClick={handleAddCategory}
+              className='px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200'>
+              <FaPlus className='inline-block mr-2' />
+              Add Category
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 목록 영역 */}
-      {loading ? (
-        <p>Loading categories...</p>
-      ) : error ? (
-        <p className='text-red-500'>{error}</p>
-      ) : (
-        <>
-          {/* 
-            Table 컴포넌트의 columns를 ID 없이 구성
-            ["Category", "Subcategories", "Actions"]
-          */}
-          <Table
-            columns={["Category", "Subcategories", "Actions"]}
-            data={paginatedCategories.map((category) => {
-              // 카테고리 Cell
-              const categoryCell =
-                editingCategoryId === category.id ? (
-                  <div className='flex items-center'>
-                    <input
-                      type='text'
-                      value={editedCategoryName}
-                      onChange={(e) => setEditedCategoryName(e.target.value)}
-                      className='p-1 border border-gray-300 rounded-md'
-                    />
-                    <button
-                      onClick={() => handleUpdateCategory(category.id)}
-                      className='ml-2 bg-yellow-500 text-white px-2 py-1 rounded-md hover:bg-yellow-600'>
-                      Save
-                    </button>
-                  </div>
-                ) : (
-                  <span
-                    className='font-semibold text-gray-800 flex items-center gap-1 cursor-pointer'
-                    onClick={() => {
-                      setEditingCategoryId(category.id);
-                      setEditedCategoryName(category.name);
-                    }}>
-                    {category.name}
-                    <PencilIcon />
-                  </span>
-                );
-
-              // 소분류 Cell
-              const subcategoryCell = subcategories[category.id]?.length ? (
-                <div className='flex flex-wrap gap-2'>
-                  {subcategories[category.id].map((sub) => (
-                    <span
-                      key={sub.id}
-                      className='bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-md inline-flex items-center'>
-                      {editingSubcategory && editingSubcategory.id === sub.id ? (
-                        <>
-                          <input
-                            type='text'
-                            value={editingSubcategory.name}
-                            onChange={(e) =>
-                              setEditingSubcategory({
-                                ...editingSubcategory,
-                                name: e.target.value,
-                              })
-                            }
-                            className='w-20 p-1 border border-gray-300 rounded-md mr-2'
-                          />
-                          <button
-                            onClick={() => handleUpdateSubcategory(sub.id)}
-                            className='bg-yellow-500 text-white px-2 py-1 rounded-md hover:bg-yellow-600'>
-                            Save
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <span
-                            className='flex items-center cursor-pointer'
-                            onClick={() => setEditingSubcategory({ id: sub.id, name: sub.name })}>
-                            {sub.name}
-                            <PencilIcon />
-                          </span>
-                        </>
-                      )}
-                      <button
-                        className='ml-2 text-red-500 hover:text-red-700'
-                        onClick={() => deleteSubcategory(sub.id)}>
-                        x
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span className='text-gray-500'>No subcategories</span>
-              );
-
-              // 액션 Cell
-              const actionsCell = (
-                <button
-                  className='text-red-500 hover:text-red-700'
-                  onClick={() => {
-                    if (window.confirm("Are you sure you want to delete this category?")) {
-                      deleteCategory(category.id);
-                    }
-                  }}>
-                  Delete
-                </button>
-              );
-
-              return [categoryCell, subcategoryCell, actionsCell];
-            })}
-          />
-
-          {/* 페이지네이션 컨트롤 */}
-          <div className='flex justify-center mt-6 space-x-4'>
+      {/* 소분류 추가 섹션 */}
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6'>
+        <div className='p-6'>
+          <h2 className='text-lg font-medium text-gray-900 mb-4'>Add Subcategory</h2>
+          <div className='flex flex-col md:flex-row gap-4'>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className='flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500'>
+              <option value=''>Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type='text'
+              value={newSubcategoryName}
+              onChange={(e) => setNewSubcategoryName(e.target.value)}
+              placeholder='Enter new subcategory name'
+              className='flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+            />
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className={`px-4 py-2 rounded-md ${
-                currentPage === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
-              disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span className='text-gray-700 text-lg'>
-              {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              className={`px-4 py-2 rounded-md ${
-                currentPage === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
-              disabled={currentPage === totalPages}>
-              Next
+              onClick={handleAddSubcategory}
+              className='px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200'>
+              <FaPlus className='inline-block mr-2' />
+              Add Subcategory
             </button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
+
+      {/* 카테고리 목록 섹션 */}
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+        <div className='p-6 border-b border-gray-100'>
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
+            <div className='relative'>
+              <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                <FaSearch className='text-gray-400' />
+              </div>
+              <input
+                type='text'
+                placeholder='Search categories...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='pl-10 pr-4 py-2 w-full md:w-64 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200'
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className='overflow-x-auto'>
+          <table className='min-w-full divide-y divide-gray-100'>
+            <thead className='bg-gray-50'>
+              <tr>
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase'>
+                  Category Name
+                </th>
+                <th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase'>
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className='bg-white divide-y divide-gray-100'>
+              {filteredCategories.map((category) => (
+                <>
+                  <tr key={category.id} className='hover:bg-gray-50 transition-colors duration-150'>
+                    <td className='px-6 py-4 whitespace-nowrap'>
+                      <div className='flex items-center'>
+                        <button
+                          onClick={() => toggleCategory(category.id)}
+                          className='mr-2 text-gray-500 hover:text-gray-700'>
+                          {expandedCategories[category.id] ? <FaChevronDown /> : <FaChevronRight />}
+                        </button>
+                        {editingCategoryId === category.id ? (
+                          <div className='flex items-center'>
+                            <input
+                              type='text'
+                              value={editedCategoryName}
+                              onChange={(e) => setEditedCategoryName(e.target.value)}
+                              className='px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                              placeholder={category.name}
+                            />
+                            <button
+                              onClick={() => handleUpdateCategory(category.id)}
+                              className='ml-2 text-green-600 hover:text-green-800'>
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingCategoryId(null)}
+                              className='ml-2 text-gray-600 hover:text-gray-800'>
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className='text-sm font-medium text-gray-900'>{category.name}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
+                      <div className='flex justify-end space-x-2'>
+                        {editingCategoryId !== category.id && (
+                          <button
+                            onClick={() => {
+                              setEditingCategoryId(category.id);
+                              setEditedCategoryName(category.name);
+                            }}
+                            className='text-orange-600 hover:text-orange-800 p-1.5 rounded-lg hover:bg-orange-50 transition-colors duration-200'>
+                            <FaEdit />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDeleteCategory(category.id)}
+                          className='text-red-600 hover:text-red-800 p-1.5 rounded-lg hover:bg-red-50 transition-colors duration-200'>
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {/* 소분류 목록 */}
+                  {expandedCategories[category.id] && (
+                    <tr>
+                      <td colSpan={2} className='px-6 py-2 bg-gray-50'>
+                        <div className='pl-8'>
+                          <h3 className='text-sm font-medium text-gray-700 mb-2'>Subcategories</h3>
+                          {subcategories[category.id] && subcategories[category.id].length > 0 ? (
+                            <div className='space-y-2'>
+                              {subcategories[category.id].map((subcategory) => (
+                                <div
+                                  key={subcategory.id}
+                                  className='flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100'>
+                                  {editingSubcategory?.id === subcategory.id ? (
+                                    <div className='flex items-center w-full'>
+                                      <input
+                                        type='text'
+                                        value={editingSubcategory.name}
+                                        onChange={(e) =>
+                                          setEditingSubcategory({
+                                            ...editingSubcategory,
+                                            name: e.target.value,
+                                          })
+                                        }
+                                        className='flex-1 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+                                      />
+                                      <button
+                                        onClick={() => handleUpdateSubcategory(subcategory.id)}
+                                        className='ml-2 text-green-600 hover:text-green-800'>
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingSubcategory(null)}
+                                        className='ml-2 text-gray-600 hover:text-gray-800'>
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <span className='text-sm text-gray-900'>
+                                        {subcategory.name}
+                                      </span>
+                                      <div className='flex space-x-2'>
+                                        <button
+                                          onClick={() =>
+                                            setEditingSubcategory({
+                                              id: subcategory.id,
+                                              name: subcategory.name,
+                                            })
+                                          }
+                                          className='text-orange-600 hover:text-orange-800 p-1 rounded-lg hover:bg-orange-50 transition-colors duration-200'>
+                                          <FaEdit />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteSubcategory(subcategory.id)}
+                                          className='text-red-600 hover:text-red-800 p-1 rounded-lg hover:bg-red-50 transition-colors duration-200'>
+                                          <FaTrash />
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className='text-sm text-gray-500'>No subcategories found.</p>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

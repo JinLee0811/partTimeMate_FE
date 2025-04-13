@@ -91,7 +91,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, data }) =>
                       href={data.company.website}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='text-sm text-blue-500 hover:underline'>
+                      className='text-sm text-orange-500 hover:underline'>
                       {data.company.website}
                     </a>
                   )}
@@ -181,7 +181,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, data }) =>
                 {data.applicationMethods?.map((method) => (
                   <span
                     key={method}
-                    className='px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm'>
+                    className='px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm'>
                     {method}
                   </span>
                 ))}
@@ -208,7 +208,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, onClose, data }) =>
         <div className='p-6 border-t'>
           <button
             onClick={onClose}
-            className='w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'>
+            className='w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700'>
             Close Preview
           </button>
         </div>

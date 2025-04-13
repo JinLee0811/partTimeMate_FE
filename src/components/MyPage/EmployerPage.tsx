@@ -6,9 +6,7 @@ import AccountDeletion from "./AccountDeletion";
 import { useState } from "react";
 
 export default function EmployerPage() {
-  const [activeTab, setActiveTab] = useState<"personal" | "password" | "settings" | "delete">(
-    "personal"
-  );
+  const [activeTab, setActiveTab] = useState<"personal" | "password" | "delete">("personal");
 
   return (
     <div className='p-6 bg-white border border-gray-200 rounded-lg shadow-sm'>
@@ -18,7 +16,6 @@ export default function EmployerPage() {
       <div className='mt-6'>
         {activeTab === "personal" && <PersonalInfo />}
         {activeTab === "password" && <PasswordChange />}
-        {activeTab === "settings" && <EmployerSettings />}
         {activeTab === "delete" && <AccountDeletion />}
       </div>
     </div>

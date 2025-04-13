@@ -1,4 +1,5 @@
 import { Link, useRouteError } from "react-router-dom";
+import mainLogo from "../assets/mainLogo.png";
 
 interface RouteError {
   status?: number;
@@ -12,40 +13,60 @@ export default function ErrorPage() {
   // ✅ 에러 코드에 따른 메시지
   const errorMessages: Record<number, { title: string; message: string }> = {
     404: {
-      title: "404 - Page Not Found",
-      message: "Sorry, the page you're looking for doesn't exist.",
+      title: "Oops! Page Not Found",
+      message: "The page you're looking for seems to have wandered off.",
     },
     403: {
-      title: "403 - Access Denied",
-      message: "You don't have permission to view this page.",
+      title: "Access Denied",
+      message: "Sorry, you don't have permission to view this page.",
     },
     500: {
-      title: "500 - Server Error",
-      message: "Oops! Something went wrong on our side.",
+      title: "Server Error",
+      message: "Our server is taking a short break. Please try again later.",
     },
   };
 
   // ✅ 에러 코드가 없으면 기본값 설정
   const errorCode = error?.status || 404;
   const { title, message } = errorMessages[errorCode] || {
-    title: "An Unexpected Error Occurred",
-    message: "Something went wrong. Please try again later.",
+    title: "Unexpected Error",
+    message: "Something went wrong. Let's try that again.",
   };
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center p-6'>
-      <h1 className='text-4xl font-bold text-gray-800'>{title}</h1>
-      <p className='text-lg text-gray-600 mt-3'>{message}</p>
+    <div className='min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-orange-50 to-white p-6'>
+      {/* Logo Section */}
+      <div className='mb-8'>
+        <img src={mainLogo} alt='Part-Time Mate Logo' className='h-24 w-auto' />
+      </div>
 
-      {/* 🔹 에러 코드 표시 */}
-      {errorCode && <p className='text-gray-500 mt-2'>Error Code: {errorCode}</p>}
+      {/* Error Content */}
+      <div className='text-center max-w-lg'>
+        <h1 className='text-4xl font-bold text-orange-600 mb-2'>{title}</h1>
+        <p className='text-lg text-gray-600 mb-4'>{message}</p>
 
-      {/* 🔹 홈으로 돌아가기 버튼 */}
-      <Link
-        to='/'
-        className='mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition'>
-        Go Back to Home
-      </Link>
+        {/* Error Code Badge */}
+        <div className='inline-block bg-orange-100 text-orange-800 px-4 py-2 rounded-full font-medium text-sm mb-8'>
+          Error {errorCode}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className='space-y-4'>
+          <Link
+            to='/'
+            className='block w-full px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-lg hover:bg-orange-700 transition-all duration-200 transform hover:-translate-y-1'>
+            Return to Home
+          </Link>
+          <button
+            onClick={() => window.history.back()}
+            className='block w-full px-6 py-3 bg-white text-orange-600 font-semibold rounded-xl border-2 border-orange-200 hover:bg-orange-50 transition-all duration-200'>
+            Go Back
+          </button>
+        </div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className='absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-orange-600' />
     </div>
   );
 }

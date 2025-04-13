@@ -2,8 +2,8 @@ import React from "react";
 import { FaUser, FaLock, FaTrash } from "react-icons/fa";
 
 interface MyPageTabsProps {
-  activeTab: "personal" | "password" | "settings" | "delete";
-  setActiveTab: (tab: "personal" | "password" | "settings" | "delete") => void;
+  activeTab: "personal" | "password" | "delete";
+  setActiveTab: (tab: "personal" | "password" | "delete") => void;
   isEmployer: boolean;
 }
 
@@ -28,13 +28,13 @@ export default function MyPageTabs({ activeTab, setActiveTab, isEmployer }: MyPa
 
   return (
     <div className='border-b border-gray-200'>
-      <nav className='flex space-x-8' aria-label='Settings'>
+      <nav className='flex w-fit mx-auto' aria-label='Settings'>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`
-              group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm
+              group inline-flex items-center py-4 px-9 border-b-2 font-medium text-sm
               ${
                 activeTab === tab.id
                   ? "border-orange-500 text-orange-600"

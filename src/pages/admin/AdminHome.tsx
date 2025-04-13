@@ -18,11 +18,16 @@ const DashboardCard = ({
 }) => (
   <Link
     to={link}
-    className='bg-white p-6 shadow rounded-lg flex items-center space-x-4 hover:bg-gray-100 transition'>
-    <div className='text-3xl text-blue-500'>{icon}</div>
-    <div>
-      <h3 className='text-lg font-semibold'>{title}</h3>
-      <p className='text-gray-500'>{count} items</p>
+    className='bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100'>
+    <div className='flex items-center justify-between'>
+      <div>
+        <h3 className='text-lg font-semibold text-gray-900'>{title}</h3>
+        <p className='text-3xl font-bold text-orange-600 mt-2'>{count}</p>
+        <p className='text-sm text-gray-500 mt-1'>Total Items</p>
+      </div>
+      <div className='w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500'>
+        {icon}
+      </div>
     </div>
   </Link>
 );
@@ -45,29 +50,42 @@ export default function AdminHome() {
 
   return (
     <div>
-      <h2 className='text-2xl font-bold mb-4'>Admin Dashboard</h2>
-      <p className='text-gray-600 mb-6'>Manage users, jobs, and categories efficiently.</p>
+      <div className='mb-8'>
+        <h1 className='text-2xl font-bold text-gray-900'>Admin Dashboard</h1>
+        <p className='mt-2 text-sm text-gray-600'>Monitor and manage your platform's key metrics</p>
+      </div>
 
-      {/* 요약 카드 */}
-      <div className='grid grid-cols-3 gap-6'>
+      {/* Stats Overview */}
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <DashboardCard
           title='Total Users'
           count={totalCount}
-          icon={<FaUsers />}
+          icon={<FaUsers className='w-6 h-6' />}
           link='/admin/users'
         />
         <DashboardCard
-          title='Total Job Posts'
+          title='Active Jobs'
           count={45}
-          icon={<FaBriefcase />}
+          icon={<FaBriefcase className='w-6 h-6' />}
           link='/admin/jobs'
         />
         <DashboardCard
           title='Categories'
           count={categoryCount}
-          icon={<FaThList />}
+          icon={<FaThList className='w-6 h-6' />}
           link='/admin/categories'
         />
+      </div>
+
+      {/* Recent Activity Section */}
+      <div className='mt-12'>
+        <h2 className='text-xl font-semibold text-gray-900 mb-6'>Recent Activity</h2>
+        <div className='bg-white rounded-2xl shadow-sm border border-gray-100 p-6'>
+          <div className='space-y-4'>
+            {/* 여기에 최근 활동 내역을 추가할 수 있습니다 */}
+            <p className='text-gray-500 text-center py-4'>No recent activities</p>
+          </div>
+        </div>
       </div>
     </div>
   );

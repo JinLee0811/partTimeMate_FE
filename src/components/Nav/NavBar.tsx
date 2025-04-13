@@ -56,8 +56,8 @@ export default function NavBar() {
       { to: "/admin/jobs", label: "Job Management" },
     ],
     JOB_SEEKER: [
-      { to: "/resume", label: "Upload Resume" },
-      { to: "/jobs/applications", label: "My Applications" },
+      { to: "/mypage/resume", label: "Upload Resume" },
+      { to: "/mypage/applications", label: "My Applications" },
     ],
     BUSINESS: [
       { to: "/jobposting", label: "Post a Job" },
@@ -178,7 +178,7 @@ export default function NavBar() {
         Sign Up
       </Link>
       <Link
-        to='/auth/login'
+        to='/mypage/resume'
         className='px-4 py-2 border border-albamon rounded-md text-albamon hover:border-albamon-dark hover:text-albamon-dark text-sm font-medium'>
         Upload Resume
       </Link>

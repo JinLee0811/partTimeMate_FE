@@ -159,7 +159,7 @@ const BasicInfo: React.FC = () => {
           value={formData?.title || ""}
           onChange={handleTitleChange}
           placeholder='Enter position title (e.g., Barista, Retail Assistant)'
-          className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'
+          className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500'
         />
       </div>
 
@@ -170,7 +170,7 @@ const BasicInfo: React.FC = () => {
           <button
             type='button'
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className='w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white flex items-center justify-between'
+            className='w-full px-4 py-2 text-left border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white flex items-center justify-between'
             disabled={!categories || categories.length === 0}>
             <span className='flex items-center'>
               {categories.length === 0
@@ -214,12 +214,12 @@ const BasicInfo: React.FC = () => {
                     onClick={() => handleCategoryChange(category.id)}
                     className={`w-full px-4 py-3 text-left hover:bg-gray-50 focus:outline-none ${
                       selectedCategory === category.id
-                        ? "bg-gray-50 border-l-4 border-red-500"
+                        ? "bg-gray-50 border-l-4 border-orange-500"
                         : "border-l-4 border-transparent"
                     }`}>
                     <span
                       className={`block font-medium ${
-                        selectedCategory === category.id ? "text-red-500" : "text-gray-900"
+                        selectedCategory === category.id ? "text-orange-500" : "text-gray-900"
                       }`}>
                       {category.name}
                     </span>
@@ -264,7 +264,7 @@ const BasicInfo: React.FC = () => {
               onClick={() => handleLocationSelect(location)}
               className={`px-4 py-2 rounded-lg border ${
                 formData?.locationCategory === location
-                  ? "bg-blue-100 border-blue-500 text-blue-700"
+                  ? "bg-orange-100 border-orange-500 text-orange-700"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}>
               {location}
@@ -274,7 +274,7 @@ const BasicInfo: React.FC = () => {
             onClick={() => setShowLocationInput(true)}
             className={`px-4 py-2 rounded-lg border ${
               showLocationInput
-                ? "bg-blue-100 border-blue-500 text-blue-700"
+                ? "bg-orange-100 border-orange-500 text-orange-700"
                 : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}>
             Other
@@ -286,7 +286,7 @@ const BasicInfo: React.FC = () => {
             value={locationArea}
             onChange={(e) => handleLocationAreaChange(e.target.value)}
             placeholder='Enter location area'
-            className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
           />
         )}
       </div>
@@ -319,7 +319,7 @@ const BasicInfo: React.FC = () => {
             onChange={(e) => updateFormData({ hourly_rate: parseFloat(e.target.value) })}
             placeholder='Enter hourly rate'
             disabled={formData?.isHourlyRateNegotiable}
-            className='w-40 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500'
+            className='w-40 px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100 disabled:text-gray-500'
           />
           <span className='text-gray-500'>per hour</span>
         </div>
@@ -329,7 +329,7 @@ const BasicInfo: React.FC = () => {
             id='isNegotiable'
             checked={formData?.isHourlyRateNegotiable || false}
             onChange={(e) => updateFormData({ isHourlyRateNegotiable: e.target.checked })}
-            className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+            className='h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded'
           />
           <label htmlFor='isNegotiable' className='text-sm text-gray-600'>
             Rate is negotiable
@@ -357,7 +357,7 @@ const BasicInfo: React.FC = () => {
                     updateFormData({ workTime: "To be discussed" });
                   }
                 }}
-                className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+                className='h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded'
               />
               <label htmlFor='daysNegotiable' className='text-sm text-gray-600'>
                 Days to be discussed
@@ -372,7 +372,7 @@ const BasicInfo: React.FC = () => {
                   onClick={() => handleDayToggle(day)}
                   className={`px-3 py-1 rounded-full text-sm ${
                     selectedDays.includes(day)
-                      ? "bg-blue-100 text-blue-700 border border-blue-300"
+                      ? "bg-orange-100 text-orange-700 border border-orange-300"
                       : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
                   }`}>
                   {day}
@@ -401,7 +401,7 @@ const BasicInfo: React.FC = () => {
                         updateFormData({ workTime: "To be discussed" });
                       }
                     }}
-                    className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+                    className='h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded'
                   />
                   <label htmlFor='timeNegotiable' className='text-sm text-gray-600'>
                     Time to be discussed
@@ -415,7 +415,7 @@ const BasicInfo: React.FC = () => {
                     <select
                       value={startTime}
                       onChange={(e) => handleTimeChange("start", e.target.value)}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'>
+                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500'>
                       <option value=''>Select start time</option>
                       {TIME_SLOTS.map((time) => (
                         <option key={time} value={time}>
@@ -429,7 +429,7 @@ const BasicInfo: React.FC = () => {
                     <select
                       value={endTime}
                       onChange={(e) => handleTimeChange("end", e.target.value)}
-                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'>
+                      className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500'>
                       <option value=''>Select end time</option>
                       {TIME_SLOTS.map((time) => (
                         <option key={time} value={time}>

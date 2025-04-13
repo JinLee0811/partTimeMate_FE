@@ -105,36 +105,4 @@ export const locations = [
       },
     ],
   },
-  {
-    id: "west-sydney",
-    name: "Western Sydney",
-    subcategories: [
-      {
-        id: "greater-west",
-        name: "Greater West",
-        areas: ["Penrith", "Mount Druitt", "St Marys"],
-      },
-      {
-        id: "south-west",
-        name: "South West Sydney",
-        areas: ["Liverpool", "Campbelltown", "Bankstown"],
-      },
-    ],
-  },
-  {
-    id: "west-sydney",
-    name: "Western Sydney",
-    subcategories: [
-      {
-        id: "greater-west",
-        name: "Greater West",
-        areas: ["Penrith", "Mount Druitt", "St Marys"],
-      },
-      {
-        id: "south-west",
-        name: "South West Sydney",
-        areas: ["Liverpool", "Campbelltown", "Bankstown"],
-      },
-    ],
-  },
 ];

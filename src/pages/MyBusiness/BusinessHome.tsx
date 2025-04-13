@@ -1,67 +1,77 @@
-import React, { useEffect } from "react";
-import { FaUsers, FaBriefcase, FaThList, FaPlusCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { useAdminStore } from "../../store/useAdminStore";
+import React from "react";
+import { FaBuilding, FaBriefcase, FaUsers } from "react-icons/fa";
 
-// DashboardCard 컴포넌트 (count는 선택적으로 표시)
-const DashboardCard = ({
-  title,
-  count,
-  icon,
-  link,
-}: {
-  title: string;
-  count?: number;
-  icon: JSX.Element;
-  link: string;
-}) => (
-  <Link
-    to={link}
-    className='bg-white p-6 shadow rounded-lg flex items-center space-x-4 hover:bg-gray-100 transition'>
-    <div className='text-3xl text-blue-500'>{icon}</div>
-    <div>
-      <h3 className='text-lg font-semibold'>{title}</h3>
-      {count !== undefined && <p className='text-gray-500'>{count} items</p>}
-    </div>
-  </Link>
-);
-
-export default function AdminHome() {
-  const { totalCount, fetchUsers } = useAdminStore();
-
-  useEffect(() => {
-    fetchUsers(1);
-  }, [fetchUsers]);
+export default function BusinessHome() {
+  const stats = [
+    {
+      title: "Total Companies",
+      value: "2",
+      change: "+1",
+      changeType: "increase",
+      icon: <FaBuilding className='h-6 w-6' />,
+    },
+    {
+      title: "Active Job Posts",
+      value: "5",
+      change: "+2",
+      changeType: "increase",
+      icon: <FaBriefcase className='h-6 w-6' />,
+    },
+    {
+      title: "Total Applications",
+      value: "15",
+      change: "+5",
+      changeType: "increase",
+      icon: <FaUsers className='h-6 w-6' />,
+    },
+  ];
 
   return (
-    <div className='min-h-screen pt-5 bg-white'>
-      <h2 className='text-2xl font-bold mb-4'>Business Dashboard</h2>
-      <p className='text-gray-600 mb-6'>
-        Welcome to your business dashboard. Here you can view the total number of registered
-        companies, check your posted job listings, see the total number of applicants, and quickly
-        access company registration.
-      </p>
+    <div className='flex-1 bg-gray-50'>
+      <div className='max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='mb-8'>
+          <h1 className='text-2xl font-bold text-gray-900'>Business Overview</h1>
+          <p className='mt-2 text-sm text-gray-600'>
+            Track your business performance and manage your companies efficiently.
+          </p>
+        </div>
 
-      {/* Shortcut Banner */}
-      <div className='grid grid-cols-4 gap-6'>
-        <DashboardCard
-          title='Total Companies'
-          count={totalCount}
-          icon={<FaUsers />}
-          link='/admin/users'
-        />
-        <DashboardCard title='Job Listings' count={45} icon={<FaBriefcase />} link='/admin/jobs' />
-        <DashboardCard
-          title='Total Applicants'
-          count={8}
-          icon={<FaThList />}
-          link='/admin/applicants'
-        />
-        <DashboardCard
-          title='Company Registration'
-          icon={<FaPlusCircle />}
-          link='/admin/company-registration'
-        />
+        <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+          {stats.map((item) => (
+            <div
+              key={item.title}
+              className='bg-white overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow'>
+              <div className='p-5'>
+                <div className='flex items-center'>
+                  <div className='flex-shrink-0'>
+                    <div className='w-12 h-12 bg-orange-50 flex items-center justify-center rounded-lg text-orange-600'>
+                      {item.icon}
+                    </div>
+                  </div>
+                  <div className='ml-5 w-0 flex-1'>
+                    <dl>
+                      <dt className='text-sm font-medium text-gray-500 truncate'>{item.title}</dt>
+                      <dd>
+                        <div className='text-lg font-semibold text-gray-900'>{item.value}</div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div className='bg-gray-50 px-5 py-3'>
+                <div className='text-sm'>
+                  <span
+                    className={`font-medium ${
+                      item.changeType === "increase" ? "text-green-600" : "text-red-600"
+                    }`}>
+                    {item.change}
+                  </span>
+                  <span className='text-gray-500'> from last month</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

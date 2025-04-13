@@ -5,9 +5,7 @@ import PasswordChange from "./PasswordChange";
 import AccountDeletion from "./AccountDeletion";
 
 export default function UserInfoEdit() {
-  const [activeTab, setActiveTab] = useState<"personal" | "password" | "settings" | "delete">(
-    "personal"
-  );
+  const [activeTab, setActiveTab] = useState<"personal" | "password" | "delete">("personal");
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -23,12 +21,15 @@ export default function UserInfoEdit() {
   };
 
   return (
-    <div className='max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8'>
-      <div className='bg-white rounded-xl shadow-sm'>
-        <div className='border-b border-gray-200'>
-          <MyPageTabs activeTab={activeTab} setActiveTab={setActiveTab} isEmployer={false} />
-        </div>
-        <div className='p-6'>{renderTabContent()}</div>
+    <div className='bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200'>
+      {/* Tabs Navigation */}
+      <div className='bg-gray-50 p-2'>
+        <MyPageTabs activeTab={activeTab} setActiveTab={setActiveTab} isEmployer={false} />
+      </div>
+
+      {/* Tab Content */}
+      <div className='p-8'>
+        <div className='max-w-2xl mx-auto'>{renderTabContent()}</div>
       </div>
     </div>
   );

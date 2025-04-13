@@ -64,7 +64,7 @@ const ApplicationMethodComponent: React.FC = () => {
                 onClick={() => handleCompanySelect(company)}
                 className={`p-4 border rounded-lg text-left transition-all ${
                   formData?.companyId === company.id
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-orange-500 bg-orange-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}>
                 <div className='flex items-center space-x-3'>
@@ -96,13 +96,13 @@ const ApplicationMethodComponent: React.FC = () => {
               onClick={() => handleMethodToggle(method)}
               className={`p-4 border rounded-lg text-left transition-all ${
                 formData?.applicationMethods?.includes(method)
-                  ? "border-blue-500 bg-blue-50"
+                  ? "border-orange-500 bg-orange-50"
                   : "border-gray-200 hover:border-gray-300"
               }`}>
               <div className='flex items-center justify-between'>
                 <span>{method}</span>
                 {formData?.applicationMethods?.includes(method) && (
-                  <span className='text-blue-500'>✓</span>
+                  <span className='text-orange-500'>✓</span>
                 )}
               </div>
             </button>
@@ -131,7 +131,7 @@ const ApplicationMethodComponent: React.FC = () => {
                     href={formData.company.website}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-blue-500 hover:underline'>
+                    className='text-orange-500 hover:underline'>
                     {formData.company.website}
                   </a>
                 </div>
@@ -148,7 +148,7 @@ const ApplicationMethodComponent: React.FC = () => {
           type='date'
           value={formData?.deadline || ""}
           onChange={handleDeadlineChange}
-          className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+          className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
           min={new Date().toISOString().split("T")[0]}
         />
       </div>

@@ -101,58 +101,65 @@ export default function JobPosting() {
   };
 
   return (
-    <div className='max-w-4xl mx-auto px-4 py-8'>
-      <h1 className='text-2xl font-bold mb-8'>Post a Job</h1>
+    <div className='max-w-6xl mx-auto px-4 py-8'>
+      <h1 className='text-2xl font-bold mb-8 text-gray-800'>Post a Job</h1>
 
-      {/* Progress Bar */}
-      <div className='mb-12'>
-        <StepProgress steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
-      </div>
+      <div className='flex flex-col md:flex-row gap-8'>
+        {/* Sidebar with Progress */}
+        <div className='md:w-1/4 lg:w-1/5'>
+          <div className='bg-white rounded-xl shadow-md border border-gray-200 p-6 sticky top-8'>
+            <StepProgress steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
+          </div>
+        </div>
 
-      {/* Step Content */}
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8'>
-        {currentStep === 1 && <BasicInfo />}
-        {currentStep === 2 && <JobDescription />}
-        {currentStep === 3 && <ApplicationMethod />}
-      </div>
+        {/* Main Content */}
+        <div className='md:w-3/4 lg:w-4/5'>
+          {/* Step Content */}
+          <div className='bg-white rounded-xl shadow-md border border-gray-200 p-8 mb-8'>
+            {currentStep === 1 && <BasicInfo />}
+            {currentStep === 2 && <JobDescription />}
+            {currentStep === 3 && <ApplicationMethod />}
+          </div>
 
-      {/* Navigation Buttons */}
-      <div className='flex justify-between items-center'>
-        <button
-          onClick={handleBack}
-          disabled={currentStep === 1}
-          className={`px-4 py-2 text-sm font-medium rounded-md ${
-            currentStep === 1
-              ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-              : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50"
-          }`}>
-          Previous
-        </button>
-
-        <div className='flex items-center gap-4'>
-          {isLastStep && (
+          {/* Navigation Buttons */}
+          <div className='flex justify-between items-center'>
             <button
-              onClick={() => setShowPreview(true)}
-              className='px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50'>
-              Preview
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                currentStep === 1
+                  ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                  : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 shadow-sm"
+              }`}>
+              Previous
             </button>
-          )}
 
-          {isLastStep ? (
-            <button
-              onClick={handleSubmit}
-              disabled={!canProceedToNextStep()}
-              className='px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'>
-              Submit
-            </button>
-          ) : (
-            <button
-              onClick={handleNext}
-              disabled={!canProceedToNextStep()}
-              className='px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed'>
-              Next
-            </button>
-          )}
+            <div className='flex items-center gap-4'>
+              {isLastStep && (
+                <button
+                  onClick={() => setShowPreview(true)}
+                  className='px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm transition-colors duration-200'>
+                  Preview
+                </button>
+              )}
+
+              {isLastStep ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={!canProceedToNextStep()}
+                  className='px-5 py-2.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md transition-colors duration-200'>
+                  Submit
+                </button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  disabled={!canProceedToNextStep()}
+                  className='px-5 py-2.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md transition-colors duration-200'>
+                  Next
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

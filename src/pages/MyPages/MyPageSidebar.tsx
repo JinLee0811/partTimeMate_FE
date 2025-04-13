@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaUser, FaCog, FaFileAlt, FaHeart, FaTachometerAlt } from "react-icons/fa";
+import { FaUser, FaCog, FaFileAlt, FaHeart, FaTachometerAlt, FaBriefcase } from "react-icons/fa";
 
 interface NavItem {
   path: string;
@@ -15,6 +15,7 @@ export default function MyPageSidebar() {
     { path: "/mypage", label: "Dashboard", icon: <FaTachometerAlt /> },
     { path: "/mypage/usersetting", label: "User Setting", icon: <FaCog /> },
     { path: "/mypage/resume", label: "Manage Resume", icon: <FaFileAlt /> },
+    { path: "/mypage/applications", label: "My Applications", icon: <FaBriefcase /> },
     { path: "/mypage/wishlist", label: "My Wishlist", icon: <FaHeart /> },
   ];
 

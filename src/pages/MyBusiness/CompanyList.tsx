@@ -1,142 +1,128 @@
-import { useEffect, useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import Pagination from "../../components/pagenation";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaSearch, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useCompanyStore } from "../../store/useCompanyStore";
 
 export default function CompanyList() {
-  // Zustand store에서 필요한 상태와 액션 가져오기
-  const { companies, totalPage, currentPage, loading, error, fetchCompanies, deleteCompany } =
-    useCompanyStore();
+  const navigate = useNavigate();
+  const { companies, fetchCompanies, deleteCompany } = useCompanyStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 로컬 검색어 상태
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // 컴포넌트 마운트 또는 currentPage 변경 시 회사 목록 불러오기
   useEffect(() => {
-    fetchCompanies(currentPage);
-  }, [currentPage, fetchCompanies]);
+    const loadCompanies = async () => {
+      try {
+        setLoading(true);
+        await fetchCompanies();
+      } catch (err) {
+        setError("Failed to load companies");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCompanies();
+  }, [fetchCompanies]);
 
-  // 검색어에 따른 필터링 (검색어가 없으면 전체 목록 사용)
   const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase())
+    company.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const displayCompanies = searchQuery ? filteredCompanies : companies;
 
-  // 검색 입력값 변경 핸들러
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    // 검색어가 변경되면 로컬 필터링만 적용 (API 호출은 하지 않음)
-  };
-
-  // 편집 핸들러 (추후 편집 페이지 이동 또는 모달 오픈 구현)
-  const handleEdit = (companyId: string) => {
-    console.log("Editing company:", companyId);
-  };
-
-  // 삭제 핸들러: 삭제 확인 후 store 액션 호출
-  const handleDelete = (companyId: string) => {
+  const handleDelete = async (companyId: string) => {
     if (window.confirm("Are you sure you want to delete this company?")) {
-      deleteCompany(companyId);
+      try {
+        await deleteCompany(companyId);
+      } catch (err) {
+        setError("Failed to delete company");
+      }
     }
   };
 
-  // 페이지 변경 핸들러 (Pagination 컴포넌트의 onPageChange 호출 시)
-  const handlePageChange = (page: number) => {
-    fetchCompanies(page);
-  };
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-[400px]'>
+        <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500'></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className='bg-red-50 p-4 rounded-xl text-red-600 text-center'>{error}</div>;
+  }
 
   return (
-    <div className='min-h-screen pt-5 bg-white'>
-      <h2 className='text-2xl font-bold mb-4'>Registered Company List</h2>
-      <p className='text-gray-600 mb-6'>Manage users, jobs, and categories efficiently.</p>
-
-      {/* 검색 입력란 */}
-      <div className='mb-4'>
-        <input
-          type='text'
-          placeholder='Search companies...'
-          value={searchQuery}
-          onChange={handleSearchChange}
-          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500'
-        />
+    <div className='max-w-6xl mx-auto p-6'>
+      <div className='flex justify-between items-center mb-8'>
+        <h1 className='text-2xl font-bold text-gray-900'>Company Management</h1>
+        <button
+          onClick={() => navigate("/mybusiness/company")}
+          className='flex items-center px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors duration-200'>
+          <FaPlus className='mr-2' />
+          Add Company
+        </button>
       </div>
 
-      {loading ? (
-        <p>Loading companies...</p>
-      ) : error ? (
-        <p className='text-red-500'>{error}</p>
-      ) : displayCompanies.length === 0 ? (
-        <p className='text-gray-600'>
-          No registered companies. You can add a company from the settings page.
-        </p>
-      ) : (
-        <table className='w-full border-collapse border border-gray-300'>
-          <thead>
-            <tr className='bg-gray-100'>
-              <th className='border border-gray-300 px-4 py-2 text-left'>Logo</th>
-              <th className='border border-gray-300 px-4 py-2 text-left'>Company Name</th>
-              <th className='border border-gray-300 px-4 py-2 text-left'>CEO</th>
-              <th className='border border-gray-300 px-4 py-2 text-left'>Website</th>
-              <th className='border border-gray-300 px-4 py-2 text-left'>Contact Email</th>
-              <th className='border border-gray-300 px-4 py-2 text-center'>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayCompanies.map((company) => (
-              <tr key={company.id} className='border border-gray-300'>
-                <td className='border border-gray-300 px-4 py-2'>
+      <div className='bg-white rounded-2xl shadow-sm p-6'>
+        {/* Search Bar */}
+        <div className='relative mb-6'>
+          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+            <FaSearch className='h-5 w-5 text-gray-400' />
+          </div>
+          <input
+            type='text'
+            placeholder='Search companies...'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className='block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200'
+          />
+        </div>
+
+        {/* Company List */}
+        <div className='space-y-4'>
+          {filteredCompanies.length === 0 ? (
+            <div className='text-center py-8 text-gray-500'>No companies found</div>
+          ) : (
+            filteredCompanies.map((company) => (
+              <div
+                key={company.id}
+                className='flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200'>
+                <div className='flex items-center space-x-4'>
                   {company.logoUrl ? (
                     <img
                       src={company.logoUrl}
-                      alt='Company Logo'
-                      className='w-12 h-12 rounded-md'
+                      alt={company.name}
+                      className='w-12 h-12 rounded-lg object-cover'
                     />
                   ) : (
-                    <span className='text-gray-500'>No Logo</span>
+                    <div className='w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center'>
+                      <span className='text-gray-400 text-xl font-medium'>
+                        {company.name.charAt(0)}
+                      </span>
+                    </div>
                   )}
-                </td>
-                <td className='border border-gray-300 px-4 py-2'>{company.name}</td>
-                <td className='border border-gray-300 px-4 py-2'>{company.ceoName}</td>
-                <td className='border border-gray-300 px-4 py-2'>
-                  <a
-                    href={company.website}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-blue-600 underline'>
-                    {company.website}
-                  </a>
-                </td>
-                <td className='border border-gray-300 px-4 py-2'>
-                  <p className='text-sm'>{company.contactEmail}</p>
-                </td>
-                <td className='border border-gray-300 px-4 py-2 flex justify-center space-x-2'>
+                  <div>
+                    <h3 className='font-medium text-gray-900'>{company.name}</h3>
+                    <p className='text-sm text-gray-500'>{company.contactEmail}</p>
+                  </div>
+                </div>
+
+                <div className='flex items-center space-x-2'>
                   <button
-                    onClick={() => handleEdit(company.id)}
-                    className='text-blue-500 hover:text-blue-700 p-2'
-                    title='Edit'>
-                    <FaEdit />
+                    onClick={() => navigate(`/mybusiness/company/${company.id}/edit`)}
+                    className='p-2 text-gray-600 hover:text-orange-500 transition-colors duration-200'>
+                    <FaEdit className='h-5 w-5' />
                   </button>
                   <button
                     onClick={() => handleDelete(company.id)}
-                    className='text-red-500 hover:text-red-700 p-2'
-                    title='Delete'>
-                    <FaTrash />
+                    className='p-2 text-gray-600 hover:text-red-500 transition-colors duration-200'>
+                    <FaTrash className='h-5 w-5' />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {/* 페이지네이션: 검색 중이 아닐 때만 노출 (API 페이지 기준) */}
-      {!searchQuery && !loading && companies.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

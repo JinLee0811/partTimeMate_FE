@@ -14,7 +14,7 @@ import Register from "./pages/auth/Register";
 import SignUpBusiness from "./pages/auth/SignUpBusiness";
 import SignUpUser from "./pages/auth/SignUpUser";
 import Brands from "./pages/brands/Brands";
-import EditUser from "./pages/MyBusiness/EditUser";
+import BusinessUserSetting from "./pages/MyBusiness/BusinessUserSetting";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminHome from "./pages/admin/AdminHome";
 import UserManagement from "./pages/admin/users/UserManagement";
@@ -35,6 +35,8 @@ import JobFilteredBoard from "./pages/jobs/JobFilteredBoard";
 import UserSetting from "./pages/MyPages/UserSetting";
 import ManageResume from "./pages/MyPages/ManageResume";
 import MyWishlist from "./pages/MyPages/MyWishlist";
+import MyApplications from "./pages/MyPages/MyApplications";
+import PostingList from "./pages/MyBusiness/PostingList";
 const queryClient = new QueryClient();
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
@@ -68,9 +70,10 @@ export default function App() {
                 </ProtectedRoute>
               }>
               <Route index element={<BusinessHome />} />
-              <Route path='user' element={<EditUser />} />
+              <Route path='usersetting' element={<BusinessUserSetting />} />
               <Route path='company' element={<CompanyManagement />} />
               <Route path='companylist' element={<CompanyList />} />
+              <Route path='postings' element={<PostingList />} />
             </Route>
             {/* 보호된 페이지 (로그인 필수, Admin 가능) */}
             <Route
@@ -84,6 +87,7 @@ export default function App() {
               <Route path='usersetting' element={<UserSetting />} />
               <Route path='resume' element={<ManageResume />} />
               <Route path='wishlist' element={<MyWishlist />} />
+              <Route path='applications' element={<MyApplications />} />
             </Route>
 
             {/* Job Posting (Business or Admin만 가능) */}
