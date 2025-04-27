@@ -8,15 +8,15 @@ const Register = () => {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50 pb-10'>
       {/* Title */}
-      <h1 className='text-xl md:text-3xl font-bold text-gray-900 text-center mb-4'>
+      <h1 className='text-lg md:text-3xl font-bold text-gray-900 text-center mb-4'>
         All the Job is Here <span className='text-gray-900'>Part-Time Mate</span>
       </h1>
-      <h2 className='text-4xl md:text-5xl font-extrabold text-gray-900'>
+      <h2 className='text-2xl md:text-5xl font-extrabold text-gray-900'>
         Find <span className='text-albamon'>Your Part-Time Job</span>
       </h2>
 
       {/* Registration Options */}
-      <div className='flex flex-col md:flex-row justify-center items-center gap-8 w-full max-w-5xl mt-10'>
+      <div className='flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 w-full max-w-md md:max-w-5xl mt-8 md:mt-10'>
         {/* Job Seeker */}
         <UserCard
           title='Job Seeker'
@@ -64,18 +64,18 @@ const UserCard = ({
   const navigate = useNavigate();
 
   return (
-    <div className='bg-white rounded-xl shadow-md p-8 text-center w-full md:w-1/2 flex flex-col items-center'>
-      <img src={imageSrc} alt={title} className='w-36 h-36 object-cover mb-4' />
-      <h2 className='text-xl font-semibold text-gray-900'>{title}</h2>
-      <p className='text-md text-gray-600 mb-4'>{description}</p>
+    <div className='bg-white rounded-xl shadow-md p-4 md:p-8 text-center w-full md:w-1/2 flex flex-col items-center'>
+      <img src={imageSrc} alt={title} className='w-24 h-24 md:w-36 md:h-36 object-cover mb-4' />
+      <h2 className='text-base md:text-xl font-semibold text-gray-900'>{title}</h2>
+      <p className='text-sm md:text-md text-gray-600 mb-4'>{description}</p>
       <button
         onClick={() => navigate(navigateTo)}
-        className={`w-full py-3 rounded-lg font-bold transition ${bgColor} ${textColor}`}>
+        className={`w-full py-3 rounded-lg font-bold transition ${bgColor} ${textColor} text-base md:text-lg`}>
         {buttonText}
       </button>
 
       {/* Social Login Buttons */}
-      <div className='flex justify-center gap-3 mt-4'>
+      <div className='flex justify-center gap-2 md:gap-3 mt-4'>
         <SocialLoginButton icon={<FaGoogle />} />
         <SocialLoginButton icon={<FaFacebookF />} />
         <SocialLoginButton icon={<FaApple />} />

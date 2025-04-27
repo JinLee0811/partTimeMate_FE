@@ -117,16 +117,22 @@ export default function SignUpBusiness() {
   };
 
   return (
-    <div className='flex flex-col items-center bg-gray-50 py-10 px-4'>
-      <div className='w-full max-w-lg bg-white shadow-md p-6 rounded-lg'>
-        <h2 className='text-2xl font-semibold text-gray-800 mb-6'>Recruiter Sign Up</h2>
+    <div className='flex flex-col items-center bg-gray-50 py-6 md:py-10 px-2 md:px-4'>
+      <div className='w-full max-w-xs md:max-w-lg bg-white shadow-md p-4 md:p-6 rounded-lg'>
+        <h2 className='text-lg md:text-2xl font-semibold text-gray-800 mb-4 md:mb-6'>
+          Recruiter Sign Up
+        </h2>
 
         {/* 오류 메시지 표시 */}
-        {localError && <p className='text-red-500 text-sm mb-4 text-center'>{localError}</p>}
+        {localError && (
+          <p className='text-red-500 text-xs md:text-sm mb-2 md:mb-4 text-center'>{localError}</p>
+        )}
 
         {/* 약관 동의 섹션 */}
-        <div className='border p-4 rounded-md mb-6 bg-gray-50'>
-          <h3 className='text-lg font-semibold text-gray-800 mb-3'>Terms & Conditions *</h3>
+        <div className='border p-2 md:p-4 rounded-md mb-4 md:mb-6 bg-gray-50'>
+          <h3 className='text-base md:text-lg font-semibold text-gray-800 mb-2 md:mb-3'>
+            Terms & Conditions *
+          </h3>
           <div className='space-y-2'>
             <label className='flex items-center space-x-2 cursor-pointer'>
               <input
@@ -168,19 +174,23 @@ export default function SignUpBusiness() {
         </div>
 
         {/* 회원가입 폼 */}
-        <form className='w-full space-y-3' onSubmit={handleSubmit}>
+        <form className='w-full space-y-2 md:space-y-3' onSubmit={handleSubmit}>
           {/* Phone Number (+61 고정) */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>Phone Number *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>
+              Phone Number *
+            </label>
             <div className='flex items-center border border-gray-300 rounded-md overflow-hidden'>
-              <span className='bg-gray-200 px-3 py-2 text-gray-600'>+61</span>
+              <span className='bg-gray-200 px-2 md:px-3 py-2 text-gray-600 text-xs md:text-base'>
+                +61
+              </span>
               <input
                 type='text'
                 name='phoneNumber'
                 value={formData.phoneNumber}
                 onChange={handlePhoneNumberChange}
                 placeholder='Enter phone number (e.g. 123456789)'
-                className='flex-1 p-2 text-sm focus:outline-none'
+                className='flex-1 p-2 text-xs md:text-sm focus:outline-none'
                 disabled={!isRequiredTermsChecked}
               />
             </div>
@@ -188,7 +198,7 @@ export default function SignUpBusiness() {
 
           {/* Email */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>Email *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>Email *</label>
             <input
               type='email'
               name='email'
@@ -196,14 +206,15 @@ export default function SignUpBusiness() {
               onChange={handleChange}
               placeholder='Enter your email'
               disabled={!isRequiredTermsChecked}
-              className='bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
-                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
+              className='bg-white border w-full text-xs md:text-sm text-gray-800 pl-3 md:pl-4 pr-3 md:pr-10 py-2 md:py-2.5 rounded-md outline-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
             />
           </div>
 
           {/* First Name */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>First Name *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>
+              First Name *
+            </label>
             <input
               type='text'
               name='firstName'
@@ -211,14 +222,15 @@ export default function SignUpBusiness() {
               onChange={handleChange}
               placeholder='Enter your First Name'
               disabled={!isRequiredTermsChecked}
-              className='bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
-                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
+              className='bg-white border w-full text-xs md:text-sm text-gray-800 pl-3 md:pl-4 pr-3 md:pr-10 py-2 md:py-2.5 rounded-md outline-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
             />
           </div>
 
           {/* Last Name */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>Last Name *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>
+              Last Name *
+            </label>
             <input
               type='text'
               name='lastName'
@@ -226,14 +238,15 @@ export default function SignUpBusiness() {
               onChange={handleChange}
               placeholder='Enter your Last Name'
               disabled={!isRequiredTermsChecked}
-              className='bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
-                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
+              className='bg-white border w-full text-xs md:text-sm text-gray-800 pl-3 md:pl-4 pr-3 md:pr-10 py-2 md:py-2.5 rounded-md outline-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>Password *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>
+              Password *
+            </label>
             <input
               type='password'
               name='password'
@@ -241,10 +254,10 @@ export default function SignUpBusiness() {
               onChange={handleChange}
               placeholder='Enter a secure password'
               disabled={!isRequiredTermsChecked}
-              className='bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
-                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
+              className='bg-white border w-full text-xs md:text-sm text-gray-800 pl-3 md:pl-4 pr-3 md:pr-10 py-2 md:py-2.5 rounded-md outline-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
             />
-            <p className={`text-sm mt-1 ${isPasswordValid ? "text-gray-500" : "text-red-500"}`}>
+            <p
+              className={`text-xs md:text-sm mt-1 md:mt-2 ${isPasswordValid ? "text-gray-500" : "text-red-500"}`}>
               Password must be 8-32 characters long and include letters, numbers, and special
               characters (including uppercase and lowercase).
             </p>
@@ -252,7 +265,9 @@ export default function SignUpBusiness() {
 
           {/* Confirm Password */}
           <div>
-            <label className='text-gray-800 text-sm mb-2 block'>Confirm Password *</label>
+            <label className='text-gray-800 text-xs md:text-sm mb-1 md:mb-2 block'>
+              Confirm Password *
+            </label>
             <input
               type='password'
               name='confirmPassword'
@@ -260,19 +275,20 @@ export default function SignUpBusiness() {
               onChange={handleChange}
               placeholder='Re-enter your password'
               disabled={!isRequiredTermsChecked}
-              className='bg-white border w-full text-sm text-gray-800 pl-4 pr-10 py-2.5 rounded-md outline-blue-500
-                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
+              className='bg-white border w-full text-xs md:text-sm text-gray-800 pl-3 md:pl-4 pr-3 md:pr-10 py-2 md:py-2.5 rounded-md outline-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:border-gray-300 border-gray-300'
             />
           </div>
 
           {/* 회원가입 버튼 */}
           <button
             type='submit'
-            className={`w-full py-3 rounded-md font-semibold transition ${
-              !isRequiredTermsChecked || isPending
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-600 text-white hover:bg-gray-700"
-            }`}
+            className={`w-full py-2 md:py-3 rounded-md font-semibold transition text-sm md:text-base
+              ${
+                !isRequiredTermsChecked || isPending
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-gray-600 text-white hover:bg-gray-700"
+              }
+            `}
             disabled={!isRequiredTermsChecked || isPending}>
             {isPending ? "Signing Up..." : "Create Recruiter Account"}
           </button>

@@ -21,15 +21,15 @@ export default function UserInfoEdit() {
   };
 
   return (
-    <div className='bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200'>
+    <div className='bg-white rounded-lg md:rounded-2xl shadow-sm overflow-hidden border border-gray-200'>
       {/* Tabs Navigation */}
-      <div className='bg-gray-50 p-2'>
+      <div className='bg-gray-50 p-1 md:p-2'>
         <MyPageTabs activeTab={activeTab} setActiveTab={setActiveTab} isEmployer={false} />
       </div>
 
       {/* Tab Content */}
-      <div className='p-8'>
-        <div className='max-w-2xl mx-auto'>{renderTabContent()}</div>
+      <div className='p-3 md:p-8'>
+        <div className='max-w-full md:max-w-2xl mx-auto'>{renderTabContent()}</div>
       </div>
     </div>
   );

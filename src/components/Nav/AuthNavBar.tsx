@@ -7,14 +7,14 @@ export default function AuthNavBar() {
   const isLoginPage = location.pathname === "/auth/login";
 
   return (
-    <nav className='flex justify-between items-center w-full max-w-5xl mx-auto p-5 bg-white'>
+    <nav className='flex justify-between items-center w-full max-w-5xl mx-auto p-5 bg-white border-b border-gray-100 md:p-5 md:border-0'>
       {/* 왼쪽 로고 */}
       <Link to='/' className='flex items-center'>
-        <img src='/mainLogo.png' alt='Part-Time Mate Logo' className='ml-10 h-16' />
+        <img src='/mainLogo.png' alt='Part-Time Mate Logo' className='h-10 md:ml-10 md:h-16' />
       </Link>
 
       {/* 오른쪽 네비게이션 */}
-      <div className='flex space-x-4'>
+      <div className='hidden sm:flex space-x-4'>
         {isLoginPage ? (
           <>
             <Link to='/' className='text-gray-600 hover:text-blue-500 transition'>
@@ -44,6 +44,8 @@ export default function AuthNavBar() {
           </>
         )}
       </div>
+      {/* 모바일 메뉴 (햄버거) */}
+      <div className='sm:hidden'>{/* 필요시 햄버거 메뉴 구현 가능, 우선 메뉴 숨김 */}</div>
     </nav>
   );
 }

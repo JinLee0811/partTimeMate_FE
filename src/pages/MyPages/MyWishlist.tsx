@@ -41,54 +41,56 @@ export default function MyWishlist() {
 
   return (
     <div className='flex-1 bg-gray-50'>
-      <div className='max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8'>
+      <div className='max-w-full px-2 py-4 sm:px-4 md:px-6 lg:px-8'>
         {/* Header */}
-        <div className='mb-8'>
-          <h1 className='text-2xl font-bold text-gray-900'>Saved Jobs</h1>
-          <p className='mt-2 text-sm text-gray-600'>
+        <div className='mb-4'>
+          <h1 className='text-lg md:text-2xl font-bold text-gray-900'>Saved Jobs</h1>
+          <p className='mt-1 text-xs md:text-sm text-gray-600'>
             Keep track of your favorite job opportunities and apply when you're ready.
           </p>
         </div>
 
         {/* Saved Jobs List */}
-        <div className='space-y-4'>
+        <div className='space-y-2 md:space-y-4'>
           {savedJobs.map((job) => (
             <div
               key={job.id}
-              className='bg-white rounded-xl p-6 border border-gray-200 hover:border-orange-200 transition-colors'>
+              className='bg-white rounded-lg md:rounded-xl p-3 md:p-6 border border-gray-200 hover:border-orange-200 transition-colors'>
               <div className='flex items-start justify-between'>
                 <div>
-                  <h3 className='text-lg font-medium text-gray-900'>{job.position}</h3>
-                  <p className='text-base text-gray-600 mt-1'>{job.companyName}</p>
+                  <h3 className='text-base md:text-lg font-medium text-gray-900'>{job.position}</h3>
+                  <p className='text-xs md:text-base text-gray-600 mt-0.5 md:mt-1'>
+                    {job.companyName}
+                  </p>
 
-                  <div className='mt-4 grid grid-cols-2 gap-4'>
-                    <div className='flex items-center text-sm text-gray-500'>
-                      <FaMapMarkerAlt className='mr-2 text-gray-400' />
+                  <div className='mt-2 md:mt-4 grid grid-cols-2 gap-2 md:gap-4'>
+                    <div className='flex items-center text-xs md:text-sm text-gray-500'>
+                      <FaMapMarkerAlt className='mr-1 md:mr-2 text-gray-400' />
                       {job.location}
                     </div>
-                    <div className='flex items-center text-sm text-gray-500'>
-                      <FaClock className='mr-2 text-gray-400' />
+                    <div className='flex items-center text-xs md:text-sm text-gray-500'>
+                      <FaClock className='mr-1 md:mr-2 text-gray-400' />
                       {job.workingHours}
                     </div>
-                    <div className='flex items-center text-sm text-gray-500'>
-                      <FaDollarSign className='mr-2 text-gray-400' />
+                    <div className='flex items-center text-xs md:text-sm text-gray-500'>
+                      <FaDollarSign className='mr-1 md:mr-2 text-gray-400' />
                       {job.salary}
                     </div>
-                    <div className='flex items-center text-sm text-gray-500'>
-                      <FaHeart className='mr-2 text-orange-500' />
+                    <div className='flex items-center text-xs md:text-sm text-gray-500'>
+                      <FaHeart className='mr-1 md:mr-2 text-orange-500' />
                       Saved on {job.postedDate}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className='mt-6 flex items-center justify-between border-t border-gray-100 pt-4'>
-                <button className='flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors'>
-                  <FaExternalLinkAlt className='mr-2' />
+              <div className='mt-4 md:mt-6 flex items-center justify-between border-t border-gray-100 pt-3 md:pt-4'>
+                <button className='flex items-center px-3 md:px-4 py-1.5 md:py-2 bg-orange-600 text-white rounded-md md:rounded-lg text-xs md:text-base hover:bg-orange-700 transition-colors'>
+                  <FaExternalLinkAlt className='mr-1 md:mr-2' />
                   View Details
                 </button>
-                <button className='flex items-center px-4 py-2 text-red-600 hover:text-red-700 transition-colors'>
-                  <FaTrash className='mr-2' />
+                <button className='flex items-center px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-base text-red-600 hover:text-red-700 transition-colors'>
+                  <FaTrash className='mr-1 md:mr-2' />
                   Remove
                 </button>
               </div>
@@ -96,12 +98,12 @@ export default function MyWishlist() {
           ))}
 
           {savedJobs.length === 0 && (
-            <div className='text-center py-12'>
-              <div className='w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                <FaHeart className='text-2xl text-orange-600' />
+            <div className='text-center py-8 md:py-12'>
+              <div className='w-12 h-12 md:w-16 md:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4'>
+                <FaHeart className='text-xl md:text-2xl text-orange-600' />
               </div>
-              <h3 className='text-lg font-medium text-gray-900'>No saved jobs yet</h3>
-              <p className='mt-2 text-sm text-gray-500'>
+              <h3 className='text-base md:text-lg font-medium text-gray-900'>No saved jobs yet</h3>
+              <p className='mt-1 md:mt-2 text-xs md:text-sm text-gray-500'>
                 Start saving jobs you're interested in by clicking the heart icon on job listings.
               </p>
             </div>

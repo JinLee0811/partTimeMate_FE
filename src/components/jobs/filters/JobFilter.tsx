@@ -29,6 +29,9 @@ export default function JobFilterPage() {
   const [selectedHours, setSelectedHours] = useState<string[]>([]);
   const [selectedDetails, setSelectedDetails] = useState<string[]>([]);
 
+  // Work Period 더보기 상태
+  const [showAllPeriods, setShowAllPeriods] = useState(false);
+
   // URL 파라미터에서 지역 정보를 읽어와 자동으로 선택
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -121,19 +124,30 @@ export default function JobFilterPage() {
   };
 
   return (
-    <div className='max-w-5xl mx-auto bg-white border border-gray-300 rounded-md shadow p-6'>
+    <div className='max-w-md md:max-w-5xl mx-auto bg-white border border-gray-200 rounded-lg shadow p-2 md:p-6 text-xs md:text-base'>
       {/* 1) Top Header: FilterTabs & Selected/Max Filters Count */}
-      <div className='flex items-center justify-between mb-4'>
-        <FilterTabs activeTab={activeTab} setActiveTab={setActiveTab} counts={counts} />
-        <div className='text-gray-500 text-sm'>
+      <div className='flex gap-1 md:gap-4 overflow-x-auto mb-2 md:mb-4'>
+        {["Job Category", "Location", "Work Period", "Detail"].map((tab) => (
+          <button
+            key={tab}
+            className={`px-3 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition
+              ${activeTab === tab ? "bg-orange-100 text-orange-600" : "bg-gray-100 text-gray-500"}`}
+            onClick={() => setActiveTab(tab as any)}>
+            {tab}
+            {counts[tab as keyof typeof counts] > 0 && (
+              <span className='ml-1 text-orange-500'>{counts[tab as keyof typeof counts]}</span>
+            )}
+          </button>
+        ))}
+        <span className='ml-auto text-gray-400 text-xs md:text-sm flex-shrink-0'>
           {totalSelectedFilters}/{MAX_FILTERS}
-        </div>
+        </span>
       </div>
 
       {/* 2) Search Input & Exclude Bar Checkbox */}
       {(activeTab === "Job Category" || activeTab === "Location") && (
-        <div className='flex items-center space-x-4 mb-4'>
-          <div className='w-96'>
+        <div className='flex items-center space-x-2 md:space-x-4 mb-2 md:mb-4'>
+          <div className='flex-1 min-w-0'>
             <SearchInput
               searchQuery={searchQuery}
               setSearchQuery={handleSearchChange}
@@ -142,10 +156,10 @@ export default function JobFilterPage() {
             />
           </div>
           {activeTab === "Job Category" && (
-            <label className='flex items-center text-sm text-gray-700 gap-1'>
+            <label className='flex items-center text-xs md:text-sm text-gray-700 gap-1'>
               <input
                 type='checkbox'
-                className='form-checkbox'
+                className='form-checkbox h-4 w-4'
                 checked={excludeBar}
                 onChange={() => setExcludeBar(!excludeBar)}
               />
@@ -156,7 +170,7 @@ export default function JobFilterPage() {
       )}
 
       {/* 3) Filter Component According to Active Tab */}
-      <div className='border-t border-gray-200 pt-4'>
+      <div className='border-t border-gray-200 pt-2 md:pt-4'>
         {activeTab === "Job Category" && (
           <CategoryFilter
             searchQuery={searchQuery}
@@ -177,14 +191,24 @@ export default function JobFilterPage() {
           />
         )}
         {activeTab === "Work Period" && (
-          <WorkPeriodFilter
-            selectedPeriods={selectedPeriods}
-            setSelectedPeriods={setSelectedPeriods}
-            selectedDays={selectedDays}
-            setSelectedDays={setSelectedDays}
-            selectedHours={selectedHours}
-            setSelectedHours={setSelectedHours}
-          />
+          <div>
+            <WorkPeriodFilter
+              selectedPeriods={showAllPeriods ? selectedPeriods : selectedPeriods.slice(0, 6)}
+              setSelectedPeriods={setSelectedPeriods}
+              selectedDays={selectedDays}
+              setSelectedDays={setSelectedDays}
+              selectedHours={selectedHours}
+              setSelectedHours={setSelectedHours}
+            />
+            {/* 더보기 버튼 (모바일에서만) */}
+            {selectedPeriods.length > 6 && (
+              <button
+                className='block md:hidden mt-2 mx-auto px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200'
+                onClick={() => setShowAllPeriods((prev) => !prev)}>
+                {showAllPeriods ? "간단히 보기" : "더보기"}
+              </button>
+            )}
+          </div>
         )}
         {activeTab === "Detail" && (
           <DetailFilter
@@ -196,7 +220,7 @@ export default function JobFilterPage() {
       </div>
 
       {/* 4) Selected Filters Display */}
-      <div className='mt-4'>
+      <div className='mt-2 md:mt-4'>
         <SelectedFilters
           selectedFilters={[
             ...selectedCategories,
@@ -211,7 +235,7 @@ export default function JobFilterPage() {
       </div>
 
       {/* 5) Reset Button */}
-      <div className='mt-6'>
+      <div className='mt-4 md:mt-6'>
         <ResetButton onReset={resetFilters} />
       </div>
     </div>

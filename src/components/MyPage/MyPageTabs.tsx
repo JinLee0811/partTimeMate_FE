@@ -34,7 +34,7 @@ export default function MyPageTabs({ activeTab, setActiveTab, isEmployer }: MyPa
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`
-              group inline-flex items-center py-4 px-9 border-b-2 font-medium text-sm
+              group inline-flex items-center py-2 md:py-4 px-4 md:px-9 border-b-2 font-medium text-xs md:text-sm
               ${
                 activeTab === tab.id
                   ? "border-orange-500 text-orange-600"
@@ -44,10 +44,10 @@ export default function MyPageTabs({ activeTab, setActiveTab, isEmployer }: MyPa
             `}>
             <span
               className={`
-              mr-2 transition-colors duration-200
+              mr-1 md:mr-2 transition-colors duration-200
               ${activeTab === tab.id ? "text-orange-500" : "text-gray-400 group-hover:text-gray-500"}
             `}>
-              {tab.icon}
+              {React.cloneElement(tab.icon as React.ReactElement, { size: 14 })}
             </span>
             {tab.label}
           </button>

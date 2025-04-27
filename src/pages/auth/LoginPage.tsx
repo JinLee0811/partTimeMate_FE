@@ -38,11 +38,13 @@ const Login: React.FC = () => {
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100 pb-10'>
-      <div className='bg-white shadow-lg rounded-lg w-full max-w-4xl flex flex-col md:flex-row'>
+      <div className='bg-white shadow-lg rounded-lg w-full max-w-md md:max-w-4xl flex flex-col md:flex-row'>
         {/* 🏷️ Left Panel - Login Form */}
-        <div className='w-full md:w-3/5 p-8'>
-          <h2 className='text-lg font-semibold text-gray-800'>Log in to access our services.</h2>
-          <p className='text-sm text-gray-500'>
+        <div className='w-full p-4 md:w-3/5 md:p-8'>
+          <h2 className='text-base md:text-lg font-semibold text-gray-800'>
+            Log in to access our services.
+          </h2>
+          <p className='text-xs md:text-sm text-gray-500'>
             If you are not a member yet,{" "}
             <Link to={"/auth/register"} className='text-albamon cursor-pointer hover:underline'>
               Sign up here
@@ -54,28 +56,36 @@ const Login: React.FC = () => {
           <div className='flex mt-5 border-b'>
             <button
               type='button'
-              className={`w-1/2 py-2 text-center font-medium ${
-                activeTab === "JOB_SEEKER" ? "border-b-2 border-black text-black" : "text-gray-400"
-              }`}
+              className={`w-1/2 py-2 text-center font-medium text-xs md:text-base rounded-t-lg transition-colors duration-200
+                ${
+                  activeTab === "JOB_SEEKER"
+                    ? "bg-orange-100 text-orange-600 border-b-2 border-orange-500"
+                    : "bg-gray-100 text-gray-400"
+                }
+              `}
               onClick={() => setActiveTab("JOB_SEEKER")}>
               Job Seeker
-              <p className='text-sm text-gray-500'>(Finding Job)</p>
+              <p className='text-xs md:text-sm text-gray-500'>(Finding Job)</p>
             </button>
             <button
               type='button'
-              className={`w-1/2 py-2 text-center font-medium ${
-                activeTab === "BUSINESS" ? "border-b-2 border-black text-black" : "text-gray-400"
-              }`}
+              className={`w-1/2 py-2 text-center font-medium text-xs md:text-base rounded-t-lg transition-colors duration-200
+                ${
+                  activeTab === "BUSINESS"
+                    ? "bg-black text-white border-b-2 border-black"
+                    : "bg-gray-100 text-gray-400"
+                }
+              `}
               onClick={() => setActiveTab("BUSINESS")}>
               Employer
-              <p className='text-sm text-gray-500'>(Hiring Staff)</p>
+              <p className='text-xs md:text-sm text-gray-500'>(Hiring Staff)</p>
             </button>
           </div>
 
-          {/* 🔹 Login Form - form 태그로 감싸고 onSubmit에서 preventDefault */}
+          {/* 🔹 Login Form */}
           <form
             onSubmit={(e) => {
-              e.preventDefault(); // 페이지 새로고침 방지
+              e.preventDefault();
               handleLogin();
             }}
             className='mt-5'>
@@ -84,42 +94,47 @@ const Login: React.FC = () => {
               placeholder='Email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400'
+              className='w-full p-3 md:p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 text-sm md:text-base'
             />
             <input
               type='password'
               placeholder='Password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className='w-full p-3 border border-gray-300 rounded-md mt-3 focus:ring-2 focus:ring-blue-400'
+              className='w-full p-3 md:p-3 border border-gray-300 rounded-md mt-3 focus:ring-2 focus:ring-blue-400 text-sm md:text-base'
             />
 
             <div className='flex items-center justify-between mt-3'>
-              <label className='flex items-center text-sm text-gray-500'>
+              <label className='flex items-center text-xs md:text-sm text-gray-500'>
                 <input type='checkbox' className='mr-2' /> Remember Me
               </label>
-              <span className='text-sm text-albamon cursor-pointer hover:underline'>
+              <span className='text-xs md:text-sm text-albamon cursor-pointer hover:underline'>
                 Forgot Password?
               </span>
             </div>
 
             {/* ✅ 로그인 에러 메시지 표시 */}
-            {errorMessage && <p className='text-red-500 text-sm mt-3'>{errorMessage}</p>}
+            {errorMessage && <p className='text-red-500 text-xs md:text-sm mt-3'>{errorMessage}</p>}
 
             <button
               type='submit'
               disabled={isDisabled}
-              className={`w-full mt-5 p-3 rounded-md font-semibold transition bg-albamon text-white hover:bg-albamon-dark ${
-                isDisabled ? "cursor-not-allowed" : ""
-              }`}>
+              className={`w-full mt-5 p-3 md:p-3 rounded-md font-semibold transition text-base md:text-base
+                ${
+                  activeTab === "JOB_SEEKER"
+                    ? "bg-albamon text-white hover:bg-albamon-dark"
+                    : "bg-black text-white hover:bg-gray-900"
+                }
+                ${isDisabled ? "cursor-not-allowed opacity-60" : ""}
+              `}>
               {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
           {/* 🔹 Social Login */}
           <div className='mt-6 text-center'>
-            <p className='text-sm text-gray-500 mb-3'>Or log in with</p>
-            <div className='flex justify-center gap-4'>
+            <p className='text-xs md:text-sm text-gray-500 mb-3'>Or log in with</p>
+            <div className='flex justify-center gap-2 md:gap-4'>
               <SocialLoginButton icon={<FaGoogle />} text='Google' />
               <SocialLoginButton icon={<FaFacebookF />} text='Facebook' />
               <SocialLoginButton icon={<FaApple />} text='Apple' />

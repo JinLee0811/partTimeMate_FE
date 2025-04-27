@@ -13,14 +13,14 @@ export default function UserSetting() {
 
   return (
     <div className='flex-1 bg-gray-50'>
-      <div className='max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8'>
-        <div className='mb-8'>
-          <h2 className='text-2xl font-bold text-gray-900'>User Setting</h2>
-          <p className='mt-2 text-sm text-gray-600'>
+      <div className='max-w-full px-2 py-4 sm:px-4 md:px-6 lg:px-8'>
+        <div className='mb-4'>
+          <h2 className='text-lg md:text-2xl font-bold text-gray-900'>User Setting</h2>
+          <p className='mt-1 text-xs md:text-sm text-gray-600'>
             Manage users, jobs, and categories efficiently.
           </p>
         </div>
-        <div className='bg-white rounded-xl shadow-sm'>
+        <div className='bg-white rounded-lg md:rounded-xl shadow-sm p-2 md:p-6'>
           <UserInfoForm />
         </div>
       </div>

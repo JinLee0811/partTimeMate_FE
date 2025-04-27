@@ -13,10 +13,10 @@ export default function PersonalInfo() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-6'>
+    <form onSubmit={handleSubmit} className='space-y-4 md:space-y-6'>
       {/* Email */}
       <div>
-        <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
+        <label htmlFor='email' className='block text-xs md:text-sm font-medium text-gray-700'>
           Email
         </label>
         <div className='mt-1'>
@@ -26,14 +26,14 @@ export default function PersonalInfo() {
             name='email'
             defaultValue={user?.email}
             disabled
-            className='block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500'
+            className='block w-full px-3 md:px-4 py-2 md:py-3 bg-gray-50 border border-gray-200 rounded-md md:rounded-lg text-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-xs md:text-sm'
           />
         </div>
       </div>
 
       {/* First Name */}
       <div>
-        <label htmlFor='firstName' className='block text-sm font-medium text-gray-700'>
+        <label htmlFor='firstName' className='block text-xs md:text-sm font-medium text-gray-700'>
           First Name
         </label>
         <div className='mt-1'>
@@ -42,7 +42,7 @@ export default function PersonalInfo() {
             id='firstName'
             name='firstName'
             defaultValue={user?.firstName}
-            className='block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400'
+            className='block w-full px-3 md:px-4 py-2 md:py-3 bg-white border border-gray-200 rounded-md md:rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400 text-xs md:text-sm'
             placeholder='Enter your first name'
           />
         </div>
@@ -50,7 +50,7 @@ export default function PersonalInfo() {
 
       {/* Last Name */}
       <div>
-        <label htmlFor='lastName' className='block text-sm font-medium text-gray-700'>
+        <label htmlFor='lastName' className='block text-xs md:text-sm font-medium text-gray-700'>
           Last Name
         </label>
         <div className='mt-1'>
@@ -59,7 +59,7 @@ export default function PersonalInfo() {
             id='lastName'
             name='lastName'
             defaultValue={user?.lastName}
-            className='block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400'
+            className='block w-full px-3 md:px-4 py-2 md:py-3 bg-white border border-gray-200 rounded-md md:rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400 text-xs md:text-sm'
             placeholder='Enter your last name'
           />
         </div>
@@ -67,15 +67,15 @@ export default function PersonalInfo() {
 
       {/* Phone Number */}
       <div>
-        <label htmlFor='phone' className='block text-sm font-medium text-gray-700'>
+        <label htmlFor='phone' className='block text-xs md:text-sm font-medium text-gray-700'>
           Phone Number
         </label>
-        <div className='mt-1 relative rounded-lg shadow-sm'>
+        <div className='mt-1 relative rounded-md md:rounded-lg shadow-sm'>
           <div className='absolute inset-y-0 left-0 flex items-center'>
             <select
               id='countryCode'
               name='countryCode'
-              className='h-full py-0 pl-3 pr-7 border-transparent bg-transparent text-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm rounded-lg'>
+              className='h-full py-0 pl-2 pr-2 w-14 border-transparent bg-transparent text-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-xs md:text-sm rounded-md md:rounded-lg'>
               <option>+61</option>
               <option>+82</option>
               <option>+81</option>
@@ -86,7 +86,7 @@ export default function PersonalInfo() {
             id='phone'
             name='phone'
             defaultValue={user?.phone}
-            className='block w-full pl-20 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400'
+            className='block w-full pl-14 md:pl-20 pr-3 md:pr-4 py-2 md:py-3 bg-white border border-gray-200 rounded-md md:rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400 text-xs md:text-sm'
             placeholder='Enter phone number'
           />
         </div>
@@ -94,7 +94,7 @@ export default function PersonalInfo() {
 
       {/* Preferred Language */}
       <div>
-        <label htmlFor='language' className='block text-sm font-medium text-gray-700'>
+        <label htmlFor='language' className='block text-xs md:text-sm font-medium text-gray-700'>
           Preferred Language
         </label>
         <div className='mt-1'>
@@ -102,7 +102,7 @@ export default function PersonalInfo() {
             id='language'
             name='language'
             defaultValue='English'
-            className='block w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500'>
+            className='block w-full px-3 md:px-4 py-2 md:py-3 bg-white border border-gray-200 rounded-md md:rounded-lg text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-xs md:text-sm'>
             <option>English</option>
             <option>Korean</option>
             <option>Japanese</option>
@@ -113,15 +113,15 @@ export default function PersonalInfo() {
       </div>
 
       {/* Submit Button */}
-      <div className='pt-4'>
+      <div className='pt-2 md:pt-4'>
         <button
           type='submit'
           disabled={isLoading}
-          className='w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed'>
+          className='w-full flex justify-center py-2 md:py-3 px-3 md:px-4 border border-transparent rounded-md md:rounded-lg shadow-sm text-xs md:text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed'>
           {isLoading ? (
             <span className='flex items-center'>
               <svg
-                className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
+                className='animate-spin -ml-1 mr-2 h-4 w-4 md:h-5 md:w-5 text-white'
                 fill='none'
                 viewBox='0 0 24 24'>
                 <circle
