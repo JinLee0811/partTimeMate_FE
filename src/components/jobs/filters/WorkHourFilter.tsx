@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { workHourTypes, timeSlotOptions, timeRanges } from "../../../data/workHours";
+import { workHourTypes, timeSlotOptions, timeRanges } from "../../../Mockdata/workHours";
 
 interface WorkHourFilterProps {
   selectedFilters: string[];

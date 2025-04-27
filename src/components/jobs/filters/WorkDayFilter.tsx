@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { workDayTypes, weeklyOptions, dayOptions } from "../../../data/workDays";
+import { workDayTypes, weeklyOptions, dayOptions } from "../../../Mockdata/workDays";
 
 interface WorkDayFilterProps {
   selectedFilters: string[];

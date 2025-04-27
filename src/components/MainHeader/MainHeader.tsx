@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUser } from "../../hooks/useUser";
-import { locations } from "../../data/locations";
+import { locations } from "../../Mockdata/locations";
 
 // locations.ts 파일에서 지역 데이터를 가져와서 사용
 const SYDNEY_AREAS = locations.map((region) => ({

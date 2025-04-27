@@ -1,5 +1,5 @@
 import React from "react";
-import { details, employmentTypes, languagePreferences } from "../../../data/details";
+import { details, employmentTypes, languagePreferences } from "../../../Mockdata/details";
 
 interface DetailsFilterProps {
   selectedFilters: string[];

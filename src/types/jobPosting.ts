@@ -53,24 +53,22 @@ export interface Company {
 export interface JobPostingData {
   // 기본 정보
   title: string;
-  categoryId: number;
-  subcategoryId?: number;
+  subcategoryId: number;
 
   // 위치 정보
-  locationCategory: JobLocation;
-  location: string;
-  coordinates?: Coordinates;
+  address: string;
+  latitude: number;
+  longitude: number;
   placeId?: string;
 
   // 급여 정보
-  hourly_rate: number;
+  hourlyRate: string;
   isHourlyRateNegotiable: boolean;
 
-  // 근무 시간
+  // 근무 조건
+  workPeriods: string[];
   workDays: string[];
-  workTime: WorkTime | "To be discussed";
-  isDaysNegotiable: boolean;
-  isTimeNegotiable: boolean;
+  workHours: string[];
 
   // 직무 설명
   description: string;
@@ -83,4 +81,15 @@ export interface JobPostingData {
   // 회사 정보
   companyId?: string;
   company?: Company;
+
+  // 추가 정보
+  employmentTypes?: string[];
+  preferredLanguages?: string[];
+  additionalOptions?: string[];
+
+  // 지원자 직접 입력용
+  contact?: string;
+  phone?: string;
+  email?: string;
+  applicationMethod?: string;
 }

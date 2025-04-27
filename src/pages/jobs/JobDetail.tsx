@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { jobs_en } from "../../data/data";
+import { jobs_en } from "../../Mockdata/data";
 
 const JobDetail = () => {
   const { id } = useParams<{ id: string }>();

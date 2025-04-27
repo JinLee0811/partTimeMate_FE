@@ -6,6 +6,7 @@ import ApplicationMethod from "../../components/JobPosting/ApplicationMethod";
 import PreviewModal from "./PreviewModal";
 import useJobPostingStore from "../../store/jobPostingStore";
 import { JobPostingData } from "../../types/jobPosting";
+import AdditionalInfo from "../../components/JobPosting/AdditionalInfo";
 
 export default function JobPosting() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -15,27 +16,46 @@ export default function JobPosting() {
   const steps = [
     { number: 1, title: "Basic Info" },
     { number: 2, title: "Description" },
-    { number: 3, title: "Application" },
+    { number: 3, title: "Additional Info" },
+    { number: 4, title: "Application" },
   ];
 
   const isLastStep = currentStep === steps.length;
 
-  const validateBasicInfo = (data: JobPostingData): boolean => {
+  const validateBasicInfo = (data: JobPostingData | null): boolean => {
+    if (!data) return false;
     return !!(
       data.title &&
-      data.categoryId &&
-      data.locationCategory &&
-      data.location &&
-      (data.isHourlyRateNegotiable || data.hourly_rate > 0) &&
-      (data.isDaysNegotiable || (data.workDays && data.workDays.length > 0))
+      data.subcategoryId &&
+      data.address &&
+      typeof data.latitude === "number" &&
+      typeof data.longitude === "number" &&
+      (data.isHourlyRateNegotiable || (data.hourlyRate && data.hourlyRate.trim() !== "")) &&
+      data.workPeriods &&
+      data.workPeriods.length > 0 &&
+      data.workDays &&
+      data.workDays.length > 0 &&
+      data.workHours &&
+      data.workHours.length > 0
     );
   };
 
-  const validateDescription = (data: JobPostingData): boolean => {
-    return !!data.description; // 내용이 있는지만 확인
+  const validateDescription = (data: JobPostingData | null): boolean => {
+    if (!data) return false;
+    return !!data.description;
   };
 
-  const validateApplicationMethod = (data: JobPostingData): boolean => {
+  const validateAdditionalInfo = (data: JobPostingData | null): boolean => {
+    if (!data) return false;
+    return !!(
+      (data.employmentTypes && data.employmentTypes.length > 0) ||
+      (data.preferredLanguages && data.preferredLanguages.length > 0) ||
+      (data.additionalOptions && data.additionalOptions.length > 0)
+    );
+  };
+
+  const validateApplicationMethod = (data: JobPostingData | null): boolean => {
+    if (!data) return false;
     return !!(data.applicationMethods && data.applicationMethods.length > 0 && data.contactInfo);
   };
 
@@ -48,16 +68,54 @@ export default function JobPosting() {
       case 2:
         return validateDescription(formData);
       case 3:
+        return validateAdditionalInfo(formData);
+      case 4:
         return validateApplicationMethod(formData);
       default:
         return false;
     }
   };
 
+  // 모든 스텝이 유효한지 체크하는 함수
+  const allStepsValid = () => {
+    if (!formData) return false;
+    return (
+      validateBasicInfo(formData) &&
+      validateDescription(formData) &&
+      validateAdditionalInfo(formData) &&
+      validateApplicationMethod(formData)
+    );
+  };
+
   const handleStepClick = (stepNumber: number) => {
-    // 이전 단계들이 모두 유효한 경우에만 해당 스텝으로 이동 가능
+    // 모든 항목이 다 채워졌으면 자유롭게 이동
+    if (allStepsValid()) {
+      setCurrentStep(stepNumber);
+      return;
+    }
+    // 아니면 기존처럼 이전 단계까지 유효해야 이동
+    if (stepNumber <= currentStep) {
+      setCurrentStep(stepNumber);
+      return;
+    }
+    // 앞으로 이동 시, 이전 단계들만 유효하면 이동
     for (let i = 1; i < stepNumber; i++) {
-      if (!canProceedToNextStep()) return;
+      switch (i) {
+        case 1:
+          if (!validateBasicInfo(formData)) return;
+          break;
+        case 2:
+          if (!validateDescription(formData)) return;
+          break;
+        case 3:
+          if (!validateAdditionalInfo(formData)) return;
+          break;
+        case 4:
+          if (!validateApplicationMethod(formData)) return;
+          break;
+        default:
+          break;
+      }
     }
     setCurrentStep(stepNumber);
   };
@@ -118,7 +176,8 @@ export default function JobPosting() {
           <div className='bg-white rounded-xl shadow-md border border-gray-200 p-8 mb-8'>
             {currentStep === 1 && <BasicInfo />}
             {currentStep === 2 && <JobDescription />}
-            {currentStep === 3 && <ApplicationMethod />}
+            {currentStep === 3 && <AdditionalInfo />}
+            {currentStep === 4 && <ApplicationMethod />}
           </div>
 
           {/* Navigation Buttons */}

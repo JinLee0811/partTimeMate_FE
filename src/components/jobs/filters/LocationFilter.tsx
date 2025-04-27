@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { locations } from "../../../data/locations";
+import { locations } from "../../../Mockdata/locations";
 import { FaCheck } from "react-icons/fa";
 
 interface LocationFilterProps {

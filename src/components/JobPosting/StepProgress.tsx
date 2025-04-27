@@ -30,8 +30,7 @@ export default function StepProgress({ steps, currentStep, onStepClick }: StepPr
           <button
             key={step.number}
             onClick={() => onStepClick(step.number)}
-            className='flex items-center'
-            disabled={step.number > currentStep}>
+            className='flex items-center'>
             {/* Step Circle */}
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${

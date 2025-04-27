@@ -1,6 +1,6 @@
 // src/pages/Brands.tsx
 import { useState } from "react";
-import { brands } from "../../data/brands";
+import { brands } from "../../Mockdata/brands";
 import BrandCard from "../../components/brands/BrandCard";
 import Pagination from "../../components/brands/Pagination";
 import BrandJobStats from "../../components/brands/BrandJobStats";

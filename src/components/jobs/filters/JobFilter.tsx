@@ -8,7 +8,7 @@ import FilterTabs from "./FilterTabs";
 import SelectedFilters from "./SelectedFilters";
 import ResetButton from "./ResetButton";
 import SearchInput from "./SearchInput";
-import { locations } from "../../../data/locations";
+import { locations } from "../../../Mockdata/locations";
 
 const MAX_FILTERS = 10;
 

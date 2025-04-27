@@ -5,6 +5,7 @@ export default function JobDescription() {
   const { formData, updateFormData } = useJobPostingStore();
 
   const handleDescriptionChange = (value: string) => {
+    // value는 HTML string입니다. 서버로도 HTML string 그대로 전달됩니다.
     updateFormData({ description: value });
   };
 

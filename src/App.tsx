@@ -21,7 +21,7 @@ import UserManagement from "./pages/admin/users/UserManagement";
 import JobManagement from "./pages/admin/jobs/JobManagement";
 import CategoryManagement from "./pages/admin/categories/CategoryManagement";
 import CategoryDetail from "./pages/admin/categories/CategoryForm";
-import JobPosting from "./pages/jobs/JobPosting";
+import JobPosting from "./pages/jobPosting/JobPosting";
 import ErrorPage from "./pages/ErrorPage";
 import BusinessDashBoard from "./pages/MyBusiness/BusinessDashBoard";
 import MyPageDashboard from "./pages/MyPages/MyPageDashBoard";

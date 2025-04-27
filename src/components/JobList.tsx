@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { jobs_en } from "../data/data"; // 데이터 가져오기
+import { jobs_en } from "../Mockdata/data"; // 데이터 가져오기
 
 const JobList = () => {
   // 첫 25개 공고만 가져오기

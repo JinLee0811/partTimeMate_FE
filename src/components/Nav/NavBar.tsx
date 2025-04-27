@@ -151,6 +151,13 @@ export default function NavBar() {
     </div>
   );
 
+  const renderLoadingState = () => (
+    <div className='flex items-center gap-2'>
+      <div className='w-8 h-8 rounded-full bg-gray-200 animate-pulse'></div>
+      <div className='w-16 h-4 bg-gray-200 rounded animate-pulse'></div>
+    </div>
+  );
+
   const renderRoleSpecificButtons = () => {
     if (!user) return null;
     const effectiveRole = user.role === "ADMIN" ? currentView : user.role;
@@ -232,7 +239,7 @@ export default function NavBar() {
             {/* Action Buttons & Auth */}
             <div className='flex items-center gap-3'>
               {isLoading ? (
-                <span>Loading...</span>
+                renderLoadingState()
               ) : isAuthenticated && user ? (
                 <>
                   {renderRoleSpecificButtons()}

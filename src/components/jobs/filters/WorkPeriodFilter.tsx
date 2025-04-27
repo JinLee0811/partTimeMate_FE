@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { workPeriods } from "../../../data/workPeriods";
-import { workDayTypes, weeklyOptions, dayOptions } from "../../../data/workDays";
-import { workHourTypes, timeSlotOptions, timeRanges } from "../../../data/workHours";
+import { workPeriods } from "../../../Mockdata/workPeriods";
+import { workDayTypes, weeklyOptions, dayOptions } from "../../../Mockdata/workDays";
+import { workHourTypes, timeSlotOptions, timeRanges } from "../../../Mockdata/workHours";
 
 interface WorkPeriodFilterProps {
   selectedPeriods: string[];

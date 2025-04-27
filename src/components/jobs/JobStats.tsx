@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { locations } from "../../data/locations";
+import { locations } from "../../Mockdata/locations";
 
 const JobStats: React.FC = () => {
   // locations.ts 파일에서 지역 데이터를 가져와서 사용

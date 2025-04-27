@@ -1,5 +1,5 @@
 // src/components/BrandJobStats.tsx
-import { brands } from "../../data/brands";
+import { brands } from "../../Mockdata/brands";
 
 export default function BrandJobStats() {
   return (

@@ -13,23 +13,33 @@ interface JobPostingStoreState {
 /** 기본 초기값 */
 const initialFormData: JobPostingData = {
   title: "",
-  categoryId: 0,
-  locationCategory: JobLocation.SYDNEY_CBD,
-  location: "",
-  hourly_rate: 0,
+  subcategoryId: 0,
+  address: "",
+  latitude: 0,
+  longitude: 0,
+  placeId: "",
+  hourlyRate: "",
   isHourlyRateNegotiable: false,
+  workPeriods: [],
   workDays: [],
-  workTime: "To be discussed",
-  isDaysNegotiable: false,
-  isTimeNegotiable: false,
+  workHours: [],
   description: "",
+  employmentTypes: [],
+  preferredLanguages: [],
+  additionalOptions: [],
+  applicationMethod: "",
+  contact: "",
+  phone: "",
+  email: "",
+  deadline: "",
+  companyId: undefined,
   applicationMethods: [],
   contactInfo: "",
 };
 
 // localStorage에서 저장된 데이터 불러오기
 const loadFormData = (): JobPostingData | null => {
-  const saved = localStorage.getItem("jobPostingDraft");
+  const saved = localStorage.getItem("jobPostingFormData");
   if (saved) {
     try {
       return JSON.parse(saved);
@@ -45,12 +55,12 @@ const loadFormData = (): JobPostingData | null => {
 const saveFormData = (data: JobPostingData | null) => {
   if (data) {
     try {
-      localStorage.setItem("jobPostingDraft", JSON.stringify(data));
+      localStorage.setItem("jobPostingFormData", JSON.stringify(data));
     } catch (e) {
       console.error("Failed to save job posting data:", e);
     }
   } else {
-    localStorage.removeItem("jobPostingDraft");
+    localStorage.removeItem("jobPostingFormData");
   }
 };
 
