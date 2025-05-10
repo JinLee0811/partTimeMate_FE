@@ -1,0 +1,213 @@
+import { useState, useEffect } from "react";
+import Table from "../../../components/Table";
+import Modal from "../../../components/Modal";
+import UserEditForm from "./UserEditForm";
+import UserDetailModal from "./UserDetail";
+import Pagination from "../../../components/pagenation";
+import { useAdminStore } from "../../../store/useAdminStore";
+import { FaSearch, FaUserEdit, FaUserCog, FaTrash, FaEye } from "react-icons/fa";
+
+export default function UserManagement() {
+  const { users, updateUser, deleteUser, fetchUsers, totalCount } = useAdminStore();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"edit" | "view" | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [displayPage, setDisplayPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // --- Calculate height for 10 items (adjust base height per row as needed) ---
+  // Assuming roughly 60px per row (padding included)
+  const listHeight = 60 * itemsPerPage; // 600px for 10 items
+  // -----------------------------------------------------------------------
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchUsers(1).finally(() => {
+      setIsLoading(false);
+    });
+  }, [fetchUsers]);
+
+  const filteredUsers = users.filter((user) =>
+    [user.email, user.firstName, user.lastName]
+      .join(" ")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+  const startIndex = (displayPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setDisplayPage(page);
+  };
+
+  useEffect(() => {
+    setDisplayPage(1);
+  }, [searchQuery]);
+
+  const openModal = (type: "edit" | "view", user: any) => {
+    setSelectedUser(user);
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateUser = async (updatedUser: any) => {
+    try {
+      setIsLoading(true);
+      await updateUser(updatedUser.id.toString(), updatedUser);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        setIsLoading(true);
+        await deleteUser(userId.toString());
+        await fetchUsers(1);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return (
+    <div className='max-w-7xl mx-auto'>
+      <div className='mb-8'>
+        <h1 className='text-2xl font-bold text-gray-900'>User Management</h1>
+        <p className='mt-2 text-sm text-gray-600'>Manage and monitor all registered users</p>
+      </div>
+
+      <div className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
+        <div className='p-6 border-b border-gray-100'>
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between'>
+            <div className='relative'>
+              <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                <FaSearch className='text-gray-400' />
+              </div>
+              <input
+                type='text'
+                placeholder='Search users...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='pl-10 pr-4 py-2 w-full md:w-64 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200'
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className='overflow-x-auto'>
+          <div className='min-w-full divide-y divide-gray-100'>
+            <div className='bg-gray-50'>
+              <div className='grid grid-cols-7 gap-4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                <div>Register Date</div>
+                <div>Email</div>
+                <div>First Name</div>
+                <div>Last Name</div>
+                <div>Role</div>
+                <div>Language</div>
+                <div className='text-right'>Actions</div>
+              </div>
+            </div>
+            <div className='bg-white divide-y divide-gray-100'>
+              {isLoading || displayedUsers.length === 0 ? (
+                <div className='flex items-center justify-center h-[400px] text-gray-500'>
+                  {isLoading ? (
+                    <div className='flex items-center space-x-2'>
+                      <div className='w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin'></div>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "No users found"
+                  )}
+                </div>
+              ) : (
+                displayedUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className='grid grid-cols-7 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150'>
+                    <div className='text-sm text-gray-900'>
+                      {new Date(user.createdAt || "").toLocaleDateString("en-AU", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <div className='text-sm text-gray-900 truncate'>{user.email}</div>
+                    <div className='text-sm text-gray-900'>{user.firstName}</div>
+                    <div className='text-sm text-gray-900'>{user.lastName}</div>
+                    <div className='text-sm'>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          user.role === "ADMIN"
+                            ? "bg-orange-100 text-orange-800"
+                            : user.role === "BUSINESS"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-green-100 text-green-800"
+                        }`}>
+                        {user.role}
+                      </span>
+                    </div>
+                    <div className='text-sm text-gray-900'>{user.preferredLanguage}</div>
+                    <div className='text-sm text-right space-x-2'>
+                      <button
+                        onClick={() => openModal("view", user)}
+                        className='text-orange-600 hover:text-orange-800 p-1.5 rounded-lg hover:bg-orange-50 transition-colors duration-200'>
+                        <FaEye />
+                      </button>
+                      <button
+                        onClick={() => openModal("edit", user)}
+                        className='text-orange-600 hover:text-orange-800 p-1.5 rounded-lg hover:bg-orange-50 transition-colors duration-200'>
+                        <FaUserEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className='text-red-600 hover:text-red-800 p-1.5 rounded-lg hover:bg-red-50 transition-colors duration-200'>
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className='px-6 py-4 border-t border-gray-100'>
+          <Pagination
+            currentPage={displayPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
+
+      {isModalOpen && selectedUser && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          {modalType === "edit" ? (
+            <UserEditForm
+              user={selectedUser}
+              onUpdate={handleUpdateUser}
+              onCancel={() => setIsModalOpen(false)}
+            />
+          ) : (
+            <UserDetailModal user={selectedUser} onClose={() => setIsModalOpen(false)} />
+          )}
+        </Modal>
+      )}
+    </div>
+  );
+}
